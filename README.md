@@ -1,4 +1,5 @@
 # Differentially Private Synthetic Telemetry Data Benchmark
+By: Jason Tran, Phuc Tran, Mehak Kapur, Hana Tjendrawasi
 
 ## Overview
 
