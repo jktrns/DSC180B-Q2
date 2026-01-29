@@ -1,0 +1,21 @@
+app_type,exe_name,average_focal_sec_per_day,rank
+0,pddtests.exe,511000.0,1
+0,e_tinvlve.exe,397142.0,2
+0,empera_dx.exe,309102.0,3
+0,breeding farm.exe,280010.0,4
+0,betconstruct.casino.livedealer.studiomanagertool.exe,250280.0,5
+0,ledmodel-websocket-server_waterfall.exe,249727.0,6
+0,dyn_updater.exe,247034.0,7
+0,applicationmonitor.exe,246411.0,8
+0,polycomcompanion.exe,246350.0,9
+0,typroclient.exe,245414.0,10
+1,breeding farm.exe,280010.0,1
+1,betconstruct.casino.livedealer.studiomanagertool.exe,222940.0,2
+1,adflow.player.playback.wmp.exe,209462.0,3
+1,runic.exe,209336.0,4
+1,nwsapsetupusernotificationtool.exe,208501.0,5
+1,zakaznik.exe,201909.0,6
+1,timewarpers.exe,183445.0,7
+1,rcmrun.exe,174353.0,8
+1,boot.exe,171754.0,9
+1,isl_light_client_4_4_2116_42.exe,168867.0,10
