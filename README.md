@@ -40,27 +40,19 @@ The project focuses on the following eight tables:
 1. `system_sysinfo_unique_normalized`  
    Anchor table defining the device level privacy unit.
 
-2. `crashlog`  
-   Records system crash events.
+2. `frgnd_system_usage_by_app`  
+   Records foreground application usage and associated system resource metrics.
 
-3. `application_error_event_1000`  
-   Captures application level error events.
+3. `userwait_v2`  
+   Captures user wait and application responsiveness events.
 
-4. `application_hang_event_1002`  
-   Captures application hang and performance degradation events.
+4. `os_network_consumption_v2`  
+   Records system-level network usage statistics.
 
-5. `microsoft_windows_kernel_power_event_41`  
-   Records critical kernel power failure events.
+5. `ucsd_apps_execclass_final`  
+   Provides application execution class labels for grouping and analysis.
 
-6. `hw_cpu_frequency`  
-   Continuous telemetry of CPU operating frequency.
-
-7. `power_acdc_usage_v4_hist`  
-   Histogram based power usage under AC and battery conditions.
-
-8. `wifi_error`  
-   Records network and wifi related errors.
-
+   
 ---
 
 ## Data Access and Tooling
