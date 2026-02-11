@@ -1,0 +1,10 @@
+[
+  {
+    "question": "Provide me a statistical summary of on time, off time, mods time, and sleep time broke out by different cpu generations and Intel market codenames. Do not include any cpu generation/market code name grouping with less than 100 clients. The metrics to summarize number of clients, average on time, average off time, average mods time, average sleep time, and average total time per day, as well as average percent on time per day, average percent off time per day, average percent mods time per day, and average percent sleep time per day. Round all decimal metrics off to 2 decimal points.",
+    "sql": "select b.marketcodename, b.cpugen, count(distinct a.guid) as number_of_systems, round(avg(on_time),2) as avg_on_time, round(avg(off_time),2) as avg_off_time, round(avg(mods_time),2) as avg_modern_sleep_time, round(avg(sleep_time),2) as avg_sleep_time, round(avg(on_time+ off_time+ mods_time+ sleep_time),2) as avg_total_time, round(sum(on_time) *100.0 / sum(on_time+off_time+mods_time+sleep_time),2) as avg_pcnt_on_time, round(sum(off_time) *100.0 / sum(on_time+off_time+mods_time+sleep_time),2) as avg_pcnt_off_time, round(sum(mods_time) *100.0 / sum(on_time+off_time+mods_time+sleep_time),2) as avg_pcnt_mods_time, round(sum(sleep_time) *100.0 / sum(on_time+off_time+mods_time+sleep_time),2) as avg_pcnt_sleep_time from reporting.system_on_off_suspend_time_day a inner join reporting.system_cpu_metadata b on a.guid = b.guid group by b.marketcodename, b.cpugen having count(distinct a.guid) > 100;",
+    "db_id": "dw",
+    "mapping": {},
+    "join_keys": [],
+    "gold_tables": []
+  }
+]

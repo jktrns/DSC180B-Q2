@@ -1,0 +1,10 @@
+[
+  {
+    "question": "Provide a statistical summary of the various detected display devices. We want to calculate, as a percentage of the total number of systems, each vendor's display type has been seen at least once. Some clients will have more than one display; as such clients can be double-counted. The metrics to be provided are the number of clients per vendor, the total number of clients in the sample, and the percentage of the specific vendor's clients in relation to the total number of clients. Round the percentage off to 2 decimal places.",
+    "sql": "select vendor_name, count(distinct guid) as number_of_systems, total_number_of_systems, round(count(distinct guid) *100.0/ total_number_of_systems,2 )as percentage_of_systems from reporting.system_display_devices cross join ( select count(distinct guid) as total_number_of_systems from reporting.system_display_devices ) inn group by vendor_name, total_number_of_systems;",
+    "db_id": "dw",
+    "mapping": {},
+    "join_keys": [],
+    "gold_tables": []
+  }
+]

@@ -1,0 +1,10 @@
+[
+  {
+    "question": "Provide me a summary of battery usage durations in minutes, broke out by the different cpu family and generations. Do NOT include any cpu family or generation with less than 100 clients.",
+    "sql": "select marketcodename, cpugen, count(distinct b.guid) as number_of_systems, avg(duration_mins) as avg_duration_mins_on_battery from reporting.system_cpu_metadata a inner join reporting.system_batt_dc_events b on a.guid = b.guid where cpugen != 'Unknown' group by marketcodename, cpugen having count(distinct b.guid) > 100;",
+    "db_id": "dw",
+    "mapping": {},
+    "join_keys": [],
+    "gold_tables": []
+  }
+]

@@ -1,0 +1,17 @@
+[project]
+name = "dsc180-q2"
+version = "0.1.0"
+description = "Add your description here"
+requires-python = ">=3.12"
+dependencies = [
+    "duckdb>=1.4.4",
+    "ipykernel>=7.2.0",
+    "jupyter>=1.1.1",
+    "matplotlib>=3.10.8",
+    "opacus>=1.5.4",
+    "pandas>=3.0.0",
+    "pyarrow>=23.0.0",
+    "pymupdf>=1.26.7",
+    "scikit-learn>=1.8.0",
+    "torch>=2.10.0",
+]

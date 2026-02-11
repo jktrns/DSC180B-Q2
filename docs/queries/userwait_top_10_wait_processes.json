@@ -1,0 +1,10 @@
+[
+  {
+    "question": "Provide me a list of the top 10 worst applications for wait time. Ignore the following list of processes in compiling the list: 'DUMMY_PROCESS', 'DESKTOP', 'explorer.exe', 'RESTRICTED PROCESS', and 'UNKNOWN'. Also ignore any events that are either 'TOTAL_NON_WAIT_EVENTS' or 'TOTAL_DISCARDED_WAIT_EVENTS', as they are not applicable to this analysis. Provide me a ranking number, as well as an average wait time in seconds for these ranked processes.",
+    "sql": "select proc_name, total_duration_sec_per_instance, rank from ( select proc_name, sum((total_duration_ms/1000))/sum(number_of_instances) as total_duration_sec_per_instance, rank() over (order by sum((total_duration_ms/1000))/sum(number_of_instances) desc) as rank from reporting.system_userwait where proc_name not in ('DUMMY_PROCESS', 'DESKTOP', 'explorer.exe', 'RESTRICTED PROCESS', 'UNKNOWN') and event_name NOT in ('TOTAL_NON_WAIT_EVENTS', 'TOTAL_DISCARDED_WAIT_EVENTS') group by proc_name order by rank desc ) inn where rank <= 10 order by rank asc;",
+    "db_id": "dw",
+    "mapping": {},
+    "join_keys": [],
+    "gold_tables": []
+  }
+]

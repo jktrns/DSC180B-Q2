@@ -1,0 +1,21 @@
+app_id,total_power_consumption,rnk
+\Device\HarddiskVolume3\Program Files\Google\Chrome\Application\chrome.exe,2526.740740740741,1
+\Device\HarddiskVolume3\Program Files (x86)\Microsoft\Edge\Application\msedge.exe,2287.9285714285716,2
+Unknown,1496.1052631578948,3
+System,366.45238095238096,4
+4DF9E0F8.Netflix_6.99.5.0_x64__mcm4njqhnhss8,1343.9,5
+\Device\HarddiskVolume3\Windows\explorer.exe,290.1388888888889,6
+System Interrupts,210.9047619047619,7
+\Device\HarddiskVolume3\Program Files\HP\HP One Agent\hp-plugin-executor.exe,220.66666666666666,8
+\Device\HarddiskVolume3\Program Files\Microsoft Office\root\Office16\EXCEL.EXE,299.3076923076923,9
+\Device\HarddiskVolume3\Program Files\Avast Software\Avast\AvastSvc.exe,89.54761904761905,10
+\Device\HarddiskVolume3\Program Files (x86)\Intel\Driver and Support Assistant\DSAService.exe,74.42857142857143,11
+\Device\HarddiskVolume3\Windows\System32\svchost.exe [netsvcs] [wuauserv],102.07142857142857,12
+Microsoft.SkypeApp_15.123.3203.0_x64__kzf8qxf38zg5c,85.90625,13
+Microsoft.Windows.ShellExperienceHost_10.0.22621.3810_neutral_neutral_cw5n1h2txyewy,58.833333333333336,14
+\Device\HarddiskVolume3\Windows\System32\LogonUI.exe,89.625,15
+\Device\HarddiskVolume3\Program Files\Avast Software\Avast\aswidsagent.exe,50.833333333333336,16
+Microsoft.Windows.StartMenuExperienceHost_10.0.22621.2506_neutral_neutral_cw5n1h2txyewy,50.595238095238095,17
+\Device\HarddiskVolume3\Windows\System32\dwm.exe,54.05555555555556,18
+\Device\HarddiskVolume3\Windows\System32\audiodg.exe,54.42857142857143,19
+MicrosoftWindows.Client.CBS_1000.22700.1020.0_x64__cw5n1h2txyewy,42.0,20

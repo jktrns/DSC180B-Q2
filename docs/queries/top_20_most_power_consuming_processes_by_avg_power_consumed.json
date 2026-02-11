@@ -1,0 +1,10 @@
+[
+  {
+    "question": "Provide a ranked list of the top 20 most power consuming processes, regardless of user id classification, as ranked by average power consumption. Provide the application name, the average total power consumed, and it's rank value.",
+    "sql": "select app_id, total_power_consumption, rnk from (select app_id, avg(total_power_consumption) as total_power_consumption, rank() over (order by sum(total_power_consumption) desc ) as rnk from reporting.system_mods_power_consumption group by app_id) where rnk <= 20;",
+    "db_id": "dw",
+    "mapping": {},
+    "join_keys": [],
+    "gold_tables": []
+  }
+]

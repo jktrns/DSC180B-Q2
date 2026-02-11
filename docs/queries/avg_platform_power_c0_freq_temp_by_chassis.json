@@ -1,0 +1,10 @@
+[
+  {
+    "question": "Provide me with a summary of the avg power consumed, the avg package c0, the average package frequency, and the average package temperature by chassis type. The report should contain these 4 metrics as well as the number of systems that entered into the calculation.",
+    "sql": "select a.chassistype, count(distinct a.guid) as number_of_systems, sum(b.nrs * b.avg_psys_rap_watts)/sum(b.nrs) as avg_psys_rap_watts, sum(c.nrs * c.avg_pkg_c0)/sum(c.nrs) as avg_pkg_c0, sum(d.nrs * d.avg_avg_freq_mhz)/sum(d.nrs) as avg_freq_mhz, sum(e.nrs * e.avg_temp_centigrade)/sum(e.nrs) as avg_temp_centigrade from reporting.system_sysinfo_unique_normalized a inner join reporting.system_psys_rap_watts b on a.guid = b.guid inner join reporting.system_pkg_C0 c on a.guid = c.guid inner join reporting.system_pkg_avg_freq_mhz d on a.guid = d.guid inner join reporting.system_pkg_temp_centigrade e on a.guid = e.guid group by a.chassistype;",
+    "db_id": "dw",
+    "mapping": {},
+    "join_keys": [],
+    "gold_tables": []
+  }
+]

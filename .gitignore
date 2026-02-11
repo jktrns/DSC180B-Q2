@@ -1,4 +1,33 @@
-.DS_Store
-*.duckdb
-*.parquet
+# Data files (downloaded from Globus, too large for git)
+data/**/*.parquet
+data/**/*.gz
+data/**/*.duckdb
 
+# Track README, results CSVs, and model artifacts
+!data/README.md
+!data/results/**/*.csv
+!data/models/**
+
+# DuckDB databases
+*.duckdb
+*.duckdb.wal
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.venv/
+venv/
+
+# uv
+.python-version
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+*.swp
+*.swo

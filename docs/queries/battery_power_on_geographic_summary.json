@@ -1,0 +1,10 @@
+[
+  {
+    "question": "Provide me a summary by country of battery usage in the world. For every country with at least 100 client systems, I would like to see the number of client systems, the average number of power ons on battery, as well as the average duration of time on battery.",
+    "sql": "select countryname_normalized as country, count(distinct a.guid) as number_of_systems, avg(num_power_ons) as avg_number_of_dc_powerons, avg(duration_mins) as avg_duration from reporting.system_batt_dc_events a inner join reporting.system_sysinfo_unique_normalized b on a.guid = b.guid group by countryname_normalized having count(distinct a.guid) > 100 order by avg_number_of_dc_powerons desc;",
+    "db_id": "dw",
+    "mapping": {},
+    "join_keys": [],
+    "gold_tables": []
+  }
+]

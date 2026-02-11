@@ -1,0 +1,10 @@
+[
+  {
+    "question": "Provide me ranked lists of the top 10 applications by application type. Rank the applications by average amount of focal screen time the applications have a day. Ignore any applications with no application type classification, and allow for ties in ranking.",
+    "sql": "select app_type, exe_name, round(average_focal_sec_per_day) as average_focal_sec_per_day, rank from (select app_type, exe_name, avg(totalsecfocal_day)as average_focal_sec_per_day, rank() over (partition by app_type order by avg(totalsecfocal_day) desc) as rank from reporting.system_frgnd_apps_types where exe_name not in ('restricted process', 'desktop') and app_type is not null group by app_type, exe_name order by average_focal_sec_per_day desc) inn where rank <= 10 order by app_type, rank asc;",
+    "db_id": "dw",
+    "mapping": {},
+    "join_keys": [],
+    "gold_tables": []
+  }
+]

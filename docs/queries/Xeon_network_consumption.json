@@ -1,0 +1,10 @@
+[
+  {
+    "question": "I want to characterize client systems with Xeon processors network consumption, vs non-Xeon systems, further bifurcated by operating system. Provide me summary averages of total network consumption per client based on whether or not the clients are Xeon or not, with Xeon systems labeled 'server class' and non-Xeon system labeled 'non-server class', enumerate the based on the os the systems are running.",
+    "sql": "select processor_class, os, count(distinct guid) as number_of_systems, sum(nrs * avg_bytes_received)/sum(nrs) as avg_bytes_received, sum(nrs * avg_bytes_sent)/sum(nrs) as avg_bytes_sent from (select a.guid, a.cpuname, a.cpucode, a.os, sum(b.nrs) as nrs, case when cpuname = 'Xeon' then 'Server Class' else 'Non-Server Class' end as processor_class, sum(case when b.input_desc = 'OS:NETWORK INTERFACE::BYTES RECEIVED/SEC::' then b.avg_bytes_sec * b.nrs * 5 else 0 end) as avg_bytes_received, sum(case when b.input_desc = 'OS:NETWORK INTERFACE::BYTES SENT/SEC::' then b.avg_bytes_sec * b.nrs * 5 else 0 end) as avg_bytes_sent from reporting.system_sysinfo_unique_normalized a inner join reporting.system_network_consumption b on a.guid = b.guid group by a.guid, a.cpuname, a.cpucode, a.os) c group by processor_class, os;",
+    "db_id": "dw",
+    "mapping": {},
+    "join_keys": [],
+    "gold_tables": []
+  }
+]

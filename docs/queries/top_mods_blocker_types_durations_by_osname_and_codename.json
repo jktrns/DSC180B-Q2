@@ -1,0 +1,10 @@
+[
+  {
+    "question": "Provide me a summary count and duration distribution of the number of top modern sleepstudy blockers, broke out by Windows os name and codename, as well as the blocker name, blocker type, and activity level. The metrics to provide are the sum of blocker entries, the number of systems that produced those entries, and the average duration in seconds of these blockers. Discard any blockers which have a zero duration.",
+    "sql": "select os_name, os_codename, blocker_name, blocker_type, activity_level, count(distinct guid) as number_of_clients, avg(active_time_sec) as average_active_time_in_seconds, count(*) as number_of_occurences from ( select a.guid, blocker_name, active_time_ms / 1000.0 as active_time_sec, activity_level, blocker_type, os_name, os_codename from reporting.system_mods_top_blocker_hist a inner join reporting.system_os_codename_history b on a.guid = b.guid and a.dt between b.min_ts and b.max_ts where active_time_ms > 0 ) as inn group by os_name, os_codename, blocker_name, blocker_type, activity_level;",
+    "db_id": "dw",
+    "mapping": {},
+    "join_keys": [],
+    "gold_tables": []
+  }
+]

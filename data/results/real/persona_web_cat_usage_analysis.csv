@@ -1,0 +1,12 @@
+persona,number_of_systems,days,content_creation_photo_edit_creation,content_creation_video_audio_edit_creation,content_creation_web_design_development,education,entertainment_music_audio_streaming,entertainment_other,entertainment_video_streaming,finance,games_other,games_video_games,mail,news,unclassified,private,productivity_crm,productivity_other,productivity_presentations,productivity_programming,productivity_project_management,productivity_spreadsheets,productivity_word_processing,recreation_travel,reference,search,shopping,social_social_network,social_communication,social_communication_live
+Casual User,7859,465408.0,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Win Store App User,1448,99741.0,0.046,0.011,0.165,1.951,0.134,2.297,22.366,0.58,2.162,0.01,2.32,1.06,32.503,17.464,0.0,0.786,0.105,0.14,0.05,0.337,0.647,0.341,0.823,5.983,2.828,3.203,0.853,0.834
+Communication,4611,434040.0,0.037,0.023,0.263,1.701,0.143,1.088,8.267,0.932,0.533,0.004,2.35,1.968,47.686,14.563,0.002,2.609,0.169,0.408,0.192,0.69,0.527,0.604,1.344,7.113,2.769,2.285,0.747,0.983
+Casual Gamer,4774,403219.0,0.143,0.01,0.172,1.453,0.057,2.518,29.719,0.366,2.224,0.057,1.318,0.581,20.444,27.881,0.0,0.528,0.095,0.145,0.028,0.266,0.605,0.173,0.69,3.547,1.704,3.017,1.61,0.648
+Gamer,6843,475161.0,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Unknown,7140,47113.0,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Entertainment,1972,119091.0,0.055,0.021,0.212,1.011,0.154,3.544,25.633,0.402,1.175,0.028,1.614,1.17,28.999,19.542,0.002,0.762,0.069,0.508,0.008,0.148,0.347,0.24,0.878,5.966,2.828,3.268,0.889,0.527
+Web User,19575,1731513.0,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+File & Network Sharer,1328,90803.0,0.061,0.021,0.138,1.224,0.55,2.874,12.047,0.976,0.75,0.012,3.778,1.399,42.384,15.86,0.0,1.037,0.054,0.508,0.045,0.805,0.258,0.366,1.131,7.009,3.348,1.848,1.005,0.512
+Content Creator/IT,3595,274780.0,0.159,0.016,0.251,1.598,0.259,2.089,14.331,0.583,0.783,0.009,2.936,1.225,35.351,21.396,0.001,1.517,0.188,0.489,0.199,0.511,0.525,0.34,1.21,6.548,2.543,2.986,1.225,0.734
+Office/Productivity,5131,396231.0,0.072,0.005,0.268,1.867,0.141,1.152,9.741,0.792,0.538,0.005,4.529,1.42,39.685,21.454,0.0,1.458,0.128,0.271,0.085,0.715,0.5,0.33,1.17,7.456,2.003,2.204,1.067,0.943

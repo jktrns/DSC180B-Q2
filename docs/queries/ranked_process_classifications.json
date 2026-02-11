@@ -1,0 +1,10 @@
+[
+  {
+    "question": "Provide me with a summary ranking of the different user_id process ownership classification in the system_mods_power_consumption dataset. Rank the user_ids by the sum of total power consumed within the user_id, in descending order. Provide me with the ranking number as well as the sum total power consumed so I can have a sense of scale.",
+    "sql": "select user_id, sum(total_power_consumption) as total_power_consumption, rank() over (order by sum(total_power_consumption) desc )as rnk from reporting.system_mods_power_consumption group by user_id;",
+    "db_id": "dw",
+    "mapping": {},
+    "join_keys": [],
+    "gold_tables": []
+  }
+]

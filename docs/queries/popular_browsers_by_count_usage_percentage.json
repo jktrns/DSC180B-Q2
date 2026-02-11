@@ -1,0 +1,10 @@
+[
+  {
+    "question": "Utilizing the web categorization usage data, produce a statistical analysis of the popularity of the browsers in that dataset. The metrics to calculate would be the percentage of total number of systems for which the browser was seen, the percentage of the number of instances for each browser, and the percentage of total duration used for each browswer.",
+    "sql": "select browser, round(num_systems *100.0 / total_systems, 2) as percent_systems, round(num_instances *100.0 / tot_instances, 2) as percent_instances, round(sum_duration *100.0 / tot_duration, 2) as percent_duration from (select browser, count(distinct guid) as num_systems, count(*) as num_instances, sum(duration_ms) as sum_duration from reporting.system_web_cat_usage group by browser) a cross join (select count(distinct guid) as total_systems, count(*) as tot_instances, sum(duration_ms) as tot_duration from reporting.system_web_cat_usage) b;",
+    "db_id": "dw",
+    "mapping": {},
+    "join_keys": [],
+    "gold_tables": []
+  }
+]

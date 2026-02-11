@@ -1,0 +1,15 @@
+marketcodename,cpugen,number_of_systems,avg_duration_mins_on_battery
+Coffee Lake,9th Gen i5,638,64.09187846917908
+Ice Lake,10th Gen i3,805,93.96621947688448
+Tiger Lake,11th Gen i7,2838,186.87790808934088
+Whiskey Lake,Pentium/Celeron-Whiskey Lake,102,96.85233798195242
+Comet Lake,10th Gen i5,2291,120.21448275862069
+Alder Lake,12th Gen i7,103,137.3286307053942
+Tiger Lake,11th Gen i3,808,189.57973648341664
+Ice Lake,10th Gen i5,1785,129.54779362751634
+Tiger Lake,11th Gen i5,3685,194.6900896071073
+Comet Lake,10th Gen i7,2228,114.44332897456448
+Ice Lake,10th Gen i7,967,157.89512451771307
+Coffee Lake,9th Gen i7,1105,65.4045634507189
+Gemini Lake Refresh,Pentium/Celeron-Gemini Lake Refresh,296,102.82565379825654
+Comet Lake,10th Gen i3,340,104.03903066695261

@@ -1,0 +1,6 @@
+user_id,total_power_consumption,rnk
+UserIdMask,186984.0,1
+SYSTEM,56672.0,2
+NONE,28426.0,3
+LOCAL SERVICE,3493.0,4
+NETWORK SERVICE,2139.0,5

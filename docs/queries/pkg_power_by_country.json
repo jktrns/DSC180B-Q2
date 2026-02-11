@@ -1,0 +1,10 @@
+[
+  {
+    "question": "Provide me a enumeration of the average cpu package power in watts consumed by a client, broke out by country.",
+    "sql": "select a.countryname_normalized, count(distinct b.guid) as number_of_systems, sum(nrs * mean)/sum(nrs) as avg_pkg_power_consumed from reporting.system_sysinfo_unique_normalized a inner join reporting.system_hw_pkg_power b on a.guid = b.guid group by a.countryname_normalized order by avg_pkg_power_consumed desc;",
+    "db_id": "dw",
+    "mapping": {},
+    "join_keys": [],
+    "gold_tables": []
+  }
+]

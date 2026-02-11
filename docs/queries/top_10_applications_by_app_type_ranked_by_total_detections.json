@@ -1,0 +1,10 @@
+[
+  {
+    "question": "Provide me ranked lists of the top 10 applications by application type. Rank the applications by the total number of detections seen per day across the application type, as measured by the metric lines_per_day. Ignore any applications with no application type classification, and allow for ties in ranking.",
+    "sql": "select app_type, exe_name, total_num_detections as total_number_of_detections, rank from (select app_type, exe_name, sum(lines_per_day) as total_num_detections, rank() over (partition by app_type order by sum(lines_per_day) desc) as rank from reporting.system_frgnd_apps_types where exe_name not in ('restricted process', 'desktop') and app_type is not null group by app_type, exe_name order by total_num_detections desc) inn where rank <= 10 order by app_type, rank asc;",
+    "db_id": "dw",
+    "mapping": {},
+    "join_keys": [],
+    "gold_tables": []
+  }
+]

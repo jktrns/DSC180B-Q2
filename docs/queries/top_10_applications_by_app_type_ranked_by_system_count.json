@@ -1,0 +1,10 @@
+[
+  {
+    "question": "Provide me ranked lists of the top 10 applications by application type. Rank the applications by the number of distinct clients the applications have been detected on. Ignore any applications with no application type classification, and allow for ties in ranking.",
+    "sql": "select * from (select app_type, exe_name, count(distinct guid) as number_of_systems, rank() over (partition by app_type order by count(distinct guid) desc) as rank from reporting.system_frgnd_apps_types where exe_name not in ('restricted process', 'desktop') and app_type is not null group by app_type, exe_name order by number_of_systems desc) inn where rank <= 10 order by app_type, rank asc;",
+    "db_id": "dw",
+    "mapping": {},
+    "join_keys": [],
+    "gold_tables": []
+  }
+]

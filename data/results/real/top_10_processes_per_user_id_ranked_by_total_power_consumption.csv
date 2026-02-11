@@ -1,0 +1,45 @@
+user_id,app_id,total_power_consumption,rnk
+NONE,Unknown,28426.0,1
+LOCAL SERVICE,\Device\HarddiskVolume3\Windows\System32\audiodg.exe,1905.0,1
+LOCAL SERVICE,\Device\HarddiskVolume3\Program Files\Avast Software\Avast\aswEngSrv.exe,572.0,2
+LOCAL SERVICE,\Device\HarddiskVolume3\Windows\System32\svchost.exe [LocalServiceNoNetwork] [DPS],454.0,3
+LOCAL SERVICE,\Device\HarddiskVolume3\Program Files (x86)\Common Files\Autodesk Shared\AdskLicensing\14.2.0.10911\AdskLicensingService\AdskLicensingService.exe,230.0,4
+LOCAL SERVICE,\Device\HarddiskVolume3\Windows\System32\svchost.exe [LocalServiceNetworkRestricted] [EventLog],86.0,5
+LOCAL SERVICE,\Device\HarddiskVolume3\Windows\System32\svchost.exe [LocalService] [LicenseManager],68.0,6
+LOCAL SERVICE,\Device\HarddiskVolume3\Windows\System32\svchost.exe [Camera] [FrameServer],56.0,7
+LOCAL SERVICE,\Device\HarddiskVolume3\Windows\System32\svchost.exe [WebThreatDefense] [webthreatdefsvc],36.0,8
+LOCAL SERVICE,\Device\HarddiskVolume3\Windows\System32\svchost.exe [LocalServiceNetworkRestricted],21.0,9
+LOCAL SERVICE,\Device\HarddiskVolume3\Windows\System32\svchost.exe [LocalServiceNoNetworkFirewall],20.0,10
+SYSTEM,System,15391.0,1
+SYSTEM,System Interrupts,8858.0,2
+SYSTEM,\Device\HarddiskVolume3\Program Files\HP\HP One Agent\hp-plugin-executor.exe,3972.0,3
+SYSTEM,\Device\HarddiskVolume3\Program Files\Avast Software\Avast\AvastSvc.exe,3761.0,4
+SYSTEM,\Device\HarddiskVolume3\Program Files (x86)\Intel\Driver and Support Assistant\DSAService.exe,3126.0,5
+SYSTEM,\Device\HarddiskVolume3\Windows\System32\svchost.exe [netsvcs] [wuauserv],2858.0,6
+SYSTEM,\Device\HarddiskVolume3\Windows\System32\LogonUI.exe,2151.0,7
+SYSTEM,\Device\HarddiskVolume3\Program Files\Avast Software\Avast\aswidsagent.exe,2135.0,8
+SYSTEM,\Device\HarddiskVolume3\Program Files\Intel\SUR\QUEENCREEK\x64\esrv_svc.exe,1354.0,9
+SYSTEM,MemCompression,1289.0,10
+NETWORK SERVICE,\Device\HarddiskVolume3\Windows\System32\svchost.exe [NetworkService],1025.0,1
+NETWORK SERVICE,\Device\HarddiskVolume3\Windows\SysWOW64\wbem\WmiPrvSE.exe,564.0,2
+NETWORK SERVICE,\Device\HarddiskVolume3\Windows\System32\sppsvc.exe,248.0,3
+NETWORK SERVICE,\Device\HarddiskVolume3\Windows\System32\svchost.exe [RPCSS],164.0,4
+NETWORK SERVICE,\Device\HarddiskVolume3\Windows\System32\svchost.exe [netprofm] [netprofm],93.0,5
+NETWORK SERVICE,\Device\HarddiskVolume3\Windows\System32\wbem\WmiPrvSE.exe,43.0,6
+NETWORK SERVICE,\Device\HarddiskVolume3\Windows\System32\SppExtComObj.Exe,2.0,7
+NETWORK SERVICE,\Device\HarddiskVolume3\Windows\System32\svchost.exe,0.0,8
+NETWORK SERVICE,\Device\HarddiskVolume3\Windows\System32\taskhostw.exe,0.0,8
+NETWORK SERVICE,\Device\HarddiskVolume3\Windows\System32\Speech_OneCore\common\SpeechModelDownload.exe,0.0,8
+NETWORK SERVICE,\Device\HarddiskVolume3\Windows\System32\svchost.exe [NetworkService] [LanmanWorkstation],0.0,8
+NETWORK SERVICE,\Device\HarddiskVolume3\Windows\System32\svchost.exe [NetworkService] [TapiSrv],0.0,8
+NETWORK SERVICE,\Device\HarddiskVolume3\Windows\System32\svchost.exe [netprofm] [NlaSvc],0.0,8
+UserIdMask,\Device\HarddiskVolume3\Program Files\Google\Chrome\Application\chrome.exe,68222.0,1
+UserIdMask,\Device\HarddiskVolume3\Program Files (x86)\Microsoft\Edge\Application\msedge.exe,64062.0,2
+UserIdMask,4DF9E0F8.Netflix_6.99.5.0_x64__mcm4njqhnhss8,13439.0,3
+UserIdMask,\Device\HarddiskVolume3\Windows\explorer.exe,10445.0,4
+UserIdMask,\Device\HarddiskVolume3\Program Files\Microsoft Office\root\Office16\EXCEL.EXE,3891.0,5
+UserIdMask,Microsoft.SkypeApp_15.123.3203.0_x64__kzf8qxf38zg5c,2749.0,6
+UserIdMask,Microsoft.Windows.ShellExperienceHost_10.0.22621.3810_neutral_neutral_cw5n1h2txyewy,2471.0,7
+UserIdMask,Microsoft.Windows.StartMenuExperienceHost_10.0.22621.2506_neutral_neutral_cw5n1h2txyewy,2125.0,8
+UserIdMask,\Device\HarddiskVolume3\Windows\System32\dwm.exe,1946.0,9
+UserIdMask,MicrosoftWindows.Client.CBS_1000.22700.1020.0_x64__cw5n1h2txyewy,1764.0,10

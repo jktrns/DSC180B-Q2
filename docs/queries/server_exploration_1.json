@@ -1,0 +1,10 @@
+[
+  {
+    "question": "I am trying to identify servers based on their network utilization. I believe that typically, servers will send more data than they will receive. To that end, please identify all client machines that are sending more data than they are receiving, utilizing the 'OS:NETWORK INTERFACE::BYTES RECEIVED/SEC::' and 'OS:NETWORK INTERFACE::BYTES SENT/SEC::' metrics in the reporting_system_network_consumption table. Note that to calculate sum total of bytes received and sent, you will have to multiple those metrics by the nrs column and by 5 to produce a data volume. Join the guids discovered to the sysinfo data to identify os, chassis, and vendor of the client systems meeting this criteria.",
+    "sql": "select a.guid, nrs, received_bytes, sent_bytes, b.chassistype, b.modelvendor_normalized as vendor, b.model_normalized as model, b.ram, b.os, b.\"#ofcores\" as number_of_cores from ( select guid, sum(nrs) as nrs, sum(case when input_desc = 'OS:NETWORK INTERFACE::BYTES RECEIVED/SEC::' then avg_bytes_sec * nrs * 5 else 0 end) as received_bytes, sum(case when input_desc = 'OS:NETWORK INTERFACE::BYTES SENT/SEC::' then avg_bytes_sec * nrs * 5 else 0 end) as sent_bytes from reporting.system_network_consumption group by guid having sum(nrs) > 720 ) a inner join reporting.system_sysinfo_unique_normalized b on a.guid = b.guid where sent_bytes > received_bytes;",
+    "db_id": "dw",
+    "mapping": {},
+    "join_keys": [],
+    "gold_tables": []
+  }
+]

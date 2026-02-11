@@ -1,0 +1,10 @@
+[
+  {
+    "question": "Provide an ordered histogram of client memory capacity, showing the distribution of average utilized ram for each memory capacity column. The ascending memory capacity should be provided in GB (gigabytes) and the utilization should be an integer percentage. Filter out any data where the average utilized memory is negative, because that is indicative of erroneous data. Ensure the average computed is a weighted average, weighted with the number of samples.",
+    "sql": "select sysinfo_ram/2^10 as ram_gb, count(distinct guid), round(sum(nrs*avg_percentage_used)/sum(nrs)) as avg_percentage_used from reporting.system_memory_utilization where avg_percentage_used > 0 group by sysinfo_ram order by sysinfo_ram asc;",
+    "db_id": "dw",
+    "mapping": {},
+    "join_keys": [],
+    "gold_tables": []
+  }
+]

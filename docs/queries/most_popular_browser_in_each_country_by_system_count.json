@@ -1,0 +1,10 @@
+[
+  {
+    "question": "Utilizing the web categorization usage data in conjunction with sysinfo geographic data, produce a list of the countries as the most popular browser by system count for each country. This will be a ranked list, so ties in an individual country should be allowed.",
+    "sql": "select country, browser from (select countryname_normalized as country, browser, count(distinct b.guid) as number_of_systems, rank() over (partition by countryname_normalized order by count(distinct b.guid) desc) as rnk from reporting.system_sysinfo_unique_normalized a inner join reporting.system_web_cat_usage b on a.guid = b.guid group by countryname_normalized, browser order by countryname_normalized, number_of_systems desc) where rnk = 1;",
+    "db_id": "dw",
+    "mapping": {},
+    "join_keys": [],
+    "gold_tables": []
+  }
+]

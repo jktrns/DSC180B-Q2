@@ -1,0 +1,10 @@
+[
+  {
+    "question": "Provide me a summary count distribution of the number of top modern sleepstudy blockers, broke out by Windows os name and codename. The metrics to provide are the sum of blocker entries, the number of systems that produced those entries, and a number of entries per system for normalization purposes. Include only Os names and codenames for which there are at least 10 client systems.",
+    "sql": "select os_name, os_codename, count(*) as num_entries, count(distinct guid) as number_of_systems, count(*) *1.0/count(distinct guid) as entries_per_system from (select a.guid, min_ts, max_ts, os_name, os_codename, dt from reporting.system_mods_top_blocker_hist a inner join reporting.system_os_codename_history b on a.guid = b.guid where a.dt between b.min_ts and b.max_ts) group by os_name, os_codename having count(distinct guid) > 10;",
+    "db_id": "dw",
+    "mapping": {},
+    "join_keys": [],
+    "gold_tables": []
+  }
+]

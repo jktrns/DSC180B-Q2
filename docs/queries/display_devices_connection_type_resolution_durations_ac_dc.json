@@ -1,0 +1,10 @@
+[
+  {
+    "question": "Provide a statistical analysis of the different display connection types and the resolutions ran with those connections. Create a single resolution column as a concatenation of the resolution height and resolution width with a separator of a letter 'x' to separate the two values. The metrics of interest are the number of system, the average amount of time on ac power in seconds, and the average amount of time on battery in seconds. Round averages to 2 decimal places. Throw out any unknown values, and any grouping of connection type and resolution with less than 50 clients.",
+    "sql": "select connection_type, resolution_heigth::text || 'x' || resolution_width::text as resolution, count(distinct guid) as number_of_systems, round(avg(duration_ac),2) as average_duration_on_ac_in_seconds, round(avg(duration_dc),2) as average_duration_on_dc_in_seconds from reporting.system_display_devices where connection_type is not null and resolution_heigth !=0 and resolution_width !=0 group by 1, 2 having count(distinct guid) > 50 order by connection_type, number_of_systems desc;",
+    "db_id": "dw",
+    "mapping": {},
+    "join_keys": [],
+    "gold_tables": []
+  }
+]
