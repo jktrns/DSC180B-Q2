@@ -218,10 +218,11 @@ def main():
         privacy_info["selected_size"] = len(synth_df)
 
     # ---- Evaluation -------------------------------------------------------
+    dp_applied = not args.skip_generation
     _run_evaluation(
         synth_df, output_dir, reporting_dir, results_dir,
         queries_dir, real_results_dir, args, privacy_info,
-        dp_histogram_applied=True,
+        dp_histogram_applied=dp_applied,
     )
 
 
