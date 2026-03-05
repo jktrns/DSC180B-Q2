@@ -924,7 +924,7 @@ Wide-table DP-VAE & 133.38 & 12.88 & 371.57 & 51 \\
 \label{tab:normalized-error}
 \end{table}
 
-Per-table DP-SGD achieves the best median normalized error (2.72), followed by PE (6.92), MST (10.96), and wide-table DP-VAE (12.88). This ranking differs from the binary pass-rate ranking, where per-table and MST were tied at 28.6\%. The normalized metric reveals that per-table DP-SGD's errors are consistently smaller relative to natural variation, while MST's high mean (1{,}294) is driven by extreme outliers on aggregate queries that involve multi-table joins (e.g., \texttt{OnOffMods} at 8{,}655$\times$ and \texttt{DisplayDurations} at 3{,}850$\times$). Metrics where the baseline variation $|\Delta_j(D_1,D_2)|$ is below $10^{-8}$ (i.e., the two random halves produce identical values) are excluded, since they offer no natural variation to normalize against.
+Per-table DP-SGD achieves the best median normalized error (2.72), followed by PE (6.92), MST (10.96), and wide-table DP-VAE (12.88). This ranking differs from the binary pass-rate ranking, where per-table and MST were tied at 28.6\%. The normalized metric reveals that per-table DP-SGD's errors are consistently smaller relative to natural variation, while MST's high mean (1{,}294) is driven by extreme outliers on aggregate queries that involve multi-table joins (e.g., \texttt{SleepPivot} at 8{,}655$\times$ and \texttt{DisplayAgg} at 3{,}850$\times$). Metrics where the baseline variation $|\Delta_j(D_1,D_2)|$ is below $10^{-8}$ (i.e., the two random halves produce identical values) are excluded, since they offer no natural variation to normalize against.
 
 Table~\ref{tab:normalized-error-per-query} provides per-query normalized errors for all four methods.
 
@@ -945,30 +945,30 @@ Table~\ref{tab:normalized-error-per-query} provides per-query normalized errors 
 \endfoot
 \bottomrule
 \endlastfoot
-\texttt{XeonNet} & Agg & 96.5 & 6.5 & 593.4 & \textbf{5.1} \\
+\texttt{XeonGeo} & Geo & 96.5 & 6.5 & 593.4 & \textbf{5.1} \\
 \texttt{ChassisAgg} & Agg & 309.3 & 4.0 & 4.0 & \textbf{3.3} \\
-\texttt{BattDuration} & Agg & --- & \textbf{12.6} & 248.1 & --- \\
-\texttt{BattGeo} & Agg & 139.1 & \textbf{2.5} & 320.5 & 8.3 \\
-\texttt{DisplayDurations} & Agg & --- & \textbf{13.7} & 3{,}850.4 & --- \\
-\texttt{DisplayVendors} & Dist & --- & 44.6 & \textbf{27.5} & --- \\
-\texttt{ModsBlockers} & Agg & --- & \textbf{16.1} & 35.3 & --- \\
-\texttt{BrowserCountry} & Cat & 9.0 & 4.0 & \textbf{3.0} & 38.0 \\
-\texttt{OnOffMods} & Agg & --- & \textbf{19.7} & 8{,}655.3 & --- \\
-\texttt{PersonaWeb} & Agg & 65.4 & \textbf{3.4} & 35.3 & 41.2 \\
-\texttt{PkgPower} & Agg & 616.6 & 3.3 & \textbf{1.0} & 8.3 \\
-\texttt{BrowserHist} & Dist & 95.5 & 118.0 & \textbf{25.5} & 65.1 \\
+\texttt{BatteryDemo} & Geo & --- & \textbf{12.6} & 248.1 & --- \\
+\texttt{BatteryGeo} & Geo & 139.1 & \textbf{2.5} & 320.5 & 8.3 \\
+\texttt{DisplayAgg} & Agg & --- & \textbf{13.7} & 3{,}850.4 & --- \\
+\texttt{VendorAgg} & Agg & --- & 44.6 & \textbf{27.5} & --- \\
+\texttt{BlockerAgg} & Agg & --- & \textbf{16.1} & 35.3 & --- \\
+\texttt{BrowserRank} & Top-$k$ & 9.0 & 4.0 & \textbf{3.0} & 38.0 \\
+\texttt{SleepPivot} & Pivot & --- & \textbf{19.7} & 8{,}655.3 & --- \\
+\texttt{PersonaPivot} & Pivot & 65.4 & \textbf{3.4} & 35.3 & 41.2 \\
+\texttt{PowerGeo} & Geo & 616.6 & 3.3 & \textbf{1.0} & 8.3 \\
+\texttt{BrowserHist} & Hist & 95.5 & 118.0 & \textbf{25.5} & 65.1 \\
 \texttt{RamHist} & Hist & 29.8 & 38.3 & 110.9 & \textbf{14.5} \\
-\texttt{ServerExpl} & Row & --- & \textbf{35.3} & 46.9 & --- \\
-\texttt{AppFocal} & Rank & --- & \textbf{1.0} & 1.1 & --- \\
-\texttt{AppSysCount} & Rank & --- & 45.9 & \textbf{9.7} & --- \\
-\texttt{AppDetections} & Rank & --- & 4.7 & \textbf{2.0} & --- \\
-\texttt{ModsBlockerDur} & Agg & --- & \textbf{2.4} & 45.1 & --- \\
-\texttt{UserWait10} & Rank & --- & \textbf{1.0} & \textbf{1.0} & --- \\
-\texttt{UserWaitACDC} & Rank & --- & \textbf{0.9} & \textbf{0.9} & --- \\
+\texttt{NetAsymAgg} & Agg & --- & \textbf{35.3} & 46.9 & --- \\
+\texttt{FocalRank} & Top-$k$ & --- & \textbf{1.0} & 1.1 & --- \\
+\texttt{SystemRank} & Top-$k$ & --- & 45.9 & \textbf{9.7} & --- \\
+\texttt{DetectionRank} & Top-$k$ & --- & 4.7 & \textbf{2.0} & --- \\
+\texttt{BlockerDurAgg} & Agg & --- & \textbf{2.4} & 45.1 & --- \\
+\texttt{WaitRank} & Top-$k$ & --- & \textbf{1.0} & \textbf{1.0} & --- \\
+\texttt{WaitModeRank} & Top-$k$ & --- & \textbf{0.9} & \textbf{0.9} & --- \\
 \end{longtable}
 \end{footnotesize}
 
-The per-query breakdown reveals several patterns. First, per-table DP-SGD achieves normalized errors below 5$\times$ on 10 of 20 queries, indicating that for half of the benchmark its synthesis error is within a small multiple of natural sampling variation. Second, MST excels on ranking queries (\texttt{UserWait*}, \texttt{AppDetections}) where it achieves near-unity normalized errors, confirming its strength in preserving marginal orderings. Third, the wide-table methods show extreme normalized errors on aggregate queries (e.g., \texttt{PkgPower} at 617$\times$, \texttt{ChassisAgg} at 309$\times$), driven by the zero-inflation problem discussed in Section~\ref{sec:methods-wide-dpsgd}. Fourth, PE achieves competitive normalized errors on the queries it can evaluate (e.g., \texttt{ChassisAgg} at 3.3, \texttt{XeonNet} at 5.1) but covers only 8 of 20 queries.
+The per-query breakdown reveals several patterns. First, per-table DP-SGD achieves normalized errors below 5$\times$ on 10 of 20 queries, indicating that for half of the benchmark its synthesis error is within a small multiple of natural sampling variation. Second, MST excels on ranking queries (\texttt{WaitRank}, \texttt{DetectionRank}) where it achieves near-unity normalized errors, confirming its strength in preserving marginal orderings. Third, the wide-table methods show extreme normalized errors on aggregate queries (e.g., \texttt{PowerGeo} at 617$\times$, \texttt{ChassisAgg} at 309$\times$), driven by the zero-inflation problem discussed in Section~\ref{sec:methods-wide-dpsgd}. Fourth, PE achieves competitive normalized errors on the queries it can evaluate (e.g., \texttt{ChassisAgg} at 3.3, \texttt{XeonGeo} at 5.1) but covers only 8 of 20 queries.
 
 Figure~\ref{fig:method-comparison} complements these tables with pass-count and average-score bars, and Figure~\ref{fig:method-by-type} breaks average score down by query type.
 
@@ -1355,7 +1355,7 @@ Total variation and Spearman $\rho$ thresholds have minimal effect on pass rates
 
 We presented an evaluation framework for differentially private synthetic data generation on Intel's DCA telemetry corpus, implementing four synthesis approaches, namely a wide-table DP-VAE trained with DP-SGD, per-table DP histogram synthesis, MST marginal-based synthesis, and Private Evolution via foundation model APIs.
 
-All four methods have completed evaluation against the 21-query benchmark. Under binary pass-rate scoring, per-table DP-SGD and MST each pass 6 of 21 queries (28.6\%), while the wide-table DP-VAE passes 1 of 8 (12.5\%) and PE passes 2 of 8 (25.0\%). However, the normalized error metric (Section~\ref{sec:normalized-error}), which calibrates each query's synthesis error against the natural variation from a 50/50 data split, reveals a clearer ranking: per-table DP-SGD achieves a median normalized error of 2.72$\times$, meaning its typical distortion is under 3 times the variation expected from halving the real dataset. PE follows at 6.92$\times$, MST at 10.96$\times$, and wide-table DP-VAE at 12.88$\times$. This continuous metric breaks the binary tie between per-table and MST, showing per-table's errors are consistently smaller relative to natural variation. Per-table DP-SGD achieves normalized errors below 5$\times$ on 10 of 20 queries, while MST excels specifically on ranking queries (achieving near-unity normalized errors on \texttt{UserWait*}) but suffers extreme errors on multi-table aggregate joins.
+All four methods have completed evaluation against the 21-query benchmark. Under binary pass-rate scoring, per-table DP-SGD and MST each pass 6 of 21 queries (28.6\%), while the wide-table DP-VAE passes 1 of 8 (12.5\%) and PE passes 2 of 8 (25.0\%). However, the normalized error metric (Section~\ref{sec:normalized-error}), which calibrates each query's synthesis error against the natural variation from a 50/50 data split, reveals a clearer ranking: per-table DP-SGD achieves a median normalized error of 2.72$\times$, meaning its typical distortion is under 3 times the variation expected from halving the real dataset. PE follows at 6.92$\times$, MST at 10.96$\times$, and wide-table DP-VAE at 12.88$\times$. This continuous metric breaks the binary tie between per-table and MST, showing per-table's errors are consistently smaller relative to natural variation. Per-table DP-SGD achieves normalized errors below 5$\times$ on 10 of 20 queries, while MST excels specifically on ranking queries (achieving near-unity normalized errors on \texttt{WaitRank} and \texttt{WaitModeRank}) but suffers extreme errors on multi-table aggregate joins.
 
 Two structural findings emerge. First, wide-table sparsity, not the choice of synthesis algorithm, is the dominant failure mode. The wide table has 93--99.9\% zero values in metric columns, and both the VAE and the foundation model collapse these to their mode. Second, per-table independence destroys cross-table correlations. The 5-way chassis join produces empty or random results under both per-table methods, while the wide-table approaches (DP-VAE and PE) at least preserve some cross-table structure.
 
