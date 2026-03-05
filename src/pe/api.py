@@ -316,11 +316,13 @@ class PEApi:
     #  Real-time API (async, for smoke tests and small runs)              #
     # ------------------------------------------------------------------ #
 
-    async def _call_api(self, prompt: str) -> list[dict]:
+    async def _call_api(
+        self, prompt: str, instructions_override: str | None = None,
+    ) -> list[dict]:
         try:
             kwargs: dict[str, Any] = {
                 "model": self.model,
-                "instructions": INSTRUCTIONS,
+                "instructions": instructions_override or INSTRUCTIONS,
                 "input": prompt,
                 "text_format": RecordsBatch,
                 "max_output_tokens": 16000,
@@ -339,7 +341,8 @@ class PEApi:
         return []
 
     async def _batch_calls(
-        self, prompts: list[str], desc: str = ""
+        self, prompts: list[str], desc: str = "",
+        instructions_override: str | None = None,
     ) -> list[list[dict]]:
         semaphore = asyncio.Semaphore(self.max_concurrent)
         results: list[list[dict]] = [[] for _ in range(len(prompts))]
@@ -350,7 +353,9 @@ class PEApi:
         async def run_one(idx: int, prompt: str):
             nonlocal completed
             async with semaphore:
-                result = await self._call_api(prompt)
+                result = await self._call_api(
+                    prompt, instructions_override=instructions_override,
+                )
                 results[idx] = result
                 completed += 1
                 if completed % 100 == 0 or completed == total:
@@ -445,7 +450,11 @@ class PEApi:
         numeric averages, and which numeric group is active.  Records are
         generated per-stratum so aggregate statistics match real data.
         """
-        from .stratified import GenerationPlan, build_stratum_prompt
+        from .stratified import (
+            GenerationPlan,
+            _STRATUM_SYSTEM_PROMPT,
+            build_stratum_prompt,
+        )
 
         prompts: list[str] = []
         for alloc in plan.allocations:
@@ -459,7 +468,11 @@ class PEApi:
             f"STRATIFIED_API: {plan.total_records} target records, "
             f"{len(plan.allocations)} strata, {len(prompts)} API calls"
         )
-        all_results = await self._batch_calls(prompts, desc="STRATIFIED_API")
+        all_results = await self._batch_calls(
+            prompts,
+            desc="STRATIFIED_API",
+            instructions_override=_STRATUM_SYSTEM_PROMPT,
+        )
         all_records = [r for batch in all_results for r in batch]
         df = self._records_to_df(all_records)
         print(

@@ -175,6 +175,7 @@ _GROUP_FIELDS: dict[str, list[str]] = {
         # plus all webcat_* fields (handled dynamically)
     ],
     "onoff": ["onoff_on_time", "onoff_off_time", "onoff_mods_time", "onoff_sleep_time"],
+    "disp": ["disp_num_displays", "disp_total_duration_ac", "disp_total_duration_dc"],
     "hw": [
         "psys_rap_nrs", "psys_rap_avg",
         "pkg_c0_nrs", "pkg_c0_avg",
