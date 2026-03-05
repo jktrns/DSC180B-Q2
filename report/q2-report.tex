@@ -590,7 +590,9 @@ For ranked result sets, we compute Spearman's rank correlation coefficient on ov
 
 We route Agg+Join and Geo/Demo queries to RE, Histogram and Pivot queries to TV, and Top-k queries to Spearman $\rho$.
 
-As discussed in Section~\ref{sec:normalized-error}, we propose a \textit{normalized error} metric (Equation~\ref{eq:normalized-error}) that divides each query's discrepancy by the baseline variation $|\Delta_j(D_1, D_2)|$ obtained from a random 50/50 split of the real data. Computing this baseline requires re-running all benchmark queries on the split data, which we defer to a follow-up evaluation pass. In the current results, we report binary pass rates at the thresholds $\text{RE} \leq 0.25$, $\text{TV} \leq 0.15$, and $\rho \geq 0.5$. The query score is the fraction of metric columns that pass. A query is marked as passing when its score is at least 0.5, with query-specific overlap thresholds defined in the evaluation metadata. We test threshold sensitivity in Figure~\ref{fig:sensitivity} to verify that comparative conclusions are not driven by a single cutoff choice.
+The query score is the fraction of metric columns that pass their respective threshold. A query is marked as passing when its score is at least 0.5. We report both these continuous scores (Table~\ref{tab:per-query-scores}) and aggregate mean metric values (Table~\ref{tab:continuous-metrics}) to enable fine-grained comparison beyond binary pass/fail.
+
+As discussed in Section~\ref{sec:normalized-error}, we additionally propose a \textit{normalized error} metric (Equation~\ref{eq:normalized-error}) that divides each query's discrepancy by the baseline variation $|\Delta_j(D_1, D_2)|$ from a random 50/50 split. Computing this denominator requires re-running all benchmark queries on two independent half-samples of the real data; we leave this normalization to a follow-up pass and report unnormalized continuous metrics here. We test threshold sensitivity in Figure~\ref{fig:sensitivity} to verify that comparative conclusions are not driven by a single cutoff choice.
 
 \begin{figure}[H]
 \centering
@@ -880,7 +882,29 @@ Private Evolution & 8 & 2 & 25.0\% & 0.150 & 0.000 \\
 \label{tab:method-comparison}
 \end{table}
 
-Figure~\ref{fig:method-comparison} complements this table with pass-count and average-score bars, and Figure~\ref{fig:method-by-type} breaks average score down by query type.
+Table~\ref{tab:continuous-metrics} reports the mean raw metric values per query type and method. For aggregate queries, the metric is median relative error (RE, lower is better); for distribution and histogram queries, total variation distance (TV, lower is better); for categorical ranking, accuracy (higher is better). These continuous values complement the binary pass rates above and reveal finer-grained differences between methods.
+
+\begin{table}[H]
+\centering
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}llcccc}
+\toprule
+\textbf{Query type} & \textbf{Metric} & \textbf{Wide DP-VAE} & \textbf{Per-table} & \textbf{MST} & \textbf{PE} \\
+\midrule
+Aggregate & Mean RE $\downarrow$ & 55.43 & \textbf{0.54} & 169.29 & 11.84 \\
+Distribution & Mean TV $\downarrow$ & 0.279 & 0.241 & \textbf{0.105} & 0.184 \\
+Histogram & Mean TV/RE $\downarrow$ & 0.744 & 0.444 & 1.000 & \textbf{0.241} \\
+Categorical ranking & Accuracy $\uparrow$ & 0.824 & 0.922 & \textbf{0.941} & 0.255 \\
+Numeric ranking & Spearman $\rho$ $\uparrow$ & --- & 0.172 & \textbf{0.463} & --- \\
+Row-level & Mixed $\downarrow$ & --- & \textbf{1.192} & 3.985 & --- \\
+\bottomrule
+\end{tabular*}
+\caption{Mean continuous metric values by query type. Bold indicates best (lowest error or highest accuracy) per row. Arrows indicate metric direction ($\downarrow$ = lower is better, $\uparrow$ = higher is better). ``---'' means no queries of that type were evaluable for the method.}
+\label{tab:continuous-metrics}
+\end{table}
+
+Per-table DP-SGD achieves the lowest aggregate RE (0.54), while MST leads on distributional fidelity (TV = 0.105) and ranking accuracy. Wide-table DP-SGD and PE evaluate fewer query types due to schema coverage limits but show competitive performance on histograms and distributions respectively. The high aggregate RE for MST (169.29) and wide-table (55.43) is driven by outlier queries with extreme numeric errors, suggesting these methods struggle with count preservation in joined aggregations.
+
+Figure~\ref{fig:method-comparison} complements these tables with pass-count and average-score bars, and Figure~\ref{fig:method-by-type} breaks average score down by query type.
 
 % \begin{footnotesize}
 \begin{longtable}{>{\raggedright\arraybackslash}p{0.28\linewidth}>{\raggedright\arraybackslash}p{0.12\linewidth}*{4}{>{\centering\arraybackslash}p{0.11\linewidth}}}
