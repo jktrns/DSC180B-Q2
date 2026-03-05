@@ -1,6 +1,7 @@
 import asyncio
 import json
 import logging
+import math
 import os
 import time
 from pathlib import Path
@@ -427,6 +428,43 @@ class PEApi:
         all_records = [r for batch in all_results for r in batch]
         df = self._records_to_df(all_records)
         print(f"VARIATION_API: {len(df)} records")
+        return df
+
+    # ------------------------------------------------------------------ #
+    #  Stratified / conditional API (async)                               #
+    # ------------------------------------------------------------------ #
+
+    async def stratified_api(
+        self,
+        plan: "GenerationPlan",
+        batch_size: int = 10,
+    ) -> pd.DataFrame:
+        """Generate records according to a stratified generation plan.
+
+        Each stratum in *plan* specifies categorical constraints, target
+        numeric averages, and which numeric group is active.  Records are
+        generated per-stratum so aggregate statistics match real data.
+        """
+        from .stratified import GenerationPlan, build_stratum_prompt
+
+        prompts: list[str] = []
+        for alloc in plan.allocations:
+            n_batches = math.ceil(alloc.count / batch_size)
+            for i in range(n_batches):
+                remaining = alloc.count - i * batch_size
+                bs = min(batch_size, remaining)
+                prompts.append(build_stratum_prompt(alloc, bs))
+
+        print(
+            f"STRATIFIED_API: {plan.total_records} target records, "
+            f"{len(plan.allocations)} strata, {len(prompts)} API calls"
+        )
+        all_results = await self._batch_calls(prompts, desc="STRATIFIED_API")
+        all_records = [r for batch in all_results for r in batch]
+        df = self._records_to_df(all_records)
+        print(
+            f"STRATIFIED_API: {len(all_records)} raw -> {len(df)} returned"
+        )
         return df
 
     # ------------------------------------------------------------------ #
