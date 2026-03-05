@@ -177,7 +177,7 @@ NUMERIC RANGES (for nonzero values only):
 - disp_num_displays: 1-4, disp_total_duration_ac/dc: 1e3 to 1e8
 
 *** CRITICAL SPARSITY RULES (MOST IMPORTANT) ***
-There are 8 numeric groups: net, mem, batt, browser+webcat, onoff, disp, hw.
+There are 7 numeric groups: net, mem, batt, browser+webcat, onoff, disp, hw.
 Each system has data in EXACTLY 1 or 2 of these groups. ALL other groups MUST be exactly 0.
 
 Group definitions:
