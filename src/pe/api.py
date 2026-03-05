@@ -4,98 +4,31 @@ import logging
 import os
 import time
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any
 
 import pandas as pd
 from openai import APITimeoutError, AsyncOpenAI, LengthFinishReasonError, OpenAI
 from pydantic import BaseModel
 
+from .constants import (
+    ChassisType,
+    CountryType,
+    CpuCodeType,
+    CpuFamilyType,
+    CpuNameType,
+    OsType,
+    PersonaType,
+    ProcessorType,
+    VendorType,
+)
 from .distance import CAT_COLS, NUMERIC_COLS
 
 logger = logging.getLogger(__name__)
 
 
-# ---------------------------------------------------------------------------
-# Constrained categorical values derived from the real DCA telemetry data.
-# Using Literal types forces OpenAI's structured outputs to only produce
-# these exact values, eliminating hallucinated categories entirely.
-# ---------------------------------------------------------------------------
-
-VALID_CHASSIS = [
-    "2 in 1", "Desktop", "Intel NUC/STK", "Notebook",
-    "Other/Unknown", "Tablet", "Detachable",
-]
-
-VALID_COUNTRIES = [
-    "Argentina", "Australia", "Austria", "Bangladesh", "Belgium", "Brazil",
-    "Canada", "Chile", "China", "Colombia", "Czech Republic", "Denmark",
-    "Ecuador", "Egypt", "France", "Germany", "Greece", "Hong Kong",
-    "Hungary", "India", "Indonesia", "Israel", "Italy", "Japan",
-    "Korea, Republic of", "Malaysia", "Mexico", "Netherlands", "Norway",
-    "Other", "Pakistan", "Peru", "Philippines", "Poland", "Portugal",
-    "Romania", "Russian Federation", "Saudi Arabia", "Singapore",
-    "South Africa", "Spain", "Sweden", "Switzerland",
-    "Taiwan, Province of China", "Thailand", "Turkey", "Ukraine",
-    "United Arab Emirates",
-    "United Kingdom of Great Britain and Northern Ireland",
-    "United States of America", "Viet Nam",
-]
-
-VALID_OS = ["Win10", "Win11", "Win8.1", "Win Server", "n/a"]
-
-VALID_PERSONA = [
-    "Casual Gamer", "Casual User", "Communication", "Content Creator/IT",
-    "Entertainment", "File & Network Sharer", "Gamer",
-    "Office/Productivity", "Unknown", "Web User", "Win Store App User",
-]
-
-VALID_VENDORS = [
-    "Lenovo", "Dell Inc.", "HP", "ASUSTeK COMPUTER INC.", "Acer",
-    "Microsoft Corporation", "Samsung", "HUAWEI", "MSI",
-    "Micro-Star International", "Toshiba", "TOSHIBA", "Sony",
-    "Hewlett-Packard", "Fujitsu", "LG Electronics", "Razer",
-    "Panasonic", "Dynabook", "Intel", "Other",
-]
-
-VALID_CPUNAMES = [
-    "Intel Core i5", "Intel Core i7", "Intel Core i3", "Intel Core i9",
-    "Intel Celeron", "Intel Pentium", "Intel Core Ultra 5",
-    "Intel Core Ultra 7", "Intel Core Ultra 9", "Intel Xeon",
-    "Intel Atom", "Other",
-]
-
-VALID_CPUCODES = [
-    "Alder Lake", "Tiger Lake", "Comet Lake", "Ice Lake", "Raptor Lake",
-    "Whiskey Lake", "Coffee Lake", "Meteor Lake", "Kaby Lake",
-    "Skylake", "Cannon Lake", "Rocket Lake", "Jasper Lake",
-    "Gemini Lake", "Elkhart Lake", "Arrow Lake", "Lunar Lake", "Other",
-]
-
-VALID_CPU_FAMILY = [
-    "6th Gen", "7th Gen", "8th Gen", "9th Gen", "10th Gen",
-    "11th Gen", "12th Gen", "13th Gen", "14th Gen",
-    "Core Ultra Series 1", "Core Ultra Series 2",
-    "Pentium/Celeron", "Xeon", "Atom", "Other",
-]
-
-VALID_PROCESSORS = [
-    "i5-1135G7", "i7-1165G7", "i5-10210U", "i7-10510U", "i5-8250U",
-    "i7-8550U", "i5-1235U", "i5-1240P", "i7-1255U", "i7-1260P",
-    "i5-8265U", "i7-8565U", "i5-10310U", "i7-10610U", "i5-1145G7",
-    "i7-1185G7", "i5-1335U", "i7-1355U", "i5-1345U", "i7-1365U",
-    "Other",
-]
-
-# Build Literal types from valid value lists
-ChassisType = Literal[tuple(VALID_CHASSIS)]  # type: ignore[valid-type]
-CountryType = Literal[tuple(VALID_COUNTRIES)]  # type: ignore[valid-type]
-OsType = Literal[tuple(VALID_OS)]  # type: ignore[valid-type]
-PersonaType = Literal[tuple(VALID_PERSONA)]  # type: ignore[valid-type]
-VendorType = Literal[tuple(VALID_VENDORS)]  # type: ignore[valid-type]
-CpuNameType = Literal[tuple(VALID_CPUNAMES)]  # type: ignore[valid-type]
-CpuCodeType = Literal[tuple(VALID_CPUCODES)]  # type: ignore[valid-type]
-CpuFamilyType = Literal[tuple(VALID_CPU_FAMILY)]  # type: ignore[valid-type]
-ProcessorType = Literal[tuple(VALID_PROCESSORS)]  # type: ignore[valid-type]
+# Categorical value lists and Literal types are now defined in constants.py
+# and imported above. This eliminates duplication with the experiment script
+# and ensures enums are derived from real data.
 
 
 class TelemetryRecord(BaseModel):
@@ -103,7 +36,7 @@ class TelemetryRecord(BaseModel):
 
     Uses Literal types to restrict outputs to only valid values from the real
     dataset, eliminating hallucinated categories (e.g. "Workstation",
-    "Server/WS", "USA", "Japanese").
+    "USA", "Japanese").
     """
 
     chassistype: ChassisType
@@ -227,11 +160,11 @@ def _compute_group_sparsity(real_df: pd.DataFrame) -> dict[str, int]:
 _DISTRIBUTION_PROMPT = """You are generating synthetic Intel DCA telemetry records. Each record = one client system (Windows PC).
 
 CATEGORICAL DISTRIBUTIONS (match these frequencies):
-- chassistype: Notebook 72%, Desktop 18%, 2 in 1 6%, Intel NUC/STK 2%, Tablet 1%, Other/Unknown 1%
-- os: Win10 85%, Win11 10%, Win8.1 3%, Win Server 1%, n/a 1%
+- chassistype: Notebook 72%, Desktop 18%, 2 in 1 6%, Intel NUC/STK 2%, Tablet 1%, Other <1%, Server/WS <1%
+- os: Win10 85%, Win11 10%, Win8.1 3%, Win Server 2%
 - countryname_normalized: United States of America 22%, India 10%, China 7%, Germany 5%, United Kingdom of Great Britain and Northern Ireland 4%, Brazil 4%, Japan 3%, France 3%, Korea, Republic of 2%, Italy 2%, Canada 2%, Australia 2%, Mexico 2%, Russian Federation 2%, Poland 1.5%, Netherlands 1.5%, Spain 1.5%, Turkey 1.5%, Indonesia 1%, Thailand 1%, Taiwan, Province of China 1%, Sweden 1%, Switzerland 1%, Colombia 1%, other countries ~15% (spread across remaining countries in the enum)
 - persona: Casual User 27%, Communication 16%, Casual Gamer 16%, Office/Productivity 13%, Web User 8%, Entertainment 6%, Content Creator/IT 5%, Win Store App User 4%, Gamer 2%, File & Network Sharer 2%, Unknown 1%
-- modelvendor_normalized: Lenovo 22%, Dell Inc. 20%, HP 18%, ASUSTeK COMPUTER INC. 8%, Acer 7%, Microsoft Corporation 3%, Samsung 3%, HUAWEI 2%, MSI 2%, others smaller
+- modelvendor_normalized: Lenovo 22%, Dell 15%, HP 15%, Asus 8%, Acer 7%, Microsoft Corporation 3%, Samsung 3%, HUAWEI 2%, MSI 2%, Toshiba 2%, Fujitsu 1%, Intel 1%, others spread across remaining vendors in the enum
 - ram: 8 (38%), 16 (28%), 4 (18%), 32 (7%), 12 (4%), 6 (2%), 64 (1%)
 
 NUMERIC RANGES (for nonzero values only):
@@ -352,7 +285,7 @@ class PEApi:
     def __init__(
         self,
         real_df: pd.DataFrame,
-        model: str = "gpt-4.1-mini",
+        model: str = "gpt-5-mini",
         max_concurrent: int = 50,
     ):
         api_key = os.environ.get("OPENAI_API_KEY", "")
