@@ -221,6 +221,7 @@ def main():
         synth_wide, output_dir, queries_dir, real_results_dir)
 
     # ---- Step 3: Solve for optimal weights ----
+    prepared = prepare_wide_table(synth_wide)
     weights_path = output_dir / "weights.npy"
 
     if args.skip_optimize and weights_path.exists():
@@ -229,7 +230,6 @@ def main():
         print(f"  Loaded weights: shape={weights.shape}")
     else:
         print("\n=== SOLVING FOR OPTIMAL WEIGHTS ===")
-        prepared = prepare_wide_table(synth_wide)
         t0 = time.time()
         weights = solve_weights(
             prepared,
