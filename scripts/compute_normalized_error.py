@@ -347,7 +347,8 @@ def main():
     print("=" * 60)
 
     if len(norm_df) > 0:
-        # With eta stabilizer, all values are finite — no need to filter infinities
+        # Zero-baseline metrics are excluded in compute_normalized_errors(),
+        # so all remaining values are finite.
         finite_df = norm_df
 
         # Per-method summary
