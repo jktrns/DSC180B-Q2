@@ -9,6 +9,18 @@ data/**/*.json
 data/**/*.txt
 data/**/*.duckdb
 
+# Experiments additive (downloaded from Google Drive)
+data/experiments_additive/
+
+# Extensionless data files in results (Excel files from Google Drive)
+data/results/evaluation_*
+data/results/pe/
+data/results/real/
+data/results/synth_mst/
+data/results/synth_pe/
+data/results/synth_pertable/
+data/results/synthetic/
+
 # Track README and manifest JSONs, ignore everything else
 !data/README.md
 !data/results/*.csv
