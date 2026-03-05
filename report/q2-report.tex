@@ -459,7 +459,7 @@ Numeric groups (all float>=0): net (3.7\% of systems): net\_nrs, net\_received\_
 RULE: each system has data in 1--2 groups only. Set all other groups to 0. Most groups are present in <7\% of systems.\\[2pt]
 Generate diverse, realistic records. Follow the sparsity rules strictly.
 \end{tcolorbox}
-\caption{Condensed PE prompt sent to GPT-5 nano. The full prompt lists all 68 fields and the top-10 values for each categorical column. Each API call requests 20 records and enforces schema compliance via a Pydantic \texttt{json\_schema} structured output constraint, so the model cannot hallucinate field names or produce malformed types.}
+\caption{Condensed PE prompt sent to GPT-5 nano. The full prompt lists all 68 fields and the top-10 values for each categorical column. Each API call requests 20 records and enforces schema compliance via a Pydantic \texttt{json\_schema} structured output constraint, so the model cannot produce invalid field names, out-of-vocabulary categorical values, or malformed types.}
 \label{fig:pe-prompt}
 \end{figure}
 
@@ -842,25 +842,7 @@ PE passes 2 of 8 evaluated queries, with average score 0.150 and median score 0.
 
 PE completes generation of 150{,}000 candidates via the OpenAI Batch API (gpt-5-nano), followed by DP nearest-neighbor histogram selection ($\sigma \approx 1.08$) to produce 50{,}000 records. The final privacy expenditure is $\varepsilon = 4.0$ at $\delta = 10^{-5}$.
 
-PE remains weak on aggregate and geographic queries. In \texttt{BrowserRank}, PE generates only 15 of 51 real countries and gets 13 correct among those 15, which leads to poor overall score despite good local matches. \texttt{PersonaPivot} also remains low (0.032).
-
-Category support mismatch is a key reason for this behavior. Country support is the largest gap. PE covers 18 of 51 real countries (35.3\% coverage), and hallucinates extra categories not present in real telemetry data. This issue is discussed further in Section~\ref{sec:discussion}.
-
-\begin{table}[H]
-\centering
-\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{0.31\textwidth}YYYYY}
-\toprule
-\textbf{Column} & \textbf{Real unique} & \textbf{PE unique} & \textbf{Overlap} & \textbf{Coverage of real} & \textbf{Extra in PE} \\
-\midrule
-\texttt{countryname\_normalized} & 51 & 30 & 18 & 35.3\% & 12 \\
-\texttt{chassistype} & 7 & 88 & 7 & 100.0\% & 81 \\
-\texttt{os} & 7 & 19 & 7 & 100.0\% & 12 \\
-\texttt{persona} & 11 & 60 & 10 & 90.9\% & 50 \\
-\bottomrule
-\end{tabularx}
-\caption{Category support overlap between real data and PE synthetic data.}
-\label{tab:pe-support}
-\end{table}
+PE remains weak on aggregate and geographic queries. The structured output constraint eliminates out-of-vocabulary categorical values, but coverage gaps persist: PE's candidate pool under-represents rare countries and demographic segments because the foundation model's prior favors common categories (e.g., the United States and Western European countries are over-represented relative to the DCA corpus). In \texttt{BrowserRank}, this coverage gap leads to poor overall score despite good local matches on the countries that are represented. \texttt{PersonaPivot} also remains low (0.032) because the persona distribution in PE output diverges from the real distribution.
 
 \subsection{Cross-method comparison}
 
@@ -1214,7 +1196,7 @@ There are clear differences in resource costs between methods. The wide-table DP
 
 \subsubsection{Overall interpretation}
 
-The PE results confirm that foundation models import their own distributional priors rather than learning the target distribution (Win11 at 77.8\% vs.\ 10.4\% real). The DP nearest-neighbor histogram partially corrects these biases for histogram-type queries (PE matches MST on browser usage at 0.667 and outperforms the wide-table DP-VAE on RAM utilization at 0.500 vs.\ 0.000), but cannot compensate for the near-total absence of nonzero continuous metrics in the LLM output. The hallucinated categorical values further reduce effective sample size by generating records that cannot match any real data point in the nearest-neighbor histogram. This aligns with \citeauthor{swanberg2025apiaccessllmsuseful}'s finding that LLMs capture 1-way marginals reasonably but are inaccurate on $k$-way marginals.
+The PE results confirm that foundation models import their own distributional priors rather than learning the target distribution (Win11 at 77.8\% vs.\ 10.4\% real). The DP nearest-neighbor histogram partially corrects these biases for histogram-type queries (PE matches MST on browser usage at 0.667 and outperforms the wide-table DP-VAE on RAM utilization at 0.500 vs.\ 0.000), but cannot compensate for the near-total absence of nonzero continuous metrics in the LLM output. Although structured output constraints eliminate out-of-vocabulary categorical values, the distributional mismatch between the foundation model's prior and the real data still reduces the effective candidate pool for the nearest-neighbor histogram. This aligns with \citeauthor{swanberg2025apiaccessllmsuseful}'s finding that LLMs capture 1-way marginals reasonably but are inaccurate on $k$-way marginals.
 
 Several mitigation strategies warrant investigation.
 
@@ -1406,7 +1388,7 @@ Two methodologies dominate differentially private synthetic data generation:
 \begin{enumerate}
     \item \textit{Training-based (DP-SGD):} Train a generative model while adding noise to gradients at each step \citep{abadi2016deep}. This is effective, but is computationally expensive and requires careful hyperparameter tuning.
     
-    \item \textit{Training-free (Private Evolution):} Usw API access to pre-trained foundation models and treat them as black boxes, iteratively selecting and mutating candidates via differentially private histograms \citep{lin2025differentiallyprivatesyntheticdata}. This is much easier to deploy, but is theoretically more abstract.
+    \item \textit{Training-free (Private Evolution):} Use API access to pre-trained foundation models and treat them as black boxes, iteratively selecting and mutating candidates via differentially private histograms \citep{lin2025differentiallyprivatesyntheticdata}. This is much easier to deploy, but is theoretically more abstract.
 \end{enumerate}
 
 Our central research question: \textit{can training-free methods match the statistical fidelity of training-based approaches on real analytical workloads?}
@@ -1421,7 +1403,7 @@ Our investigation involves the Intel Driver and Client Applications (DCA) teleme
 
 \paragraph{Schema overview}
 
-The DCA telemetry corpus comprises of $\approx 30$ interrelated tables, organized around a globally unique identifier (\texttt{guid}) assigned to each client system. Tables are indexed by \texttt{guid} and, where applicable, a date column (\texttt{dt}), The schema spans several categories:
+The DCA telemetry corpus comprises $\approx 30$ interrelated tables, organized around a globally unique identifier (\texttt{guid}) assigned to each client system. Tables are indexed by \texttt{guid} and, where applicable, a date column (\texttt{dt}), The schema spans several categories:
 
 \begin{itemize}
     \item \textit{Client metadata:} The \texttt{system\_sysinfo\_unique\_normalized} table provides static attributes, like chassis type (notebook, desktop, 2-in-1, tablet), country, OEM, RAM capacity, processor family/generation, graphics card, screen size, and a derived \textit{persona} classification (Gamer, Office/Productivity, Content Creator, etc.).
@@ -1540,7 +1522,7 @@ Both paradigms exhibit known limitations:
     
     \item \textit{Private Evolution limitations:}
     \begin{itemize}
-        \item Utility depends on foundation model quality, and somes may underperform on specialized tabular data
+        \item Utility depends on foundation model quality, and some may underperform on specialized tabular data
         \item Nearest-neighbor histograms assume embedding similarity correlates with distributional similarity
         \item Limited theoretical understanding compared to optimization-based methods
     \end{itemize}
