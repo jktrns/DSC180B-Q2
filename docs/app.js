@@ -72,6 +72,9 @@ async function initQueryExplorer() {
         } else if (s.note === 'pass') {
           pill.classList.add('pass');
           pill.innerHTML = '<span><strong>' + s.method + '</strong></span><span>' + s.value.toFixed(3) + '</span><span class="small">\u2713 pass</span>';
+        } else if (s.note === 'partial') {
+          pill.classList.add('partial');
+          pill.innerHTML = '<span><strong>' + s.method + '</strong></span><span>' + s.value.toFixed(3) + '</span><span class="small">\u25CB partial</span>';
         } else {
           pill.classList.add('fail');
           pill.innerHTML = '<span><strong>' + s.method + '</strong></span><span>' + s.value.toFixed(3) + '</span><span class="small">\u2717 fail</span>';

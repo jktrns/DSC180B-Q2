@@ -47,6 +47,8 @@
           html += '<td class="cell-na">N/A</td>';
         } else if (s.note === 'pass') {
           html += '<td class="cell-pass">' + s.value.toFixed(3) + '</td>';
+        } else if (s.note === 'partial') {
+          html += '<td class="cell-partial">' + s.value.toFixed(3) + '</td>';
         } else {
           html += '<td class="cell-fail">' + s.value.toFixed(3) + '</td>';
         }
