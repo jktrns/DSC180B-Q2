@@ -241,7 +241,7 @@ where $\eta$ is a small constant (we use $\eta = 10^{-8}$) to avoid division by 
 \end{equation}
 Lower scores indicate better overall fidelity. Because the normalization is continuous, this metric can distinguish methods even when both are above or below any fixed threshold.
 
-We report this normalized error as our primary comparison metric throughout the results. For continuity with prior work, we also report binary pass rates at the thresholds $\text{RE} \leq 0.25$, $\text{TV} \leq 0.15$, and $\rho \geq 0.5$ in the supplementary tables, but these should be interpreted as coarse summaries rather than definitive rankings.
+We adopt this normalized error framework for future evaluation. Computing the baseline $\Delta_j(D_1, D_2)$ requires running each benchmark query on two independent half-samples of the real dataset; we leave this computation to a follow-up pass when the full telemetry data is available on the evaluation host. In the current results, we report binary pass rates at the thresholds $\text{RE} \leq 0.25$, $\text{TV} \leq 0.15$, and $\rho \geq 0.5$, which should be interpreted as coarse summaries. The normalized error metric will provide a more granular ranking once the $D_1/D_2$ baselines are computed.
 
 \subsection{Research questions}
 \label{sec:research-questions}
@@ -342,40 +342,62 @@ Training time & 359.7 min (CPU) \\
 
 \subsubsection{Training dynamics}
 
-Figure~\ref{fig:training-curves} plots the training and validation loss over the 20 epochs of DP-SGD training. We use an 80/20 train/validation split. Because Opacus applies per-sample gradient clipping and Gaussian noise injection at every step, the training loss is substantially noisier than in a standard (non-private) VAE. Despite this, the training loss decreases steadily over the first 10 epochs before plateauing, indicating that the model is learning signal through the privacy noise. The validation loss tracks training loss closely and does not diverge, confirming that the model is not overfitting to the noisy gradients. The gap between the two curves remains small ($< 5\%$ relative difference), which is expected given the large dataset size (1{,}000{,}000 rows) relative to model capacity (505{,}971 parameters). The plateau after epoch 10 suggests that additional training would provide diminishing returns at the cost of further privacy budget consumption (since each epoch consumes additional $(\varepsilon, \delta)$ budget under composition).
+Figure~\ref{fig:training-curves} plots the training loss and cumulative privacy budget ($\varepsilon$) over the 20 epochs of DP-SGD training. Because Opacus applies per-sample gradient clipping and Gaussian noise injection at every step, the per-epoch loss is noisier than in a standard (non-private) VAE. Despite this, the training loss decreases monotonically from 23.76 in epoch 1 to 17.31 in epoch 20 (a 27\% reduction), indicating that the model learns signal through the privacy noise. The steepest improvement occurs in the first 5 epochs (23.76 $\to$ 19.70), after which the rate of decrease slows. By epoch 15 the loss curve is nearly flat (17.79 $\to$ 17.31 over the final 5 epochs), suggesting diminishing returns from additional training. The cumulative privacy spend increases roughly linearly, reaching $\varepsilon = 3.996$ at epoch 20, just under the target budget of $\varepsilon = 4.0$.
 
 \begin{figure}[H]
 \centering
+\begin{minipage}{0.48\linewidth}
+\centering
 \begin{tikzpicture}
 \begin{axis}[
-    width=0.75\linewidth,
+    width=\linewidth,
     height=6cm,
     xlabel={Epoch},
-    ylabel={Loss},
+    ylabel={Training loss},
     xmin=0, xmax=21,
-    ymin=0,
-    legend style={at={(0.97,0.97)}, anchor=north east, font=\small},
+    ymin=16, ymax=25,
     grid=major,
     major grid style={gray!25},
     mark size=1.8pt,
     line width=0.9pt,
 ]
 \addplot[RoyalBlue, mark=*] coordinates {
-    (1,48.2) (2,42.1) (3,38.7) (4,36.4) (5,34.8)
-    (6,33.6) (7,32.8) (8,32.2) (9,31.8) (10,31.5)
-    (11,31.3) (12,31.1) (13,31.0) (14,30.9) (15,30.8)
-    (16,30.7) (17,30.7) (18,30.6) (19,30.6) (20,30.5)
+    (1,23.7622) (2,20.9521) (3,20.2980) (4,19.9154) (5,19.6992)
+    (6,19.4422) (7,19.2577) (8,19.0777) (9,18.8628) (10,18.6364)
+    (11,18.4671) (12,18.3102) (13,18.1113) (14,17.9882) (15,17.7876)
+    (16,17.7178) (17,17.6200) (18,17.4995) (19,17.4214) (20,17.3097)
 };
-\addplot[BrickRed, mark=square*, dashed] coordinates {
-    (1,49.0) (2,43.0) (3,39.5) (4,37.0) (5,35.3)
-    (6,34.1) (7,33.3) (8,32.7) (9,32.3) (10,32.0)
-    (11,31.8) (12,31.6) (13,31.5) (14,31.4) (15,31.3)
-    (16,31.2) (17,31.2) (18,31.1) (19,31.1) (20,31.0)
-};
-\legend{Training loss, Validation loss}
 \end{axis}
 \end{tikzpicture}
-\caption{DP-VAE training and validation loss over 20 epochs of DP-SGD training ($\varepsilon = 4.0$, $\delta = 10^{-5}$). Both curves decrease monotonically and converge after approximately 10 epochs, with no evidence of overfitting.}
+\end{minipage}
+\hfill
+\begin{minipage}{0.48\linewidth}
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    width=\linewidth,
+    height=6cm,
+    xlabel={Epoch},
+    ylabel={Cumulative $\varepsilon$},
+    xmin=0, xmax=21,
+    ymin=0, ymax=4.5,
+    grid=major,
+    major grid style={gray!25},
+    mark size=1.8pt,
+    line width=0.9pt,
+]
+\addplot[BrickRed, mark=square*] coordinates {
+    (1,1.6447) (2,1.9190) (3,2.1169) (4,2.2827) (5,2.4303)
+    (6,2.5660) (7,2.6932) (8,2.8137) (9,2.9289) (10,3.0397)
+    (11,3.1468) (12,3.2506) (13,3.3514) (14,3.4497) (15,3.5456)
+    (16,3.6394) (17,3.7312) (18,3.8212) (19,3.9095) (20,3.9962)
+};
+\addplot[gray, dashed, line width=0.6pt] coordinates {(0,4.0) (21,4.0)};
+\node[gray, font=\scriptsize] at (axis cs:18,4.2) {$\varepsilon_{\text{target}} = 4.0$};
+\end{axis}
+\end{tikzpicture}
+\end{minipage}
+\caption{Wide-table DP-VAE training dynamics over 20 epochs ($\varepsilon_{\text{target}} = 4.0$, $\delta = 10^{-5}$). Left: training loss decreases monotonically from 23.76 to 17.31, with the steepest improvement in early epochs. Right: cumulative privacy budget grows approximately linearly, reaching $\varepsilon = 3.996$ at convergence. Data extracted from the saved model checkpoint.}
 \label{fig:training-curves}
 \end{figure}
 
@@ -433,8 +455,8 @@ Schema:\\
 Intel telemetry. Each record represents one client system.\\
 Categorical (pick from list): chassistype: ["Notebook", "Desktop", "2 In 1", ...]; countryname\_normalized: ["United States", "India", "Germany", ...]; os: ["Windows 11", "Windows 10", ...]; persona: ["Office/Productivity", "Gamer", ...]; cpu\_family: ["Core", "Celeron", ...]; \ldots\\
 ram: integer GB (4/8/16/32/64), always present.\\
-Numeric groups (all float>=0): net (72\% of systems): net\_nrs, net\_received\_bytes, net\_sent\_bytes; mem (68\%): mem\_nrs, mem\_avg\_pct\_used, mem\_sysinfo\_ram; batt (41\%): batt\_num\_power\_ons, batt\_duration\_mins; browser (55\%): web\_chrome\_duration, web\_edge\_duration, \ldots; webcat (55\%): webcat\_education, webcat\_entertainment\_video\_streaming, \ldots{} (28 cols); onoff (89\%): onoff\_on\_time, \ldots; disp (33\%): disp\_num\_displays, \ldots; hw (<1\%): psys\_rap\_nrs, \ldots\\
-RULE: each system has data in 1--2 groups only. Set all other groups to 0. hw group is <1\% of systems.\\[2pt]
+Numeric groups (all float>=0): net (3.7\% of systems): net\_nrs, net\_received\_bytes, net\_sent\_bytes; mem (6.9\%): mem\_nrs, mem\_avg\_pct\_used, mem\_sysinfo\_ram; batt (2.0\%): batt\_num\_power\_ons, batt\_duration\_mins; browser (6.4\%): web\_chrome\_duration, web\_edge\_duration, \ldots; webcat (5.9\%): webcat\_education, webcat\_entertainment\_video\_streaming, \ldots{} (28 cols); onoff (3.7\%): onoff\_on\_time, \ldots; disp (20.9\%): disp\_num\_displays, \ldots; hw (<1\%): psys\_rap\_nrs, \ldots\\
+RULE: each system has data in 1--2 groups only. Set all other groups to 0. Most groups are present in <7\% of systems.\\[2pt]
 Generate diverse, realistic records. Follow the sparsity rules strictly.
 \end{tcolorbox}
 \caption{Condensed PE prompt sent to GPT-5 nano. The full prompt lists all 68 fields and the top-10 values for each categorical column. Each API call requests 20 records and enforces schema compliance via a Pydantic \texttt{json\_schema} structured output constraint, so the model cannot hallucinate field names or produce malformed types.}
@@ -514,7 +536,7 @@ As a non-neural baseline, we implement the Maximum Spanning Tree (MST) algorithm
 
 \paragraph{Discretization.} MST requires all columns to have finite cardinality. We discretize continuous columns into 20 quantile bins, computed on the nonzero values only, with a dedicated zero bin appended when the column has $> 5\%$ zero values (common in telemetry data where most metrics are sparse). Categorical columns are capped at 50 categories using the same top-$k$ binning applied for the DP-VAE; values outside the top 50 are grouped into an ``Other'' bin. After synthesis, continuous values are reconstructed by sampling uniformly within each bin's range. This introduces quantization noise that is typically small relative to the DP noise, but can affect tail values.
 
-\paragraph{Instantiation via SmartNoise.} We use the \texttt{MSTSynthesizer} class from the SmartNoise Synth library (v1.0), which wraps the original MST implementation. We initialize with \texttt{epsilon=4.0}, \texttt{delta=1e-5}, and the default split ratio between selection and measurement budgets. The synthesizer handles the discretization, marginal selection, noise injection, PGM fitting, and sampling steps internally. For each table, we call \texttt{fit()} on the preprocessed (binned) DataFrame, then \texttt{sample(n)} to produce $n$ synthetic rows matching the real table's row count. Synthesis for a single table takes under 10 minutes on CPU, and the full 19-table pipeline completes in approximately 90 minutes.
+\paragraph{Instantiation via SmartNoise.} We use the \texttt{MSTSynthesizer} class from the SmartNoise Synth library (v1.0.6), which wraps the original MST implementation. We initialize with \texttt{epsilon=4.0}, \texttt{delta=1e-5}, and the default split ratio between selection and measurement budgets. The synthesizer handles the discretization, marginal selection, noise injection, PGM fitting, and sampling steps internally. For each table, we call \texttt{fit()} on the preprocessed (binned) DataFrame, then \texttt{sample(n)} to produce $n$ synthetic rows matching the real table's row count. Synthesis for a single table takes under 10 minutes on CPU, and the full 19-table pipeline completes in approximately 90 minutes.
 
 \paragraph{Per-table composition.} Like the per-table DP-SGD approach, MST synthesizes each of the 19 reporting tables independently at $\varepsilon = 4.0$ per table, $\delta = 10^{-5}$, with guid assignment proportional to each table's real join rate against the sysinfo anchor. The total privacy budget under basic composition is $19 \times 4.0 = 76.0$, identical to the per-table DP-SGD baseline. This is a conservative bound; advanced composition theorems or privacy amplification via subsampling could tighten it, but we use basic composition for simplicity and comparability.
 
@@ -568,9 +590,7 @@ For ranked result sets, we compute Spearman's rank correlation coefficient on ov
 
 We route Agg+Join and Geo/Demo queries to RE, Histogram and Pivot queries to TV, and Top-k queries to Spearman $\rho$.
 
-As discussed in Section~\ref{sec:normalized-error}, our primary comparison metric is the \textit{normalized error} (Equation~\ref{eq:normalized-error}), which divides each query's discrepancy by the baseline variation $|\Delta_j(D_1, D_2)|$ obtained from a random 50/50 split of the real data. This normalization calibrates each metric to the natural scale of that query: a normalized error of 1.0 means the synthetic data introduces exactly as much distortion as halving the real dataset would. The normalization is computed per metric column where applicable. This makes cross-query and cross-method comparisons meaningful without relying on arbitrary thresholds.
-
-For legacy comparison, we also report binary pass rates at the thresholds $\text{RE} \leq 0.25$, $\text{TV} \leq 0.15$, and $\rho \geq 0.5$. The query score is the fraction of metric columns that pass. A query is marked as passing when its score is at least 0.5, with query-specific overlap thresholds defined in the evaluation metadata. We test threshold sensitivity in Figure~\ref{fig:sensitivity} to verify that comparative conclusions are not driven by a single cutoff choice.
+As discussed in Section~\ref{sec:normalized-error}, we propose a \textit{normalized error} metric (Equation~\ref{eq:normalized-error}) that divides each query's discrepancy by the baseline variation $|\Delta_j(D_1, D_2)|$ obtained from a random 50/50 split of the real data. Computing this baseline requires re-running all benchmark queries on the split data, which we defer to a follow-up evaluation pass. In the current results, we report binary pass rates at the thresholds $\text{RE} \leq 0.25$, $\text{TV} \leq 0.15$, and $\rho \geq 0.5$. The query score is the fraction of metric columns that pass. A query is marked as passing when its score is at least 0.5, with query-specific overlap thresholds defined in the evaluation metadata. We test threshold sensitivity in Figure~\ref{fig:sensitivity} to verify that comparative conclusions are not driven by a single cutoff choice.
 
 \begin{figure}[H]
 \centering
