@@ -1388,7 +1388,7 @@ Two methodologies dominate differentially private synthetic data generation:
 \begin{enumerate}
     \item \textit{Training-based (DP-SGD):} Train a generative model while adding noise to gradients at each step \citep{abadi2016deep}. This is effective, but is computationally expensive and requires careful hyperparameter tuning.
     
-    \item \textit{Training-free (Private Evolution):} Usw API access to pre-trained foundation models and treat them as black boxes, iteratively selecting and mutating candidates via differentially private histograms \citep{lin2025differentiallyprivatesyntheticdata}. This is much easier to deploy, but is theoretically more abstract.
+    \item \textit{Training-free (Private Evolution):} Use API access to pre-trained foundation models and treat them as black boxes, iteratively selecting and mutating candidates via differentially private histograms \citep{lin2025differentiallyprivatesyntheticdata}. This is much easier to deploy, but is theoretically more abstract.
 \end{enumerate}
 
 Our central research question: \textit{can training-free methods match the statistical fidelity of training-based approaches on real analytical workloads?}
@@ -1403,7 +1403,7 @@ Our investigation involves the Intel Driver and Client Applications (DCA) teleme
 
 \paragraph{Schema overview}
 
-The DCA telemetry corpus comprises of $\approx 30$ interrelated tables, organized around a globally unique identifier (\texttt{guid}) assigned to each client system. Tables are indexed by \texttt{guid} and, where applicable, a date column (\texttt{dt}), The schema spans several categories:
+The DCA telemetry corpus comprises $\approx 30$ interrelated tables, organized around a globally unique identifier (\texttt{guid}) assigned to each client system. Tables are indexed by \texttt{guid} and, where applicable, a date column (\texttt{dt}), The schema spans several categories:
 
 \begin{itemize}
     \item \textit{Client metadata:} The \texttt{system\_sysinfo\_unique\_normalized} table provides static attributes, like chassis type (notebook, desktop, 2-in-1, tablet), country, OEM, RAM capacity, processor family/generation, graphics card, screen size, and a derived \textit{persona} classification (Gamer, Office/Productivity, Content Creator, etc.).
@@ -1522,7 +1522,7 @@ Both paradigms exhibit known limitations:
     
     \item \textit{Private Evolution limitations:}
     \begin{itemize}
-        \item Utility depends on foundation model quality, and somes may underperform on specialized tabular data
+        \item Utility depends on foundation model quality, and some may underperform on specialized tabular data
         \item Nearest-neighbor histograms assume embedding similarity correlates with distributional similarity
         \item Limited theoretical understanding compared to optimization-based methods
     \end{itemize}
