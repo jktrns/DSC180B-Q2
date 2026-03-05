@@ -1,0 +1,4 @@
+marketcodename,cpugen,number_of_systems,avg_on_time,avg_off_time,avg_modern_sleep_time,avg_sleep_time,avg_total_time,avg_pcnt_on_time,avg_pcnt_off_time,avg_pcnt_mods_time,avg_pcnt_sleep_time
+Jasper Lake,Pentium/Celeron-Jasper Lake,104,1705288.46,454471.15,96548.08,374615.38,2630923.08,64.82,17.27,3.67,14.24
+Rocket Lake,11th Gen i9,104,3232500.0,740057.69,197288.46,393750.0,4563596.15,70.83,16.22,4.32,8.63
+Tiger Lake,11th Gen i7,102,2061078.43,486392.16,155441.18,641294.12,3344205.88,61.63,14.54,4.65,19.18

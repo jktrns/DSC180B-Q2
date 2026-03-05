@@ -1,0 +1,5 @@
+processor_class,os,number_of_systems,avg_bytes_received,avg_bytes_sent
+Non-Server Class,Win10,971,2956192216549.4536,153935223668.82184
+Non-Server Class,Win Server,122,20646339608494.008,1029401285401.5114
+Non-Server Class,Win8.1,76,788994260286.0817,86906417771.61684
+Non-Server Class,Win11,34,2653204528916.644,130670149063.26364

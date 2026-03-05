@@ -1,0 +1,8 @@
+marketcodename,cpugen,number_of_systems,avg_duration_mins_on_battery
+Alder Lake,12th Gen i5,167,235.14970059880238
+Jasper Lake,Pentium/Celeron-Jasper Lake,253,204.64426877470356
+Tiger Lake,11th Gen i7,291,274.553264604811
+Comet Lake,10th Gen i3,109,229.8165137614679
+Tiger Lake,11th Gen i5,115,225.82608695652175
+Gemini Lake Refresh,Pentium/Celeron-Gemini Lake Refresh,128,202.578125
+Ice Lake,10th Gen i3,145,228.79310344827587

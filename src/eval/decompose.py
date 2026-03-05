@@ -38,6 +38,20 @@ def decompose_wide_table(synth_wide: pd.DataFrame, output_dir: Path) -> dict[str
     )
     counts["sysinfo"] = len(sysinfo)
 
+    # CPU metadata table (needed by battery_on_duration and on_off_mods queries)
+    if "cpucode" in sw.columns and "cpu_family" in sw.columns:
+        cpu_meta = pd.DataFrame(
+            {
+                "guid": sw["guid"].values,
+                "marketcodename": sw["cpucode"].values,
+                "cpugen": sw["cpu_family"].values,
+            }
+        )
+        cpu_meta.to_parquet(
+            output_dir / "system_cpu_metadata.parquet", index=False
+        )
+        counts["cpu_metadata"] = len(cpu_meta)
+
     if "net_nrs" in sw.columns:
         net_mask = sw["net_nrs"] > 0
         net_g = sw.loc[net_mask, ["guid", "net_nrs", "net_received_bytes", "net_sent_bytes"]].copy()
