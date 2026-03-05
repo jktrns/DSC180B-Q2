@@ -93,6 +93,9 @@ window.initQueryExplorer = initQueryExplorer;
 // === IMAGE COMPARE SLIDER ===
 function initImageCompare() {
   document.querySelectorAll('.img-compare').forEach(function(comp) {
+    if (comp.dataset.compareInit) return;
+    comp.dataset.compareInit = '1';
+
     var overlay = comp.querySelector('.img-compare__overlay');
     var handle = comp.querySelector('.img-compare__handle');
     if (!overlay || !handle) return;

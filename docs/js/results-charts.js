@@ -32,7 +32,7 @@
 
     let html = '<table><thead><tr>';
     html += '<th>Query</th><th>Type</th>';
-    METHODS.forEach(m => { html += '<th>' + m + '</th>'; });
+    METHODS.forEach(m => { html += '<th>' + m.replace('Wide DP-SGD', 'Wide DP-VAE') + '</th>'; });
     html += '</tr></thead><tbody>';
 
     data.forEach(q => {
