@@ -53,11 +53,15 @@ def main():
         print(f"Loaded: {synth_df.shape}")
     else:
         print("=== GENERATING SYNTHETIC DATA ===")
-        # Use a small real_df for schema description (from prior experiment)
-        real_df_path = Path("data/pe_experiments/experiment_gpt-5-mini.parquet")
+        # Use real wide training table for schema description (sparsity stats).
+        # Falls back to prior experiment parquet if available.
+        real_df_path = Path("data/reporting/wide_training_table.parquet")
         if not real_df_path.exists():
-            print(f"ERROR: {real_df_path} not found. Run experiment first.")
+            real_df_path = Path("data/pe_experiments/experiment_gpt-5-mini.parquet")
+        if not real_df_path.exists():
+            print(f"ERROR: No real data found. Need wide_training_table.parquet or experiment parquet.")
             sys.exit(1)
+        print(f"Loading real data from: {real_df_path}")
         real_df = pd.read_parquet(real_df_path)
         api = PEApi(
             real_df=real_df,

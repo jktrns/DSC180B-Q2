@@ -156,6 +156,209 @@ def _compute_group_sparsity(real_df: pd.DataFrame) -> dict[str, int]:
     return result
 
 
+# ---------------------------------------------------------------------------
+# Real aggregate target tables — loaded from data/results/real/ CSVs
+# These are embedded directly in the prompt so the LLM can generate records
+# whose aggregated statistics approximate the real query results.
+# ---------------------------------------------------------------------------
+_REAL_RESULTS_DIR = Path(__file__).resolve().parent.parent.parent / "data" / "results" / "real"
+
+
+def _load_real_targets() -> str:
+    """Load real query result CSVs and format them as compact prompt sections.
+
+    These tables become generation targets: the model should produce records
+    whose aggregated statistics approximate these values.
+    """
+    rdir = _REAL_RESULTS_DIR
+    sections: list[str] = []
+
+    # --- Battery duration by CPU generation ---
+    try:
+        df = pd.read_csv(rdir / "battery_on_duration_cpu_family_gen.csv")
+        lines = ["cpucode | cpugen | target_avg_duration_mins"]
+        for _, r in df.iterrows():
+            lines.append(
+                f"{r['marketcodename']} | {r['cpugen']} | {r['avg_duration_mins_on_battery']:.0f}"
+            )
+        sections.append(
+            "BATTERY DURATION TARGETS (batt group, by cpucode × cpu_family):\n"
+            + "\n".join(lines)
+        )
+    except Exception:
+        pass
+
+    # --- On/off/sleep summary by CPU ---
+    try:
+        df = pd.read_csv(
+            rdir / "on_off_mods_sleep_summary_by_cpu_marketcodename_gen.csv"
+        )
+        lines = ["cpucode | cpugen | on_time | off_time | mods_time | sleep_time"]
+        for _, r in df.iterrows():
+            lines.append(
+                f"{r['marketcodename']} | {r['cpugen']} | "
+                f"{r['avg_on_time']:.0f} | {r['avg_off_time']:.0f} | "
+                f"{r['avg_modern_sleep_time']:.0f} | {r['avg_sleep_time']:.0f}"
+            )
+        sections.append(
+            "ON/OFF/SLEEP TIME TARGETS (onoff group, by cpucode × cpu_family).\n"
+            "Values are in seconds. Total ≈ 84000 s (≈ 1 day).\n"
+            + "\n".join(lines)
+        )
+    except Exception:
+        pass
+
+    # --- Platform power/C0/freq/temp by chassis ---
+    try:
+        df = pd.read_csv(
+            rdir / "avg_platform_power_c0_freq_temp_by_chassis.csv"
+        )
+        lines = ["chassistype | psys_rap_watts | pkg_c0_pct | freq_mhz | temp_C"]
+        for _, r in df.iterrows():
+            lines.append(
+                f"{r['chassistype']} | {r['avg_psys_rap_watts']:.1f} | "
+                f"{r['avg_pkg_c0']:.1f} | {r['avg_freq_mhz']:.0f} | "
+                f"{r['avg_temp_centigrade']:.1f}"
+            )
+        sections.append(
+            "HW METRIC TARGETS (hw group, by chassistype).\n"
+            "Use these to set psys_rap_avg, pkg_c0_avg, avg_freq_avg, temp_avg, pkg_power_avg.\n"
+            "CRITICAL: avg_freq_avg must be 1000-6000 (MHz). Do NOT use values outside this range.\n"
+            + "\n".join(lines)
+        )
+    except Exception:
+        pass
+
+    # --- Pkg power by country (top 15 + summary) ---
+    try:
+        df = pd.read_csv(rdir / "pkg_power_by_country.csv")
+        lines = ["country | avg_pkg_power"]
+        for _, r in df.head(15).iterrows():
+            lines.append(
+                f"{r['countryname_normalized']} | {r['avg_pkg_power_consumed']:.1f}"
+            )
+        lines.append(f"... remaining countries: median ~ {df['avg_pkg_power_consumed'].median():.1f}")
+        sections.append(
+            "PKG POWER TARGETS (hw group, by country).\n"
+            "Most countries have avg_pkg_power 1-10 watts. A few outliers are much higher.\n"
+            + "\n".join(lines)
+        )
+    except Exception:
+        pass
+
+    # --- Battery power-on geographic summary ---
+    try:
+        df = pd.read_csv(rdir / "battery_power_on_geographic_summary.csv")
+        lines = ["country | avg_powerons | avg_duration_mins"]
+        for _, r in df.iterrows():
+            lines.append(
+                f"{r['country']} | {r['avg_number_of_dc_powerons']:.1f} | "
+                f"{r['avg_duration']:.0f}"
+            )
+        sections.append(
+            "BATTERY GEOGRAPHIC TARGETS (batt group, by country).\n"
+            "avg_powerons ≈ 2-3 across all countries. Duration varies 84-238 mins.\n"
+            "batt_num_power_ons should be near 2-3, batt_duration_mins near these targets.\n"
+            + "\n".join(lines)
+        )
+    except Exception:
+        pass
+
+    # --- Most popular browser per country ---
+    try:
+        df = pd.read_csv(
+            rdir / "most_popular_browser_in_each_country_by_system_count.csv"
+        )
+        edge_countries = df.loc[df["browser"] == "edge", "country"].tolist()
+        sections.append(
+            "BROWSER-COUNTRY RULE:\n"
+            "Chrome is the most popular browser in almost every country.\n"
+            f"ONLY these countries have edge as most popular: {', '.join(edge_countries)}.\n"
+            "When browser+webcat group is active, the dominant browser duration field should be:\n"
+            f"  - web_edge_duration > web_chrome_duration  ONLY for: {', '.join(edge_countries)}\n"
+            "  - web_chrome_duration > web_edge_duration   for ALL other countries\n"
+            "web_firefox_duration should be small (< 10% of total) in most records."
+        )
+    except Exception:
+        pass
+
+    # --- Persona-webcat conditional distributions ---
+    try:
+        df = pd.read_csv(rdir / "persona_web_cat_usage_analysis.csv")
+        has_webcat = df["content_creation_photo_edit_creation"].notna()
+        no_webcat_personas = df.loc[~has_webcat, "persona"].tolist()
+        sections.append(
+            "PERSONA-WEBCAT RULE:\n"
+            f"These personas do NOT have webcat data: {', '.join(no_webcat_personas)}.\n"
+            "If persona is one of these AND browser+webcat group is active, the webcat_* fields "
+            "should still sum to ~100 but follow a generic distribution.\n"
+            "For personas WITH webcat data, use these target distributions (% of browsing time):"
+        )
+        webcat_cols = [c for c in df.columns if c not in ["persona", "number_of_systems", "days"]]
+        for _, row in df.loc[has_webcat].iterrows():
+            persona = row["persona"]
+            cats = {}
+            for col in webcat_cols:
+                val = row[col]
+                if pd.notna(val) and val > 0.3:
+                    cats[col] = round(val, 1)
+            sorted_cats = sorted(cats.items(), key=lambda x: -x[1])[:10]
+            cat_str = ", ".join(f"{k}={v}" for k, v in sorted_cats)
+            sections[-1] += f"\n  {persona}: {cat_str}"
+    except Exception:
+        pass
+
+    # --- Xeon network consumption ---
+    try:
+        df = pd.read_csv(rdir / "Xeon_network_consumption.csv")
+        lines = ["processor_class | os | avg_bytes_received | avg_bytes_sent"]
+        for _, r in df.iterrows():
+            lines.append(
+                f"{r['processor_class']} | {r['os']} | "
+                f"{r['avg_bytes_received']:.2e} | {r['avg_bytes_sent']:.2e}"
+            )
+        sections.append(
+            "NETWORK CONSUMPTION TARGETS (net group, by cpuname × os).\n"
+            "processor_class = 'Server Class' when cpuname='Intel Xeon', else 'Non-Server Class'.\n"
+            "Net bytes vary HUGELY by processor class. Match these magnitudes:\n"
+            + "\n".join(lines)
+        )
+    except Exception:
+        pass
+
+    # --- RAM utilization histogram ---
+    try:
+        df = pd.read_csv(rdir / "ram_utilization_histogram.csv")
+        # Filter to common RAM sizes
+        common_ram = [4, 8, 16, 32, 64]
+        filtered = df[df["ram_gb"].isin(common_ram)]
+        lines = ["ram_gb | avg_pct_used"]
+        for _, r in filtered.iterrows():
+            lines.append(f"{int(r['ram_gb'])} | {r['avg_percentage_used']:.0f}")
+        sections.append(
+            "RAM UTILIZATION TARGETS (mem group).\n"
+            "mem_avg_pct_used correlates inversely with ram size:\n"
+            + "\n".join(lines)
+        )
+    except Exception:
+        pass
+
+    if not sections:
+        return ""
+    return "\n\n".join(sections)
+
+
+# Cache the real targets so we only load once
+_REAL_TARGETS_CACHE: str | None = None
+
+
+def _get_real_targets() -> str:
+    global _REAL_TARGETS_CACHE
+    if _REAL_TARGETS_CACHE is None:
+        _REAL_TARGETS_CACHE = _load_real_targets()
+    return _REAL_TARGETS_CACHE
+
+
 # Distribution-aware prompt with real marginal percentages and sparsity examples
 _DISTRIBUTION_PROMPT = """You are generating synthetic Intel DCA telemetry records. Each record = one client system (Windows PC).
 
@@ -167,60 +370,81 @@ CATEGORICAL DISTRIBUTIONS (match these frequencies):
 - modelvendor_normalized: Lenovo 22%, Dell 15%, HP 15%, Asus 8%, Acer 7%, Microsoft Corporation 3%, Samsung 3%, HUAWEI 2%, MSI 2%, Toshiba 2%, Fujitsu 1%, Intel 1%, others spread across remaining vendors in the enum
 - ram: 8 (38%), 16 (28%), 4 (18%), 32 (7%), 12 (4%), 6 (2%), 64 (1%)
 
-NUMERIC RANGES (for nonzero values only):
-- net_received_bytes: 1e8 to 1e14 (median ~1e11), net_sent_bytes: 1e7 to 1e13 (median ~1e10), net_nrs: 100-50000
-- mem_avg_pct_used: 20-95 (median 55), mem_nrs: 100-50000, mem_sysinfo_ram: match ram in MB (e.g. ram=8 -> 8192)
-- batt_num_power_ons: 1-20 (median 3), batt_duration_mins: 10-600 (median 130)
-- web_chrome_duration/web_edge_duration/web_firefox_duration: 1e3 to 1e8 (ms)
-- webcat_* fields: 0.0-100.0 (percentage of browsing time; active webcat fields should sum to roughly 100)
-- onoff_on_time/off_time/mods_time/sleep_time: 0-1e7 (seconds)
-- disp_num_displays: 1-4, disp_total_duration_ac/dc: 1e3 to 1e8
+*** CRITICAL: CONDITIONAL NUMERIC RANGES ***
+Numeric values MUST match the REAL AGGREGATE TARGETS below. Do NOT use generic ranges.
 
-*** CRITICAL SPARSITY RULES (MOST IMPORTANT) ***
+GROUP: net (net_nrs, net_received_bytes, net_sent_bytes)
+- net_nrs: 100-50000
+- IMPORTANT: net bytes depend on cpuname.
+  If cpuname=Intel Xeon: net_received_bytes ~ 1e12-6e17, net_sent_bytes ~ 1e12-6e17
+  If cpuname!=Intel Xeon: net_received_bytes ~ 1e10-1e16, net_sent_bytes ~ 1e10-1e16
+
+GROUP: mem (mem_nrs, mem_avg_pct_used, mem_sysinfo_ram)
+- mem_nrs: 100-50000
+- mem_sysinfo_ram: MUST match ram × 1024 (e.g. ram=8 → mem_sysinfo_ram=8192)
+- mem_avg_pct_used: depends on ram (see RAM UTILIZATION TARGETS below)
+  ram=4 → ~71, ram=8 → ~60, ram=16 → ~47, ram=32 → ~41, ram=64 → ~35
+
+GROUP: batt (batt_num_power_ons, batt_duration_mins)
+- Notebook/2-in-1 ONLY.
+- batt_num_power_ons: 1-5 (average ~2.5 across all countries)
+- batt_duration_mins: depends on cpucode (see BATTERY DURATION TARGETS below)
+  Tiger Lake → ~190, Ice Lake → ~95-158, Comet Lake → ~104-120, Coffee Lake → ~64-65
+
+GROUP: browser+webcat
+- web_chrome_duration/edge_duration/firefox_duration: 1e3 to 1e8 (ms)
+- Chrome dominant in most countries. Edge dominant ONLY in China, Denmark, Korea.
+- webcat_* fields: 0-100 (percentage of browsing time, active fields sum to ~100)
+- webcat distribution depends on persona (see PERSONA-WEBCAT RULE below)
+
+GROUP: onoff (onoff_on_time, onoff_off_time, onoff_mods_time, onoff_sleep_time)
+- Values are in SECONDS. Total ≈ 84000 s (≈ 1 day).
+- on_time: 23000-53000, off_time: 8000-23000, sleep_time: 18000-52000
+- mods_time: 0-14000 (high for Tiger Lake/Ice Lake, ~0 for Coffee Lake/Rocket Lake)
+- Depends on cpucode (see ON/OFF/SLEEP TIME TARGETS below)
+
+GROUP: hw (psys_rap_*, pkg_c0_*, avg_freq_*, temp_*, pkg_power_*)
+- CRITICAL: avg_freq_avg MUST be 1000-6000 (MHz). Notebook ~1500, Desktop ~5400.
+- psys_rap_avg: 2-7 (watts). pkg_c0_avg: 37-46 (percentage).
+- temp_avg: 41-52 (Celsius). pkg_power_avg: 0.7-673 (watts, see PKG POWER TARGETS).
+- *_nrs fields: 100-50000.
+
+GROUP: disp (disp_num_displays, disp_total_duration_ac, disp_total_duration_dc)
+- disp_num_displays: 1-4, duration_ac/dc: 1e3 to 1e8
+
+*** CRITICAL SPARSITY RULES ***
 There are 7 numeric groups: net, mem, batt, browser+webcat, onoff, disp, hw.
 Each system has data in EXACTLY 1 or 2 of these groups. ALL other groups MUST be exactly 0.
-
-Group definitions:
-- net: net_nrs, net_received_bytes, net_sent_bytes
-- mem: mem_nrs, mem_avg_pct_used, mem_sysinfo_ram
-- batt: batt_num_power_ons, batt_duration_mins
-- browser+webcat: web_chrome_duration, web_edge_duration, web_firefox_duration, web_total_duration, web_num_instances, AND all webcat_* fields
-- onoff: onoff_on_time, onoff_off_time, onoff_mods_time, onoff_sleep_time
-- disp: disp_num_displays, disp_total_duration_ac, disp_total_duration_dc
-- hw: psys_rap_nrs, psys_rap_avg, pkg_c0_nrs, pkg_c0_avg, avg_freq_nrs, avg_freq_avg, temp_nrs, temp_avg, pkg_power_nrs, pkg_power_avg
 
 Approximate group frequencies (what % of systems have data in each group):
 - net: 25%, mem: 22%, batt: 15% (Notebook/2-in-1 only), browser+webcat: 20%, onoff: 18%, disp: 10%, hw: <1%
 
-EXAMPLE of correct sparsity (system with net + mem active):
-- net_nrs=5000, net_received_bytes=5e10, net_sent_bytes=3e9 (NONZERO - active)
-- mem_nrs=5000, mem_avg_pct_used=62, mem_sysinfo_ram=16384 (NONZERO - active)
-- batt_num_power_ons=0, batt_duration_mins=0 (ZERO - inactive)
-- web_*=0, webcat_*=0 (all ZERO - inactive)
-- onoff_*=0 (all ZERO - inactive)
-- disp_*=0 (all ZERO - inactive)
-- hw fields=0 (all ZERO - inactive)
+EXAMPLE 1 — Notebook with net + mem active, ram=8, USA, Chrome era:
+{"chassistype":"Notebook","countryname_normalized":"United States of America","modelvendor_normalized":"Dell","os":"Win10","cpuname":"Intel Core i5","cpucode":"Comet Lake","cpu_family":"10th Gen i5","persona":"Office/Productivity","processornumber":"i5-10210U","ram":8,"net_nrs":5000,"net_received_bytes":5e10,"net_sent_bytes":3e9,"mem_nrs":5000,"mem_avg_pct_used":60,"mem_sysinfo_ram":8192,"batt_num_power_ons":0,"batt_duration_mins":0,"web_chrome_duration":0,"web_edge_duration":0,"web_firefox_duration":0,"web_total_duration":0,"web_num_instances":0,"webcat_content_creation_photo_edit_creation":0,"webcat_content_creation_video_audio_edit_creation":0,"webcat_content_creation_web_design_development":0,"webcat_education":0,"webcat_entertainment_music_audio_streaming":0,"webcat_entertainment_other":0,"webcat_entertainment_video_streaming":0,"webcat_finance":0,"webcat_games_other":0,"webcat_games_video_games":0,"webcat_mail":0,"webcat_news":0,"webcat_unclassified":0,"webcat_private":0,"webcat_productivity_crm":0,"webcat_productivity_other":0,"webcat_productivity_presentations":0,"webcat_productivity_programming":0,"webcat_productivity_project_management":0,"webcat_productivity_spreadsheets":0,"webcat_productivity_word_processing":0,"webcat_recreation_travel":0,"webcat_reference":0,"webcat_search":0,"webcat_shopping":0,"webcat_social_social_network":0,"webcat_social_communication":0,"webcat_social_communication_live":0,"onoff_on_time":0,"onoff_off_time":0,"onoff_mods_time":0,"onoff_sleep_time":0,"disp_num_displays":0,"disp_total_duration_ac":0,"disp_total_duration_dc":0,"psys_rap_nrs":0,"psys_rap_avg":0,"pkg_c0_nrs":0,"pkg_c0_avg":0,"avg_freq_nrs":0,"avg_freq_avg":0,"temp_nrs":0,"temp_avg":0,"pkg_power_nrs":0,"pkg_power_avg":0}
 
-EXAMPLE of correct sparsity (system with browser+webcat + onoff active):
-- net_*=0 (ZERO), mem_*=0 (ZERO), batt_*=0 (ZERO)
-- web_chrome_duration=5e6, web_total_duration=6e6, web_num_instances=150 (NONZERO)
-- webcat_entertainment_video_streaming=35, webcat_social_social_network=25, webcat_search=20, webcat_news=10, webcat_mail=10 (sum ~100)
-- onoff_on_time=3e6, onoff_off_time=1e6, onoff_mods_time=500000, onoff_sleep_time=2e6 (NONZERO)
-- disp_*=0 (ZERO), hw=0 (ZERO)
+EXAMPLE 2 — Notebook with browser+webcat + onoff active, Tiger Lake, Communication persona:
+{"chassistype":"Notebook","countryname_normalized":"Germany","modelvendor_normalized":"Lenovo","os":"Win10","cpuname":"Intel Core i7","cpucode":"Tiger Lake","cpu_family":"11th Gen i7","persona":"Communication","processornumber":"i7-1165G7","ram":16,"net_nrs":0,"net_received_bytes":0,"net_sent_bytes":0,"mem_nrs":0,"mem_avg_pct_used":0,"mem_sysinfo_ram":0,"batt_num_power_ons":0,"batt_duration_mins":0,"web_chrome_duration":5e6,"web_edge_duration":1e5,"web_firefox_duration":0,"web_total_duration":5.1e6,"web_num_instances":150,"webcat_content_creation_photo_edit_creation":0,"webcat_content_creation_video_audio_edit_creation":0,"webcat_content_creation_web_design_development":0.3,"webcat_education":1.7,"webcat_entertainment_music_audio_streaming":0.1,"webcat_entertainment_other":1.1,"webcat_entertainment_video_streaming":8.3,"webcat_finance":0.9,"webcat_games_other":0.5,"webcat_games_video_games":0,"webcat_mail":2.4,"webcat_news":2.0,"webcat_unclassified":47.7,"webcat_private":14.6,"webcat_productivity_crm":0,"webcat_productivity_other":2.6,"webcat_productivity_presentations":0.2,"webcat_productivity_programming":0.4,"webcat_productivity_project_management":0.2,"webcat_productivity_spreadsheets":0.7,"webcat_productivity_word_processing":0.5,"webcat_recreation_travel":0.6,"webcat_reference":1.3,"webcat_search":7.1,"webcat_shopping":2.8,"webcat_social_social_network":2.3,"webcat_social_communication":0.7,"webcat_social_communication_live":1.0,"onoff_on_time":26000,"onoff_off_time":12000,"onoff_mods_time":14260,"onoff_sleep_time":32690,"disp_num_displays":0,"disp_total_duration_ac":0,"disp_total_duration_dc":0,"psys_rap_nrs":0,"psys_rap_avg":0,"pkg_c0_nrs":0,"pkg_c0_avg":0,"avg_freq_nrs":0,"avg_freq_avg":0,"temp_nrs":0,"temp_avg":0,"pkg_power_nrs":0,"pkg_power_avg":0}
+
+EXAMPLE 3 — Desktop with hw group active:
+{"chassistype":"Desktop","countryname_normalized":"China","modelvendor_normalized":"Asus","os":"Win10","cpuname":"Intel Core i7","cpucode":"Coffee Lake","cpu_family":"9th Gen i7","persona":"Gamer","processornumber":"i7-9700","ram":32,"net_nrs":0,"net_received_bytes":0,"net_sent_bytes":0,"mem_nrs":0,"mem_avg_pct_used":0,"mem_sysinfo_ram":0,"batt_num_power_ons":0,"batt_duration_mins":0,"web_chrome_duration":0,"web_edge_duration":0,"web_firefox_duration":0,"web_total_duration":0,"web_num_instances":0,"webcat_content_creation_photo_edit_creation":0,"webcat_content_creation_video_audio_edit_creation":0,"webcat_content_creation_web_design_development":0,"webcat_education":0,"webcat_entertainment_music_audio_streaming":0,"webcat_entertainment_other":0,"webcat_entertainment_video_streaming":0,"webcat_finance":0,"webcat_games_other":0,"webcat_games_video_games":0,"webcat_mail":0,"webcat_news":0,"webcat_unclassified":0,"webcat_private":0,"webcat_productivity_crm":0,"webcat_productivity_other":0,"webcat_productivity_presentations":0,"webcat_productivity_programming":0,"webcat_productivity_project_management":0,"webcat_productivity_spreadsheets":0,"webcat_productivity_word_processing":0,"webcat_recreation_travel":0,"webcat_reference":0,"webcat_search":0,"webcat_shopping":0,"webcat_social_social_network":0,"webcat_social_communication":0,"webcat_social_communication_live":0,"onoff_on_time":0,"onoff_off_time":0,"onoff_mods_time":0,"onoff_sleep_time":0,"disp_num_displays":0,"disp_total_duration_ac":0,"disp_total_duration_dc":0,"psys_rap_nrs":3000,"psys_rap_avg":6.3,"pkg_c0_nrs":3000,"pkg_c0_avg":45.1,"avg_freq_nrs":3000,"avg_freq_avg":5442,"temp_nrs":3000,"temp_avg":41.8,"pkg_power_nrs":3000,"pkg_power_avg":5.1}
 
 VIOLATION: Setting net, mem, browser, AND onoff all nonzero for the same system. That is 4 active groups (max allowed is 2).
 
 ram is ALWAYS present and nonzero regardless of group activation.
 
-Do NOT inject your own assumptions. Follow the distributions and sparsity rules exactly."""
+MATCH THE REAL AGGREGATE TARGETS BELOW. These are the actual statistics from the real dataset.
+When generating records, ensure that if you aggregate them by the grouping columns, the averages
+approximate the target values. This is the MOST IMPORTANT requirement after sparsity.
+
+Do NOT inject your own assumptions. Follow the distributions, sparsity rules, and aggregate targets exactly."""
 
 
 def _build_schema_description(real_df: pd.DataFrame) -> str:
-    """Build schema description with real distribution statistics.
+    """Build schema description with real distribution statistics and aggregate targets.
 
-    Uses the static distribution prompt with real-world frequencies rather than
-    dynamically computing top-10 values (which lost long-tail coverage).
-    The group sparsity is still computed from the real data for accuracy.
+    Combines the static distribution prompt with:
+    1. Real group sparsity computed from the data
+    2. Real query result tables loaded from data/results/real/ CSVs
     """
     group_sparsity = _compute_group_sparsity(real_df)
     # Merge browser and webcat into a single combined group to match the
@@ -234,7 +458,11 @@ def _build_schema_description(real_df: pd.DataFrame) -> str:
     sparsity_info = ", ".join(
         f"{g}: {pct}%" for g, pct in sorted(merged.items())
     )
-    return f"{_DISTRIBUTION_PROMPT}\nReal group sparsity: {sparsity_info}"
+    real_targets = _get_real_targets()
+    parts = [_DISTRIBUTION_PROMPT, f"Real group sparsity: {sparsity_info}"]
+    if real_targets:
+        parts.append(f"\n=== REAL AGGREGATE TARGETS ===\n{real_targets}")
+    return "\n".join(parts)
 
 
 def _build_random_prompt(schema_desc: str, batch_size: int) -> str:
