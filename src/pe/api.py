@@ -384,7 +384,7 @@ class PEApi:
                 "max_output_tokens": 16000,
             }
             if self._is_reasoning:
-                kwargs["reasoning"] = {"effort": "minimal"}
+                kwargs["reasoning"] = {"effort": "low"}
             else:
                 kwargs["temperature"] = 0.8
             response = await self.client.responses.parse(**kwargs)
