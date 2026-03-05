@@ -60,7 +60,6 @@ REPORTING_TABLES = [
     "system_frgnd_apps_types",
     "system_mods_power_consumption",
     "system_mods_top_blocker_hist",
-    "system_network_consumption",
     "system_on_off_suspend_time_day",
     "system_os_codename_history",
     "system_pkg_C0",
@@ -217,9 +216,14 @@ def compute_normalized_errors(
             baseline_err = abs(baseline_val)
             method_err = abs(method_val)
 
-        # Compute normalized error with eta stabilizer (matches paper Eq. 6)
+        # Skip metrics where baseline variation is exactly zero — these have
+        # no natural variation to normalize against (e.g., Jaccard group_coverage
+        # where D1 and D2 produce identical group keys).
         ETA = 1e-8
-        normalized = method_err / (abs(baseline_err) + ETA)
+        if abs(baseline_err) < ETA:
+            # No meaningful baseline variation; cannot normalize
+            continue
+        normalized = method_err / abs(baseline_err)
 
         rows.append({
             "query": query,
