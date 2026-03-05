@@ -1,71 +1,45 @@
 /**
- * app.js
- * Shared application logic for all pages.
- * - Partial injection (header/footer)
- * - Active nav highlighting
- * - Page-specific initialization
+ * app.js - Shared logic for all pages.
+ * Partial injection, nav highlighting, query explorer, image compare.
  */
 
-// ============================================================================
-// PARTIAL INJECTION
-// ============================================================================
-
+// === PARTIAL INJECTION ===
 async function injectPartials() {
   try {
-    // Inject header
-    const headerRes = await fetch('partials/header.html');
+    const [headerRes, footerRes] = await Promise.all([
+      fetch('partials/header.html'),
+      fetch('partials/footer.html')
+    ]);
     const headerHtml = await headerRes.text();
-    const headerEl = document.getElementById('siteHeader');
-    if (headerEl) {
-      headerEl.innerHTML = headerHtml;
-    }
-
-    // Inject footer
-    const footerRes = await fetch('partials/footer.html');
     const footerHtml = await footerRes.text();
+    const headerEl = document.getElementById('siteHeader');
     const footerEl = document.getElementById('siteFooter');
-    if (footerEl) {
-      footerEl.innerHTML = footerHtml;
-    }
-
+    if (headerEl) headerEl.innerHTML = headerHtml;
+    if (footerEl) footerEl.innerHTML = footerHtml;
     setActiveNav();
   } catch (e) {
     console.error('Error injecting partials:', e);
   }
 }
 
-// ============================================================================
-// NAVIGATION HIGHLIGHTING
-// ============================================================================
-
+// === NAV HIGHLIGHTING ===
 function setActiveNav() {
   const currentPage = document.body.getAttribute('data-page');
-  const navLinks = document.querySelectorAll('.nav-link');
-
-  navLinks.forEach((link) => {
+  document.querySelectorAll('.nav-link').forEach(link => {
     const linkPage = link.getAttribute('data-page');
-    if (linkPage === currentPage) {
-      link.classList.add('active');
-    } else {
-      link.classList.remove('active');
-    }
+    link.classList.toggle('active', linkPage === currentPage);
   });
 }
 
-// ============================================================================
-// QUERY EXPLORER
-// ============================================================================
-
+// === QUERY EXPLORER (used in scrollytelling) ===
 async function initQueryExplorer() {
   const range = document.getElementById('queryRange');
   const label = document.getElementById('queryLabel');
   const typeEl = document.getElementById('queryType');
   const descEl = document.getElementById('queryDesc');
   const scoresEl = document.getElementById('queryScores');
-  const imgEl = document.getElementById('queryImg');
-  const capEl = document.getElementById('queryCaption');
 
-  if (!range || !label) return; // elements don't exist on this page
+  if (!range || !label) return;
 
   let data = [];
   try {
@@ -82,96 +56,69 @@ async function initQueryExplorer() {
 
   function render(i) {
     const q = data[i];
-    label.textContent = `${i + 1} of ${data.length} (${q.name})`;
-    typeEl.textContent = q.type ? `Type: ${q.type}` : '';
-    descEl.textContent = q.desc || '';
-    if (imgEl) imgEl.src = q.image || '';
-    if (capEl) capEl.textContent = q.caption || '';
+    if (!q) return;
+    label.textContent = (i + 1) + ' of ' + data.length + ' \u2014 ' + q.name;
+    if (typeEl) typeEl.textContent = q.type ? 'Type: ' + q.type : '';
+    if (descEl) descEl.textContent = q.desc || '';
 
     if (scoresEl) {
       scoresEl.innerHTML = '';
-      (q.scores || []).forEach((s) => {
-        const pill = document.createElement('div');
+      (q.scores || []).forEach(function(s) {
+        var pill = document.createElement('div');
         pill.className = 'score-pill';
-        const v = typeof s.value === 'number' ? s.value.toFixed(3) : String(s.value);
-        pill.innerHTML = `<span><strong>${s.method}</strong></span><span>${v}</span><span class="small">${s.note || ''}</span>`;
+        if (s.value === null) {
+          pill.classList.add('na');
+          pill.innerHTML = '<span><strong>' + s.method + '</strong></span><span>N/A</span>';
+        } else if (s.note === 'pass') {
+          pill.classList.add('pass');
+          pill.innerHTML = '<span><strong>' + s.method + '</strong></span><span>' + s.value.toFixed(3) + '</span><span class="small">\u2713 pass</span>';
+        } else {
+          pill.classList.add('fail');
+          pill.innerHTML = '<span><strong>' + s.method + '</strong></span><span>' + s.value.toFixed(3) + '</span><span class="small">\u2717 fail</span>';
+        }
         scoresEl.appendChild(pill);
       });
     }
   }
 
-  range.addEventListener('input', () => render(Number(range.value)));
+  range.addEventListener('input', function() { render(Number(range.value)); });
   render(0);
 }
+// Expose for scrolly.js
+window.initQueryExplorer = initQueryExplorer;
 
-// ============================================================================
-// IMAGE COMPARE SLIDER
-// ============================================================================
-
+// === IMAGE COMPARE SLIDER ===
 function initImageCompare() {
-  const comps = document.querySelectorAll('.img-compare');
-
-  comps.forEach((comp) => {
-    const overlay = comp.querySelector('.img-compare__overlay');
-    const handle = comp.querySelector('.img-compare__handle');
-
+  document.querySelectorAll('.img-compare').forEach(function(comp) {
+    var overlay = comp.querySelector('.img-compare__overlay');
+    var handle = comp.querySelector('.img-compare__handle');
     if (!overlay || !handle) return;
 
-    let dragging = false;
+    var dragging = false;
 
     function setPos(clientX) {
-      const rect = comp.getBoundingClientRect();
-      const x = Math.min(Math.max(clientX - rect.left, 0), rect.width);
-      const pct = (x / rect.width) * 100;
+      var rect = comp.getBoundingClientRect();
+      var x = Math.min(Math.max(clientX - rect.left, 0), rect.width);
+      var pct = (x / rect.width) * 100;
       overlay.style.width = pct + '%';
-      handle.style.left = `calc(${pct}% - 10px)`;
+      handle.style.left = 'calc(' + pct + '% - 10px)';
     }
 
-    function onDown(e) {
+    comp.addEventListener('pointerdown', function(e) {
       dragging = true;
-      if (comp.setPointerCapture) {
-        comp.setPointerCapture(e.pointerId);
-      }
+      if (comp.setPointerCapture) comp.setPointerCapture(e.pointerId);
       setPos(e.clientX);
-    }
-
-    function onMove(e) {
-      if (!dragging) return;
-      setPos(e.clientX);
-    }
-
-    function onUp() {
-      dragging = false;
-    }
-
-    comp.addEventListener('pointerdown', onDown);
-    comp.addEventListener('pointermove', onMove);
-    window.addEventListener('pointerup', onUp);
-
-    // Set default position to center
-    setPos(comp.getBoundingClientRect().left + comp.getBoundingClientRect().width / 2);
+    });
+    comp.addEventListener('pointermove', function(e) {
+      if (dragging) setPos(e.clientX);
+    });
+    window.addEventListener('pointerup', function() { dragging = false; });
   });
 }
+window.initImageCompare = initImageCompare;
 
-// ============================================================================
-// PAGE INITIALIZATION
-// ============================================================================
-
-document.addEventListener('DOMContentLoaded', async () => {
-  // Always inject partials and set active nav
+// === PAGE INIT ===
+document.addEventListener('DOMContentLoaded', async function() {
   await injectPartials();
-
-  // Page-specific initialization
-  const page = document.body.getAttribute('data-page');
-
-  switch (page) {
-    case 'explore':
-      // Scrollytelling and histogram initializations are handled by scrolly.js
-      initImageCompare();
-      break;
-    default:
-      // Other pages may have image compares
-      initImageCompare();
-      break;
-  }
+  initImageCompare();
 });

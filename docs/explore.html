@@ -3,180 +3,120 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Explore | Training-based vs Training-free Differential Privacy</title>
+  <title>Explore | DP Synthesis</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
 </head>
 <body data-page="explore">
   <div id="siteHeader"></div>
 
-  <main>
+  <main id="main-content">
     <section class="section">
       <h1>Explore the Results</h1>
       <p class="lead">
-        Scroll through interactive visualizations: see our workflow, browse queries, compare distributions,
-        and view performance metrics side-by-side.
+        Scroll through interactive visualizations: see our workflow, browse individual queries,
+        compare real vs. synthetic distributions, and review the final scorecard.
       </p>
     </section>
 
-    <!-- SCROLLYTELLING CONTAINER -->
+    <!-- SCROLLYTELLING -->
     <div class="scrolly-container">
-      <!-- LEFT: NARRATIVE STEPS -->
       <div class="scrolly-text">
-        <!-- STEP 1: HERO -->
+        <!-- STEP 1 -->
         <section class="step" data-step="step-hero">
           <h2>Step 1: Project Overview</h2>
-          <p>
-            This project compares four approaches to differentially private synthetic data generation:
-          </p>
+          <p>We compare four approaches to differentially private synthetic data generation on multi-table telemetry:</p>
           <ul>
             <li><strong>Wide-Table DP-VAE:</strong> Train a VAE on all columns flattened into one table.</li>
-            <li><strong>Per-Table DP-SGD:</strong> Train independent VAE models for each table separately.</li>
-            <li><strong>MST (Marginal):</strong> Reconstruct synthetic data from low-cardinality marginals using a Chow-Liu tree.</li>
-            <li><strong>Private Evolution:</strong> Use an LLM to generate candidates, then select via differential privacy.</li>
+            <li><strong>Per-Table DP-SGD:</strong> Train independent VAEs per table.</li>
+            <li><strong>MST:</strong> Reconstruct from noisy marginals via a Chow-Liu tree.</li>
+            <li><strong>Private Evolution:</strong> LLM generates candidates; DP selects the best matches.</li>
           </ul>
-          <p>
-            All methods add differential privacy noise to protect individual privacy while maintaining data utility.
-            We benchmark each approach on 21 production-style SQL queries.
-          </p>
+          <p>All methods use &epsilon;&nbsp;=&nbsp;4.0, &delta;&nbsp;=&nbsp;10<sup>&minus;5</sup>. We benchmark on 21 SQL queries.</p>
         </section>
 
-        <!-- STEP 2: QUERY EXPLORER -->
+        <!-- STEP 2 -->
         <section class="step" data-step="step-queries">
-          <h2>Step 2: Benchmark Queries</h2>
-          <p>
-            We executed 21 SQL queries grouped into four categories: aggregate (GROUP BY with metrics),
-            distribution (histograms and percentages), ranking (top-K items), and row-level (summary statistics).
-          </p>
-          <p>
-            Use the slider on the right to explore each query. Each card shows:
-          </p>
+          <h2>Step 2: Query Explorer</h2>
+          <p>Use the slider on the right to browse all 21 benchmark queries. Each card shows:</p>
           <ul>
-            <li>Query name and type (e.g., "aggregate", "distribution")</li>
-            <li>Description of what the query measures</li>
-            <li>Performance scores (relative error, total variation, or Jaccard) for each method</li>
-            <li>An example visualization (placeholder)</li>
+            <li>Query name and type (Agg+Join, Geo/Demo, Histogram, Pivot, Top-k)</li>
+            <li>What the query measures</li>
+            <li>Per-method scores with pass/fail indicators</li>
           </ul>
-          <p>
-            <strong>Green means passed</strong> (metric below threshold); <strong>red means failed</strong>.
-          </p>
+          <p><strong>Green = pass</strong> (metric meets threshold); <strong>Red = fail</strong>; <strong>Gray = N/A</strong> (not evaluated).</p>
         </section>
 
-        <!-- STEP 3: INTERACTIVE HISTOGRAM -->
+        <!-- STEP 3 -->
         <section class="step" data-step="step-histogram">
-          <h2>Step 3: Distribution Visualization</h2>
-          <p>
-            This interactive histogram compares real (measured) distributions against synthetic data from each method.
-          </p>
-          <p>
-            On the right, you can:
-          </p>
+          <h2>Step 3: Distribution Comparison</h2>
+          <p>This interactive chart compares real distributions against each synthetic method.</p>
           <ul>
-            <li><strong>Select a method:</strong> Choose which synthetic approach to compare against real data.</li>
-            <li><strong>Toggle normalization:</strong> View as probability (normalized) or raw counts.</li>
-            <li><strong>View difference:</strong> See synthetic minus real, highlighting overestimates (positive) and underestimates (negative).</li>
-            <li><strong>Check metrics:</strong> Total Variation distance indicates how different the distributions are.</li>
+            <li><strong>Select a dataset:</strong> Browser usage, RAM utilization, or display vendors.</li>
+            <li><strong>Select a method:</strong> Compare any synthesis approach against the real data.</li>
+            <li><strong>Toggle normalization:</strong> View as probability or raw counts.</li>
           </ul>
-          <p>
-            Lower Total Variation means better preservation of the distribution. A value below 0.15 typically passes.
-          </p>
+          <p>Lower Total Variation (TV) distance means better preservation. TV &lt; 0.15 typically passes.</p>
         </section>
 
-        <!-- STEP 4: IMAGE COMPARE SLIDER -->
+        <!-- STEP 4 -->
         <section class="step" data-step="step-compare">
-          <h2>Step 4: Real vs. Synthetic Plots</h2>
-          <p>
-            Drag the handle on the right to compare actual query results side-by-side:
-            the left side shows real data, the right shows synthetic.
-          </p>
-          <p>
-            Look for:
-          </p>
+          <h2>Step 4: Side-by-Side Comparison</h2>
+          <p>The panel shows a visual comparison of real vs. synthetic query results. Look for:</p>
           <ul>
-            <li><strong>Shape match:</strong> Does the synthetic distribution follow the same shape as real?</li>
-            <li><strong>Peak alignment:</strong> Are modes (peaks) at similar locations?</li>
+            <li><strong>Shape match:</strong> Does the synthetic distribution follow the same shape?</li>
+            <li><strong>Peak alignment:</strong> Are modes at similar locations?</li>
             <li><strong>Tail behavior:</strong> Do tails match, or is one method missing rare values?</li>
-            <li><strong>Zero-inflation:</strong> Excessive zeros or gaps in synthetic suggest mode collapse or sparsity.</li>
+            <li><strong>Zero-inflation:</strong> Excessive zeros suggest mode collapse.</li>
           </ul>
-          <p>
-            This is a qualitative check alongside the quantitative metrics shown earlier.
-          </p>
         </section>
 
-        <!-- STEP 5: SCOREBOARD -->
+        <!-- STEP 5 -->
         <section class="step" data-step="step-scoreboard">
-          <h2>Step 5: Summary Scorecard</h2>
-          <p>
-            Here is the final tally: how many queries each method passed out of the total evaluated.
-          </p>
-          <div class="results-summary">
-            <div class="score-card">
-              <h3>Per-Table DP-SGD</h3>
-              <p class="score">6/21</p>
-              <p class="small">Queries passed</p>
-            </div>
-            <div class="score-card">
-              <h3>MST (Marginal)</h3>
-              <p class="score">6/21</p>
-              <p class="small">Queries passed</p>
-            </div>
-            <div class="score-card">
-              <h3>Wide-Table DP-VAE</h3>
-              <p class="score">1/8</p>
-              <p class="small">Evaluated subset</p>
-            </div>
-            <div class="score-card">
-              <h3>Private Evolution</h3>
-              <p class="score">2/8</p>
-              <p class="small">Evaluated subset</p>
-            </div>
-          </div>
-          <p>
-            Key insight: simple distributions pass, but complex join-heavy queries challenge all methods.
-            See <a href="results.html">Results</a> for a deep dive into failure modes and recommendations.
-          </p>
+          <h2>Step 5: Final Scorecard</h2>
+          <p>The final tally: how many queries each method passed out of its evaluated set.</p>
+          <p><strong>Key insight:</strong> Per-table DP-SGD and MST tied at 6/21, but excel at different query types.
+             Simple distributions pass; complex joins remain hard across all methods.</p>
+          <p>See the <a href="results.html">Results</a> page for detailed failure analysis and the
+             <a href="takeaways.html">Takeaways</a> page for recommendations.</p>
         </section>
       </div>
 
-      <!-- RIGHT: STICKY PANEL -->
+      <!-- STICKY PANEL -->
       <div class="scrolly-panel">
-        <!-- Progress indicator -->
         <div class="scrolly-progress">
           <div class="progress-bar"></div>
           <span class="progress-text">Step 1 of 5</span>
         </div>
-
-        <!-- Panel content placeholder -->
         <div class="panel-content" id="panelContent">
           <div class="figure-placeholder">
-            <p>Workflow diagram placeholder</p>
-            <small>Project overview and evaluation workflow.</small>
+            <p>Project Overview</p>
+            <small>Comparing DP synthesis approaches on relational telemetry data.</small>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- FOOTER SECTION -->
+    <!-- SUMMARY -->
     <section class="section">
       <h2>Summary</h2>
-      <p>
-        This exploration shows that differential privacy introduces a fundamental trade-off: stronger privacy
-        (lower epsilon) means less utility, but weaker privacy risks individual leakage. Our evaluation found that:
-      </p>
+      <p>This exploration shows that differential privacy introduces a fundamental privacy-utility trade-off:</p>
       <ul class="bullets">
         <li>Simple distributions and independent features are well-preserved by most methods.</li>
         <li>Join-heavy and cross-table queries remain the biggest challenge.</li>
-        <li>Wide-table training sacrifices individual feature fidelity for multi-table cohesion.</li>
-        <li>Hybrid routing (different methods for different query types) is the most promising path forward.</li>
+        <li>No single method dominates&mdash;a hybrid routing strategy is most promising.</li>
       </ul>
       <p>
-        For full technical details, see the <a href="results.html">Results</a> page and the <a href="https://github.com/mekapur/DSC180B-Q2/raw/main/report/q2-report.pdf" target="_blank">full report (PDF)</a>.
+        For full details, see the <a href="results.html">Results</a> page or
+        the <a href="https://github.com/jktrns/DSC180B-Q2/raw/main/report/q2-report.pdf" target="_blank" rel="noopener">full report (PDF)</a>.
       </p>
     </section>
   </main>
 
   <div id="siteFooter"></div>
-
   <script src="js/scrolly.js"></script>
   <script src="js/charts.js"></script>
   <script src="app.js"></script>

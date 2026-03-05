@@ -3,96 +3,173 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Training-based vs Training-free Differential Privacy for Data Synthesis</title>
+  <title>Differential Privacy for Data Synthesis</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body data-page="index">
   <div id="siteHeader"></div>
 
-  <main>
+  <main id="main-content">
     <!-- HERO -->
-    <section class="section hero" id="overview">
-      <div class="hero-left">
-        <h1>Can we share device telemetry safely?</h1>
-        <p class="lead">
-          We compared training-based (DP-SGD) and training-free (Private Evolution) approaches
-          for differentially private synthetic data on multi-table device telemetry, and tested utility
-          using a production-style SQL benchmark.
-        </p>
-        <div class="cta">
-          <a class="button" href="https://github.com/mekapur/DSC180B-Q2/raw/main/report/q2-report.pdf" target="_blank" rel="noopener">Read the Report (PDF)</a>
-          <a class="button button-secondary" href="https://github.com/mekapur/DSC180B-Q2" target="_blank" rel="noopener">View Code</a>
-        </div>
-        <p class="small">
-          Audience note: this page is written for a general reader. Technical details are available in the report.
-        </p>
-      </div>
-      <div class="hero-right">
-        <img class="hero-img" src="assets/hero.jpeg" alt="Project overview: comparing differential privacy approaches" loading="lazy" />
-        <p class="caption">Figure: project overview and evaluation workflow.</p>
+    <section class="hero-section">
+      <span class="hero-badge">DSC 180B &middot; Capstone 2025</span>
+      <h1>Can We Share Device Telemetry Without Compromising Privacy?</h1>
+      <p class="lead">
+        We compared training-based and training-free differential privacy methods for generating
+        synthetic relational data, benchmarked on 21 production-style SQL queries over Intel's
+        Device Community Analytics corpus.
+      </p>
+      <div class="cta">
+        <a class="button" href="results.html">View Results</a>
+        <a class="button button-secondary" href="https://github.com/jktrns/DSC180B-Q2/raw/main/report/q2-report.pdf" target="_blank" rel="noopener">Read Report (PDF)</a>
+        <a class="button button-secondary" href="https://github.com/jktrns/DSC180B-Q2" target="_blank" rel="noopener">GitHub Repo</a>
       </div>
     </section>
 
-    <!-- MOTIVATION -->
+    <div class="section-divider"><hr /></div>
+
+    <!-- KEY RESULTS AT A GLANCE -->
+    <section class="section" id="at-a-glance">
+      <h2>Results at a Glance</h2>
+      <p>Each method was evaluated on a shared benchmark of SQL queries. A query "passes" when all relevant
+         metrics (relative error, total variation, Jaccard similarity, Spearman correlation) fall within
+         pre-defined thresholds. Privacy budget: &epsilon;&nbsp;=&nbsp;4.0, &delta;&nbsp;=&nbsp;10<sup>&minus;5</sup>.</p>
+      <div class="results-summary">
+        <div class="score-card">
+          <h3>Per-Table DP-SGD</h3>
+          <p class="score blue">6 / 21</p>
+          <p class="small">Best on aggregates (RE&nbsp;=&nbsp;0.54)</p>
+        </div>
+        <div class="score-card">
+          <h3>MST (Marginal)</h3>
+          <p class="score blue">6 / 21</p>
+          <p class="small">Best on distributions (TV&nbsp;=&nbsp;0.105)</p>
+        </div>
+        <div class="score-card">
+          <h3>Wide-Table DP-VAE</h3>
+          <p class="score red">1 / 8</p>
+          <p class="small">Sparsity collapse</p>
+        </div>
+        <div class="score-card">
+          <h3>Private Evolution</h3>
+          <p class="score amber">2 / 8</p>
+          <p class="small">LLM knowledge ceiling</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-divider"><hr /></div>
+
+    <!-- WHY THIS MATTERS -->
     <section class="section" id="motivation">
       <h2>Why This Matters</h2>
       <p>
-        Device telemetry data (usage patterns, hardware specs, network activity) is valuable for product teams
-        but contains sensitive information about individuals. Sharing raw telemetry poses privacy risks. Differential
-        privacy enables us to release synthetic data that is statistically useful while guaranteeing individual privacy.
+        Device telemetry&mdash;hardware specs, usage patterns, network activity&mdash;helps product teams
+        improve software, but it contains sensitive information about individuals. Releasing raw telemetry
+        poses privacy risks. <strong>Differential privacy (DP)</strong> lets us publish synthetic data that
+        preserves statistical utility while mathematically bounding the information leaked about any single
+        record.
       </p>
+      <div class="callout">
+        <p><strong>The core question:</strong> Which DP synthesis approach best preserves the utility of
+        production SQL workloads on multi-table relational data?</p>
+      </div>
       <ul class="bullets">
-        <li><strong>Privacy risk:</strong> Raw telemetry can reveal device models, software versions, usage habits, and locations.</li>
-        <li><strong>Solution:</strong> Generate synthetic data that mimics real distributions under privacy guarantees.</li>
-        <li><strong>Trade-off:</strong> Adding privacy noise reduces utility. We measure this trade-off across different approaches.</li>
+        <li><strong>Privacy risk:</strong> Raw telemetry can reveal device models, locations, browser habits, and usage patterns.</li>
+        <li><strong>Solution:</strong> Generate synthetic data that mimics real distributions under formal privacy guarantees.</li>
+        <li><strong>Trade-off:</strong> Privacy noise reduces utility. We measure this trade-off across four approaches and five query types.</li>
       </ul>
     </section>
 
-    <!-- QUICK LINKS -->
+    <div class="section-divider"><hr /></div>
+
+    <!-- NAVIGATE THE SITE -->
     <section class="section" id="quick-nav">
-      <h2>Explore the Site</h2>
+      <h2>Explore the Project</h2>
       <div class="cards">
-        <div class="card">
+        <a class="card" href="methods.html">
           <h3>Methods</h3>
-          <p>Learn about training-based (DP-SGD) and training-free (Private Evolution) approaches, and our baseline comparisons.</p>
-          <a href="methods.html" class="link-arrow">Read more ></a>
-        </div>
-        <div class="card">
+          <p>How differential privacy works, the four synthesis approaches we compared, and our evaluation framework.</p>
+          <span class="link-arrow">Read more</span>
+        </a>
+        <a class="card" href="results.html">
           <h3>Results</h3>
-          <p>Quantitative evaluation: which queries passed, failure modes, and performance across 4 methods.</p>
-          <a href="results.html" class="link-arrow">Read more ></a>
-        </div>
-        <div class="card">
+          <p>Pass rates, per-query scores, failure modes, and detailed performance breakdowns across all methods.</p>
+          <span class="link-arrow">Read more</span>
+        </a>
+        <a class="card" href="explore.html">
           <h3>Explore</h3>
-          <p>Interactive scrollytelling with real vs. synthetic comparisons, histogram visualizations, and query-by-query results.</p>
-          <a href="explore.html" class="link-arrow">Read more ></a>
+          <p>Interactive scrollytelling: browse queries, compare histograms, and see real vs. synthetic data side by side.</p>
+          <span class="link-arrow">Read more</span>
+        </a>
+        <a class="card" href="takeaways.html">
+          <h3>Takeaways</h3>
+          <p>Lessons learned, recommendations for practitioners, future directions, and project credits.</p>
+          <span class="link-arrow">Read more</span>
+        </a>
+      </div>
+    </section>
+
+    <div class="section-divider"><hr /></div>
+
+    <!-- SCOPE -->
+    <section class="section" id="scope">
+      <h2>Project Scope</h2>
+      <div class="compare-grid">
+        <div>
+          <h3>What We Did</h3>
+          <ul class="bullets">
+            <li>Implemented four DP synthesis pipelines (Wide DP-VAE, Per-table DP-SGD, MST, Private Evolution).</li>
+            <li>Designed a 21-query SQL benchmark covering aggregates, distributions, rankings, and pivots.</li>
+            <li>Evaluated all methods at matched privacy budget (&epsilon;&nbsp;=&nbsp;4.0).</li>
+            <li>Analyzed failure modes: sparsity collapse, independence assumptions, LLM knowledge gaps.</li>
+          </ul>
+        </div>
+        <div>
+          <h3>What We Did Not Do</h3>
+          <ul class="bullets">
+            <li>Sweep over multiple &epsilon; values (fixed at 4.0 for fair comparison).</li>
+            <li>Implement relational DP methods that reason about foreign keys directly.</li>
+            <li>Fine-tune the LLM used in Private Evolution on domain-specific data.</li>
+            <li>Evaluate on datasets beyond the Intel DCA corpus.</li>
+          </ul>
         </div>
       </div>
     </section>
 
-    <!-- KEY FINDINGS -->
-    <section class="section" id="findings">
-      <h2>Key Findings</h2>
-      <ul class="bullets">
-        <li>Per-table DP-SGD and MST baseline each passed 6 out of 21 benchmark queries.</li>
-        <li>Wide-table DP-VAE and Private Evolution were evaluated on 8 queries (schema constraints), passing 1/8 and 2/8 respectively.</li>
-        <li>Join-heavy aggregate queries were hardest: sparsity in wide-table synthesis and per-table independence breaking cross-table relationships.</li>
-        <li>Histogram-based methods (MST) perform well on simple distributions but struggle with complex joins.</li>
-      </ul>
-    </section>
+    <div class="section-divider"><hr /></div>
 
-    <!-- NEXT STEPS -->
-    <section class="section" id="next">
-      <h2>Next Steps</h2>
-      <p>
-        Explore the <a href="explore.html">interactive Explore page</a> to see real vs. synthetic data comparisons, 
-        or dive into the <a href="methods.html">Methods</a> page for technical details about each approach.
+    <!-- TEAM -->
+    <section class="section" id="team">
+      <h2>Team</h2>
+      <div class="team-grid">
+        <div class="team-member">
+          <p class="name">Mehak Kapur</p>
+          <p class="role">DS, UCSD</p>
+        </div>
+        <div class="team-member">
+          <p class="name">Hana Tjendrawasi</p>
+          <p class="role">DS, UCSD</p>
+        </div>
+        <div class="team-member">
+          <p class="name">Jason Tran</p>
+          <p class="role">DS, UCSD</p>
+        </div>
+        <div class="team-member">
+          <p class="name">Phuc Tran</p>
+          <p class="role">DS, UCSD</p>
+        </div>
+      </div>
+      <p style="text-align:center;margin-top:16px;" class="small">
+        Mentor: <strong>Yu-Xiang Wang</strong> (HDSI, UC San Diego)
       </p>
     </section>
   </main>
 
   <div id="siteFooter"></div>
-
   <script src="app.js"></script>
 </body>
 </html>

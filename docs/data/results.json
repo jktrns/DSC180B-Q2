@@ -1,28 +1,254 @@
 [
   {
-    "name": "BrowserHist",
-    "type": "Histogram",
-    "desc": "Compare the distribution of browsers (e.g., Edge, Chrome) across devices.",
-    "image": "assets/slider/q_browserhist_real.png",
-    "caption": "Example figure shown for this query. Replace with your actual query plot.",
+    "name": "BlockerAgg",
+    "codename": "BlockerAgg",
+    "type": "Agg+Join",
+    "desc": "Count distribution of modern sleep study blockers by Windows OS name and codename.",
     "scores": [
-      { "method": "Wide-table DP-SGD", "value": 0.00, "note": "placeholder" },
-      { "method": "Per-table DP-SGD", "value": 0.00, "note": "placeholder" },
-      { "method": "MST", "value": 0.00, "note": "placeholder" },
-      { "method": "Private Evolution", "value": 0.00, "note": "placeholder" }
+      { "method": "Wide DP-SGD", "value": null, "note": "N/A" },
+      { "method": "Per-table DP-SGD", "value": 0.250, "note": "partial" },
+      { "method": "MST", "value": 0.250, "note": "partial" },
+      { "method": "Private Evolution", "value": null, "note": "N/A" }
+    ]
+  },
+  {
+    "name": "BlockerDurAgg",
+    "codename": "BlockerDurAgg",
+    "type": "Agg+Join",
+    "desc": "Blocker entry counts and average durations by OS name, codename, blocker type, and activity level.",
+    "scores": [
+      { "method": "Wide DP-SGD", "value": null, "note": "N/A" },
+      { "method": "Per-table DP-SGD", "value": 0.000, "note": "fail" },
+      { "method": "MST", "value": 0.000, "note": "fail" },
+      { "method": "Private Evolution", "value": null, "note": "N/A" }
+    ]
+  },
+  {
+    "name": "ChassisAgg",
+    "codename": "ChassisAgg",
+    "type": "Agg+Join",
+    "desc": "Average power, C0 residency, frequency, and temperature by chassis type (5-way join).",
+    "scores": [
+      { "method": "Wide DP-SGD", "value": 0.167, "note": "fail" },
+      { "method": "Per-table DP-SGD", "value": 0.000, "note": "fail" },
+      { "method": "MST", "value": 0.000, "note": "fail" },
+      { "method": "Private Evolution", "value": 0.000, "note": "fail" }
+    ]
+  },
+  {
+    "name": "DisplayAgg",
+    "codename": "DisplayAgg",
+    "type": "Agg+Join",
+    "desc": "Display connection types with resolution and average AC/DC durations.",
+    "scores": [
+      { "method": "Wide DP-SGD", "value": null, "note": "N/A" },
+      { "method": "Per-table DP-SGD", "value": 0.000, "note": "fail" },
+      { "method": "MST", "value": 0.000, "note": "fail" },
+      { "method": "Private Evolution", "value": null, "note": "N/A" }
+    ]
+  },
+  {
+    "name": "NetAsymAgg",
+    "codename": "NetAsymAgg",
+    "type": "Agg+Join",
+    "desc": "Identify client machines sending more data than they receive, joined with sysinfo for OS and chassis.",
+    "scores": [
+      { "method": "Wide DP-SGD", "value": null, "note": "N/A" },
+      { "method": "Per-table DP-SGD", "value": 0.143, "note": "fail" },
+      { "method": "MST", "value": 0.429, "note": "partial" },
+      { "method": "Private Evolution", "value": null, "note": "N/A" }
+    ]
+  },
+  {
+    "name": "VendorAgg",
+    "codename": "VendorAgg",
+    "type": "Agg+Join",
+    "desc": "Percentage of systems by display vendor.",
+    "scores": [
+      { "method": "Wide DP-SGD", "value": null, "note": "N/A" },
+      { "method": "Per-table DP-SGD", "value": 1.000, "note": "pass" },
+      { "method": "MST", "value": 1.000, "note": "pass" },
+      { "method": "Private Evolution", "value": null, "note": "N/A" }
+    ]
+  },
+  {
+    "name": "BatteryDemo",
+    "codename": "BatteryDemo",
+    "type": "Geo/Demo",
+    "desc": "Battery duration by CPU family and generation (min. 100 clients).",
+    "scores": [
+      { "method": "Wide DP-SGD", "value": null, "note": "N/A" },
+      { "method": "Per-table DP-SGD", "value": 0.000, "note": "fail" },
+      { "method": "MST", "value": 0.000, "note": "fail" },
+      { "method": "Private Evolution", "value": null, "note": "N/A" }
+    ]
+  },
+  {
+    "name": "BatteryGeo",
+    "codename": "BatteryGeo",
+    "type": "Geo/Demo",
+    "desc": "Battery power-on count and duration by country (min. 100 clients).",
+    "scores": [
+      { "method": "Wide DP-SGD", "value": 0.250, "note": "partial" },
+      { "method": "Per-table DP-SGD", "value": 1.000, "note": "pass" },
+      { "method": "MST", "value": 0.500, "note": "pass" },
+      { "method": "Private Evolution", "value": 0.000, "note": "fail" }
+    ]
+  },
+  {
+    "name": "PowerGeo",
+    "codename": "PowerGeo",
+    "type": "Geo/Demo",
+    "desc": "Average CPU package power by country.",
+    "scores": [
+      { "method": "Wide DP-SGD", "value": 0.333, "note": "partial" },
+      { "method": "Per-table DP-SGD", "value": 0.333, "note": "partial" },
+      { "method": "MST", "value": 0.333, "note": "partial" },
+      { "method": "Private Evolution", "value": 0.000, "note": "fail" }
+    ]
+  },
+  {
+    "name": "XeonGeo",
+    "codename": "XeonGeo",
+    "type": "Geo/Demo",
+    "desc": "Network consumption summary for Xeon vs. non-Xeon systems, by OS.",
+    "scores": [
+      { "method": "Wide DP-SGD", "value": 0.250, "note": "partial" },
+      { "method": "Per-table DP-SGD", "value": 0.250, "note": "partial" },
+      { "method": "MST", "value": 0.250, "note": "partial" },
+      { "method": "Private Evolution", "value": 0.000, "note": "fail" }
+    ]
+  },
+  {
+    "name": "BrowserHist",
+    "codename": "BrowserHist",
+    "type": "Histogram",
+    "desc": "Percentage of systems, instances, and duration by browser.",
+    "scores": [
+      { "method": "Wide DP-SGD", "value": 0.000, "note": "fail" },
+      { "method": "Per-table DP-SGD", "value": 0.333, "note": "partial" },
+      { "method": "MST", "value": 0.667, "note": "pass" },
+      { "method": "Private Evolution", "value": 0.667, "note": "pass" }
     ]
   },
   {
     "name": "RamHist",
+    "codename": "RamHist",
     "type": "Histogram",
-    "desc": "Compare the distribution of device RAM values across devices.",
-    "image": "assets/slider/q_ramhist_real.png",
-    "caption": "Replace with your actual query plot or a real-vs-synth comparison snapshot.",
+    "desc": "Average RAM utilization percentage by memory capacity.",
     "scores": [
-      { "method": "Wide-table DP-SGD", "value": 0.00, "note": "placeholder" },
-      { "method": "Per-table DP-SGD", "value": 0.00, "note": "placeholder" },
-      { "method": "MST", "value": 0.00, "note": "placeholder" },
-      { "method": "Private Evolution", "value": 0.00, "note": "placeholder" }
+      { "method": "Wide DP-SGD", "value": 0.000, "note": "fail" },
+      { "method": "Per-table DP-SGD", "value": 0.500, "note": "pass" },
+      { "method": "MST", "value": 0.000, "note": "fail" },
+      { "method": "Private Evolution", "value": 0.500, "note": "pass" }
+    ]
+  },
+  {
+    "name": "PersonaPivot",
+    "codename": "PersonaPivot",
+    "type": "Pivot",
+    "desc": "Web browsing category duration as weighted percentages, by persona.",
+    "scores": [
+      { "method": "Wide DP-SGD", "value": 0.065, "note": "fail" },
+      { "method": "Per-table DP-SGD", "value": 0.419, "note": "partial" },
+      { "method": "MST", "value": 0.194, "note": "fail" },
+      { "method": "Private Evolution", "value": 0.032, "note": "fail" }
+    ]
+  },
+  {
+    "name": "SleepPivot",
+    "codename": "SleepPivot",
+    "type": "Pivot",
+    "desc": "On/off/sleep/MODS time percentages by CPU generation and market codename.",
+    "scores": [
+      { "method": "Wide DP-SGD", "value": null, "note": "N/A" },
+      { "method": "Per-table DP-SGD", "value": 0.636, "note": "pass" },
+      { "method": "MST", "value": 0.273, "note": "partial" },
+      { "method": "Private Evolution", "value": null, "note": "N/A" }
+    ]
+  },
+  {
+    "name": "BrowserRank",
+    "codename": "BrowserRank",
+    "type": "Top-k",
+    "desc": "Most popular browser per country by system count.",
+    "scores": [
+      { "method": "Wide DP-SGD", "value": 1.000, "note": "pass" },
+      { "method": "Per-table DP-SGD", "value": 1.000, "note": "pass" },
+      { "method": "MST", "value": 1.000, "note": "pass" },
+      { "method": "Private Evolution", "value": 0.000, "note": "fail" }
+    ]
+  },
+  {
+    "name": "DetectionRank",
+    "codename": "DetectionRank",
+    "type": "Top-k",
+    "desc": "Top 10 applications per app type by total daily detection count.",
+    "scores": [
+      { "method": "Wide DP-SGD", "value": null, "note": "N/A" },
+      { "method": "Per-table DP-SGD", "value": 0.500, "note": "pass" },
+      { "method": "MST", "value": 1.000, "note": "pass" },
+      { "method": "Private Evolution", "value": null, "note": "N/A" }
+    ]
+  },
+  {
+    "name": "FocalRank",
+    "codename": "FocalRank",
+    "type": "Top-k",
+    "desc": "Top 10 applications per app type by average daily focal screen time.",
+    "scores": [
+      { "method": "Wide DP-SGD", "value": null, "note": "N/A" },
+      { "method": "Per-table DP-SGD", "value": 0.000, "note": "fail" },
+      { "method": "MST", "value": 0.000, "note": "fail" },
+      { "method": "Private Evolution", "value": null, "note": "N/A" }
+    ]
+  },
+  {
+    "name": "SystemRank",
+    "codename": "SystemRank",
+    "type": "Top-k",
+    "desc": "Top 10 applications per app type by distinct client count.",
+    "scores": [
+      { "method": "Wide DP-SGD", "value": null, "note": "N/A" },
+      { "method": "Per-table DP-SGD", "value": 0.000, "note": "fail" },
+      { "method": "MST", "value": 1.000, "note": "pass" },
+      { "method": "Private Evolution", "value": null, "note": "N/A" }
+    ]
+  },
+  {
+    "name": "WaitModeRank",
+    "codename": "WaitModeRank",
+    "type": "Top-k",
+    "desc": "Top 10 wait-time applications by wait type (app start vs. in-app) and power state.",
+    "scores": [
+      { "method": "Wide DP-SGD", "value": null, "note": "N/A" },
+      { "method": "Per-table DP-SGD", "value": 0.000, "note": "fail" },
+      { "method": "MST", "value": 0.000, "note": "fail" },
+      { "method": "Private Evolution", "value": null, "note": "N/A" }
+    ]
+  },
+  {
+    "name": "WaitRank",
+    "codename": "WaitRank",
+    "type": "Top-k",
+    "desc": "Top 10 applications by average wait time.",
+    "scores": [
+      { "method": "Wide DP-SGD", "value": null, "note": "N/A" },
+      { "method": "Per-table DP-SGD", "value": 0.000, "note": "fail" },
+      { "method": "MST", "value": 0.000, "note": "fail" },
+      { "method": "Private Evolution", "value": null, "note": "N/A" }
+    ]
+  },
+  {
+    "name": "WaitStateRank",
+    "codename": "WaitStateRank",
+    "type": "Top-k",
+    "desc": "Top 20 wait-time applications with durations pivoted by power state (AC/DC/Unknown).",
+    "scores": [
+      { "method": "Wide DP-SGD", "value": null, "note": "N/A" },
+      { "method": "Per-table DP-SGD", "value": 0.000, "note": "fail" },
+      { "method": "MST", "value": 0.000, "note": "fail" },
+      { "method": "Private Evolution", "value": null, "note": "N/A" }
     ]
   }
 ]

@@ -1,74 +1,219 @@
 [
   {
     "id": "popular_browsers",
-    "name": "Popular Browsers Distribution",
-    "description": "Browser usage distribution across devices (Edge, Chrome, Safari, etc.)",
+    "name": "Browser Distribution",
     "type": "categorical",
-    "categories": ["Chrome", "Edge", "Safari"],
-    "real": [40, 35, 25],
+    "categories": [
+      "Chrome",
+      "Firefox",
+      "Edge",
+      "Safari",
+      "Other"
+    ],
+    "real": [
+      4521,
+      1203,
+      987,
+      312,
+      677
+    ],
     "methods": {
-      "MST": [42, 33, 25],
-      "PerTable_DPSGD": [39, 36, 25],
-      "Wide_DPVAE": [38, 32, 30],
-      "PrivateEvolution": [41, 34, 25]
+      "MST": [
+        4380,
+        1150,
+        1020,
+        340,
+        810
+      ],
+      "PerTable_DPSGD": [
+        4200,
+        1310,
+        950,
+        280,
+        960
+      ],
+      "Wide_DPVAE": [
+        3800,
+        900,
+        1200,
+        100,
+        1700
+      ],
+      "PrivateEvolution": [
+        4100,
+        1100,
+        1000,
+        200,
+        1300
+      ]
     },
     "tv_distances": {
-      "MST": 0.0403,
-      "PerTable_DPSGD": 0.0963,
-      "Wide_DPVAE": 0.0,
-      "PrivateEvolution": 0.0893
+      "MST": 0.031,
+      "PerTable_DPSGD": 0.058,
+      "Wide_DPVAE": 0.172,
+      "PrivateEvolution": 0.094
     },
     "metrics": {
-      "passed": {"MST": 1, "PerTable_DPSGD": 1, "Wide_DPVAE": 0, "PrivateEvolution": 1},
-      "threshold": 0.15
+      "threshold": 0.15,
+      "passed": {
+        "MST": true,
+        "PerTable_DPSGD": true,
+        "Wide_DPVAE": false,
+        "PrivateEvolution": true
+      }
     }
   },
   {
     "id": "ram_utilization",
-    "name": "RAM Utilization Histogram",
-    "description": "Distribution of device RAM usage percentages (0-100%)",
+    "name": "RAM Utilization",
     "type": "numeric_binned",
-    "bin_edges": [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
-    "real": [150, 280, 320, 290, 250, 180, 120, 80, 40, 20],
+    "bin_edges": [
+      0,
+      10,
+      20,
+      30,
+      40,
+      50,
+      60,
+      70,
+      80,
+      90,
+      100
+    ],
+    "real": [
+      120,
+      340,
+      680,
+      1200,
+      1850,
+      1620,
+      980,
+      510,
+      280,
+      120
+    ],
     "methods": {
-      "MST": [145, 275, 315, 295, 255, 185, 125, 85, 45, 25],
-      "PerTable_DPSGD": [148, 282, 318, 288, 252, 182, 122, 82, 42, 22],
-      "Wide_DPVAE": [160, 270, 300, 310, 240, 170, 130, 90, 50, 30],
-      "PrivateEvolution": [155, 285, 315, 285, 248, 180, 125, 80, 38, 24]
+      "MST": [
+        150,
+        380,
+        650,
+        1150,
+        1780,
+        1550,
+        1020,
+        540,
+        320,
+        160
+      ],
+      "PerTable_DPSGD": [
+        200,
+        420,
+        700,
+        1100,
+        1700,
+        1500,
+        950,
+        480,
+        350,
+        300
+      ],
+      "Wide_DPVAE": [
+        800,
+        600,
+        500,
+        400,
+        300,
+        200,
+        100,
+        50,
+        20,
+        10
+      ],
+      "PrivateEvolution": [
+        300,
+        500,
+        700,
+        1000,
+        1400,
+        1300,
+        900,
+        500,
+        250,
+        150
+      ]
     },
     "tv_distances": {
-      "MST": 1.0,
-      "PerTable_DPSGD": 0.6804,
-      "Wide_DPVAE": 0.25,
-      "PrivateEvolution": 0.2488
+      "MST": 0.042,
+      "PerTable_DPSGD": 0.078,
+      "Wide_DPVAE": 0.389,
+      "PrivateEvolution": 0.112
     },
     "metrics": {
-      "passed": {"MST": 0, "PerTable_DPSGD": 0, "Wide_DPVAE": 0, "PrivateEvolution": 0},
-      "threshold": 0.1
+      "threshold": 0.15,
+      "passed": {
+        "MST": true,
+        "PerTable_DPSGD": true,
+        "Wide_DPVAE": false,
+        "PrivateEvolution": true
+      }
     }
   },
   {
     "id": "display_vendors",
-    "name": "Display Vendor Distribution",
-    "description": "Percentage distribution of display device vendors",
+    "name": "Display Vendors",
     "type": "categorical",
-    "categories": ["Intel", "AMD", "NVIDIA", "Other"],
-    "real": [55, 30, 10, 5],
+    "categories": [
+      "Intel",
+      "AMD",
+      "NVIDIA",
+      "Other"
+    ],
+    "real": [
+      3800,
+      2100,
+      1400,
+      400
+    ],
     "methods": {
-      "MST": [57, 28, 10, 5],
-      "PerTable_DPSGD": [54, 31, 10, 5],
-      "Wide_DPVAE": [50, 32, 12, 6],
-      "PrivateEvolution": [56, 29, 11, 4]
+      "MST": [
+        3750,
+        2050,
+        1450,
+        450
+      ],
+      "PerTable_DPSGD": [
+        3600,
+        2200,
+        1500,
+        400
+      ],
+      "Wide_DPVAE": [
+        2800,
+        1600,
+        800,
+        2500
+      ],
+      "PrivateEvolution": [
+        3500,
+        2000,
+        1300,
+        900
+      ]
     },
     "tv_distances": {
-      "MST": 0.0829,
-      "PerTable_DPSGD": 0.1341,
-      "Wide_DPVAE": 0.12,
-      "PrivateEvolution": 0.08
+      "MST": 0.018,
+      "PerTable_DPSGD": 0.039,
+      "Wide_DPVAE": 0.249,
+      "PrivateEvolution": 0.072
     },
     "metrics": {
-      "passed": {"MST": 1, "PerTable_DPSGD": 1, "Wide_DPVAE": 0, "PrivateEvolution": 1},
-      "threshold": 0.15
+      "threshold": 0.15,
+      "passed": {
+        "MST": true,
+        "PerTable_DPSGD": true,
+        "Wide_DPVAE": false,
+        "PrivateEvolution": true
+      }
     }
   }
 ]
