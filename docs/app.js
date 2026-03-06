@@ -118,7 +118,7 @@ function initImageCompare() {
     comp.addEventListener('pointermove', function(e) {
       if (dragging) setPos(e.clientX);
     });
-    window.addEventListener('pointerup', function() { dragging = false; });
+    comp.addEventListener('pointerup', function() { dragging = false; });
   });
 }
 window.initImageCompare = initImageCompare;
