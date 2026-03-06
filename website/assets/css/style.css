@@ -10,10 +10,8 @@
   --bg: #fff;
   --bg-alt: #fafafa;
   --rule: #ddd;
-  --accent: #66001a;
-  --accent-hover: #8a0022;
-  --url: #1a5c2a;
   --max-width: 960px;
+  --prose: 640px;
   --serif: 'Libertinus Serif', Georgia, 'Times New Roman', serif;
   --mono: 'Fira Code', Consolas, monospace;
 }
@@ -84,7 +82,7 @@ nav .nav-links a {
 }
 
 nav .nav-links a:hover {
-  color: var(--accent);
+  color: var(--text);
 }
 
 /* --- Main --- */
@@ -93,6 +91,17 @@ main {
   max-width: var(--max-width);
   margin: 0 auto;
   padding: 0 2rem 5rem;
+}
+
+/* --- Prose width constraint --- */
+
+section > p,
+section > ul,
+section > ol,
+section > blockquote,
+section > details,
+section > .callout {
+  max-width: var(--prose);
 }
 
 /* --- Header --- */
@@ -123,7 +132,7 @@ main {
 }
 
 .header .authors a:hover {
-  color: var(--accent);
+  text-decoration: underline;
 }
 
 .header .emails {
@@ -150,16 +159,15 @@ main {
   display: inline-block;
   padding: 0.35rem 1rem;
   font-size: 13px;
-  color: var(--url);
-  border: 1px solid var(--url);
-  border-radius: 3px;
+  color: var(--text-muted);
+  border: 1px solid var(--rule);
   text-decoration: none;
   transition: background 0.15s, color 0.15s;
 }
 
 .header .links a:hover {
-  background: var(--url);
-  color: #fff;
+  background: var(--text);
+  color: var(--bg);
 }
 
 /* --- Abstract --- */
@@ -169,7 +177,6 @@ main {
   margin: 0 auto 3rem;
   padding: 1.5rem 2rem;
   background: var(--bg-alt);
-  border-radius: 4px;
   font-size: 15.5px;
   line-height: 1.7;
   color: var(--text-muted);
@@ -177,6 +184,7 @@ main {
 
 .abstract p {
   margin: 0;
+  max-width: none;
 }
 
 /* --- Typography --- */
@@ -186,12 +194,14 @@ p {
 }
 
 a {
-  color: var(--accent);
-  text-decoration: none;
+  color: var(--text);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-color: var(--rule);
 }
 
 a:hover {
-  text-decoration: underline;
+  text-decoration-color: var(--text);
 }
 
 /* --- Headings --- */
@@ -204,6 +214,7 @@ h2 {
   margin: 3rem 0 1rem;
   padding-bottom: 0.4rem;
   border-bottom: 1px solid var(--rule);
+  max-width: var(--prose);
 }
 
 h3 {
@@ -212,6 +223,7 @@ h3 {
   font-weight: 500;
   color: var(--text);
   margin: 2rem 0 0.7rem;
+  max-width: var(--prose);
 }
 
 h4 {
@@ -240,6 +252,9 @@ figcaption {
   color: var(--text-muted);
   margin-top: 0.6rem;
   line-height: 1.5;
+  max-width: var(--prose);
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .row {
@@ -256,10 +271,14 @@ figcaption {
 
 /* --- Tables --- */
 
+.table-wrapper {
+  overflow-x: auto;
+  margin: 1.5rem 0;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;
-  margin: 1.5rem 0;
   font-size: 15px;
 }
 
@@ -282,6 +301,12 @@ tbody tr:last-child {
   border-bottom: 2px solid var(--text);
 }
 
+/* Score cells (functional colors preserved) */
+.cell-pass    { background: #e8f0eb; color: #2d6a4f; }
+.cell-fail    { background: #f5e6e6; color: #9b2226; }
+.cell-partial { background: #f5f0e0; color: #7c5e10; }
+.cell-na      { background: #f5f5f5; color: #999; }
+
 /* --- Code --- */
 
 code {
@@ -289,13 +314,11 @@ code {
   font-size: 0.82em;
   background: var(--bg-alt);
   padding: 0.15em 0.35em;
-  border-radius: 3px;
 }
 
 pre {
   background: var(--bg-alt);
   border: 1px solid var(--rule);
-  border-radius: 4px;
   padding: 1rem 1.2rem;
   overflow-x: auto;
   font-size: 13px;
@@ -318,20 +341,28 @@ li {
   margin-bottom: 0.3rem;
 }
 
-/* --- Blockquote --- */
+/* --- Blockquote / Callout --- */
 
-blockquote {
-  margin: 1.2rem 0 1.2rem 0;
+blockquote,
+.callout {
+  margin: 1.2rem 0;
   padding: 0.8rem 1.5rem;
   border-left: 3px solid var(--rule);
   color: var(--text-muted);
-  font-style: italic;
   background: var(--bg-alt);
-  border-radius: 0 4px 4px 0;
 }
 
-blockquote p:last-child {
+blockquote {
+  font-style: italic;
+}
+
+blockquote p:last-child,
+.callout p:last-child {
   margin-bottom: 0;
+}
+
+.callout p {
+  max-width: none;
 }
 
 /* --- Details/dropdown --- */
@@ -339,7 +370,6 @@ blockquote p:last-child {
 details {
   margin: 1.2rem 0;
   border: 1px solid var(--rule);
-  border-radius: 4px;
   padding: 0.7rem 1.2rem;
 }
 
@@ -347,7 +377,7 @@ summary {
   cursor: pointer;
   font-weight: 500;
   font-size: 15px;
-  color: var(--accent);
+  color: var(--text-muted);
 }
 
 details[open] summary {
@@ -361,7 +391,90 @@ details[open] summary {
 hr {
   border: none;
   border-top: 1px solid var(--rule);
+  margin: 2.5rem 0;
+}
+
+/* --- Results summary cards --- */
+
+.results-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.score-card {
+  text-align: center;
+  padding: 1.2rem 1rem;
+  border: 1px solid var(--rule);
+  background: var(--bg-alt);
+}
+
+.score-card h3 {
+  font-size: 15px;
+  font-weight: 500;
+  margin: 0 0 0.4rem;
+  max-width: none;
+  border: none;
+  padding: 0;
+}
+
+.score-card .score {
+  font-size: 1.8rem;
+  font-weight: 400;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.score-card .small {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 0.3rem 0 0;
+}
+
+/* --- Chart containers --- */
+
+.chart-container {
   margin: 2rem 0;
+}
+
+.chart-title {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+  max-width: none;
+}
+
+/* --- Compare grid --- */
+
+.compare-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-top: 1rem;
+}
+
+/* --- Small text --- */
+
+.small {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.caption {
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* --- Lead paragraph --- */
+
+.lead {
+  font-size: 19px;
+  line-height: 1.65;
+  color: var(--text-muted);
+  max-width: var(--prose);
 }
 
 /* --- Footer --- */
@@ -407,5 +520,23 @@ footer {
 
   .row {
     flex-direction: column;
+  }
+
+  .compare-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .results-summary {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .results-summary {
+    grid-template-columns: 1fr;
+  }
+
+  nav .nav-links {
+    display: none;
   }
 }
