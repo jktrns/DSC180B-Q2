@@ -1,6 +1,41 @@
-@import url('https://cdn.jsdelivr.net/npm/@fontsource/libertinus-serif@5/400.css');
-@import url('https://cdn.jsdelivr.net/npm/@fontsource/libertinus-serif@5/400-italic.css');
-@import url('https://cdn.jsdelivr.net/npm/@fontsource/libertinus-serif@5/500.css');
+@font-face {
+  font-family: 'Beaufort';
+  src: url('../fonts/Beaufort-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Beaufort';
+  src: url('../fonts/Beaufort-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'SpiegelSans';
+  src: url('../fonts/SpiegelSans-5Regular_TRIAL.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'SpiegelSans';
+  src: url('../fonts/SpiegelSans-5RegularItalic_TRIAL.woff2') format('woff2');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'SpiegelSans';
+  src: url('../fonts/SpiegelSans-6SemiBold_TRIAL.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
 @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap');
 
 :root {
@@ -11,7 +46,8 @@
   --bg-alt: #1c1c1c;
   --rule: #2e2e2e;
   --max-width: 650px;
-  --serif: 'Libertinus Serif', Georgia, 'Times New Roman', serif;
+  --heading: 'Beaufort', Georgia, serif;
+  --body: 'SpiegelSans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --mono: 'Fira Code', Consolas, monospace;
 }
 
@@ -27,8 +63,8 @@ html {
 }
 
 body {
-  font-family: var(--serif);
-  font-size: 16px;
+  font-family: var(--body);
+  font-size: 14px;
   line-height: 1.7;
   color: var(--text);
   background: var(--bg);
@@ -59,7 +95,7 @@ nav .nav-inner {
 }
 
 nav .nav-title {
-  font-family: var(--serif);
+  font-family: var(--heading);
   font-weight: 500;
   font-size: 15px;
   color: var(--text);
@@ -102,7 +138,7 @@ main {
 }
 
 .header h1 {
-  font-family: var(--serif);
+  font-family: var(--heading);
   font-size: 28px;
   font-weight: 500;
   line-height: 1.25;
@@ -195,7 +231,7 @@ a:hover {
 /* --- Headings --- */
 
 h2 {
-  font-family: var(--serif);
+  font-family: var(--heading);
   font-size: 22px;
   font-weight: 500;
   color: var(--text);
@@ -205,7 +241,7 @@ h2 {
 }
 
 h3 {
-  font-family: var(--serif);
+  font-family: var(--heading);
   font-size: 18px;
   font-weight: 500;
   color: var(--text);
@@ -213,7 +249,7 @@ h3 {
 }
 
 h4 {
-  font-family: var(--serif);
+  font-family: var(--heading);
   font-size: 16px;
   font-weight: 500;
   font-style: italic;

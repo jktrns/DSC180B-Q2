@@ -69,7 +69,7 @@
       xaxis: { color: '#a8a49a' },
       margin: { t: 20, r: 20, b: 60, l: 50 },
       paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
-      font: { family: "'Libertinus Serif', Georgia, serif", color: '#e0ddd5' }
+      font: { family: "'SpiegelSans', 'Helvetica Neue', Arial, sans-serif", color: '#e0ddd5' }
     }, { responsive: true, displayModeBar: false });
   }
 
@@ -103,7 +103,7 @@
       legend: { orientation: 'h', y: -0.25, font: { color: '#a8a49a' } },
       margin: { t: 20, r: 20, b: 80, l: 50 },
       paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
-      font: { family: "'Libertinus Serif', Georgia, serif", color: '#e0ddd5' }
+      font: { family: "'SpiegelSans', 'Helvetica Neue', Arial, sans-serif", color: '#e0ddd5' }
     }, { responsive: true, displayModeBar: false });
   }
 
