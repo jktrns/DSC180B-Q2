@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Training-based versus training-free differential privacy for data synthesis</title>
+  <meta name="description" content="Comparing DP-SGD and Private Evolution on Intel DCA telemetry data">
+  <link rel="stylesheet" href="/DSC180B-Q2/assets/css/style.css">
+  <script>
+    MathJax = {
+      tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+</head>
+<body>
+  <nav>
+    <div class="nav-inner">
+      <a class="nav-title" href="/DSC180B-Q2/">DP Synthesis</a>
+      <ul class="nav-links">
+        <li><a href="#introduction">Introduction</a></li>
+        <li><a href="#data">Data</a></li>
+        <li><a href="#methods">Methods</a></li>
+        <li><a href="#results">Results</a></li>
+        <li><a href="#discussion">Discussion</a></li>
+        <li><a href="https://github.com/mekapur/DSC180B-Q2">GitHub</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+    <div class="header">
+  <h1 style="counter-increment: none;">Training-based versus training-free<br />differential privacy for data synthesis</h1>
+  <div class="authors">
+    <a href="https://github.com/mekapur">Mehak Kapur</a>,
+    <a href="https://github.com/hanajuliatj">Hana Tjendrawasi</a>,
+    <a href="https://github.com/jktrns">Jason Tran</a>,
+    <a href="https://github.com/21phuctran">Phuc Tran</a>
+  </div>
+  <div class="emails">{mekapur,htjendrawasi,jat037,pct001}@ucsd.edu</div>
+  <div class="affiliation">
+    Halıcıoğlu Data Science Institute, UC San Diego<br />
+    Mentor: Yu-Xiang Wang
+  </div>
+  <div class="links">
+    <a href="https://github.com/mekapur/DSC180B-Q2">Code</a>
+    <a href="#">Report (PDF)</a>
+    <a href="#">Poster</a>
+  </div>
+</div>
+
+<div class="abstract">
+
+  <p>Differentially private synthetic data generation promises to resolve the tension between data utility and individual privacy, enabling the release of datasets that preserve the statistical properties analysts need while bounding what any adversary can learn about a single record. Two paradigms have emerged: training-based methods, which inject calibrated noise during model optimization, and training-free methods, which leverage foundation models through black-box API access. We investigate both approaches on Intel’s Driver and Client Applications (DCA) telemetry corpus, evaluating against a benchmark of 21 analytical SQL queries representative of production business intelligence workloads.</p>
+
+</div>
+
+<section id="introduction">
+
+  <h2 id="introduction">Introduction</h2>
+
+  <h3 id="why-does-this-matter">Why does this matter?</h3>
+
+  <h3 id="the-privacy-utility-tension">The privacy-utility tension</h3>
+
+  <h3 id="two-paradigms-for-synthetic-data">Two paradigms for synthetic data</h3>
+
+</section>
+
+<section id="data">
+
+  <h2 id="data">Data</h2>
+
+  <h3 id="intel-dca-telemetry-corpus">Intel DCA telemetry corpus</h3>
+
+  <h3 id="the-21-query-sql-benchmark">The 21-query SQL benchmark</h3>
+
+  <h3 id="formal-benchmark-definition">Formal benchmark definition</h3>
+
+</section>
+
+<section id="methods">
+
+  <h2 id="methods">Methods</h2>
+
+  <h3 id="training-based-dp-sgd-with-variational-autoencoders">Training-based: DP-SGD with variational autoencoders</h3>
+
+  <h3 id="training-free-private-evolution-via-foundation-model-apis">Training-free: Private Evolution via foundation model APIs</h3>
+
+  <h3 id="mst-baseline">MST baseline</h3>
+
+  <h3 id="per-table-synthesis">Per-table synthesis</h3>
+
+  <h3 id="privacy-budget-comparison">Privacy budget comparison</h3>
+
+</section>
+
+<section id="results">
+
+  <h2 id="results">Results</h2>
+
+  <h3 id="cross-method-comparison">Cross-method comparison</h3>
+
+  <h3 id="performance-by-query-type">Performance by query type</h3>
+
+  <h3 id="calibration-analysis">Calibration analysis</h3>
+
+  <h3 id="sensitivity-to-evaluation-thresholds">Sensitivity to evaluation thresholds</h3>
+
+</section>
+
+<section id="discussion">
+
+  <h2 id="discussion">Discussion</h2>
+
+  <h3 id="what-worked">What worked</h3>
+
+  <h3 id="what-didnt">What didn’t</h3>
+
+  <h3 id="why-pe-underperforms-on-tabular-data">Why PE underperforms on tabular data</h3>
+
+  <h3 id="future-directions">Future directions</h3>
+
+</section>
+
+<h2 id="references">References</h2>
+
+  </main>
+
+  <footer>
+    UC San Diego, Halıcıoğlu Data Science Institute · DSC 180B, Winter 2026 · Mentor: Yu-Xiang Wang
+  </footer>
+</body>
+</html>

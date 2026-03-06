@@ -878,3 +878,515 @@ All deliverables will be submitted to Gradescope.
         Must present dry run during your group’s Week 9/10 TA Check-In.
         Must create YouTube video of final pitch.
 
+
+Skip to main content
+DSC 180AB
+
+    🏡 Home
+    📓 Syllabus
+    📆 Office Hours
+    🙋 Staff
+    👨‍🏫 Mentor Guide
+    💾 Archive
+
+This site uses Just the Docs, a documentation theme for Jekyll.
+
+    Gradescope
+    Piazza
+    Domain Descriptions 
+
+🛜 Website – Quarter 2 Project
+
+🔙 to the main Quarter 2 Project page
+
+    Checkpoint due Sunday, February 22nd
+    Final submission due Sunday, March 8th
+    Graded by your TA
+
+Overview
+
+You will create a static website that serves as a public-facing version of your report. To get a sense of the types of websites students created in the past, refer to last year’s project websites.
+
+Anyone on the internet may stumble across your website, whether that’s a recruiter that messages you on LinkedIn, your friends and family from home, someone on the internet who Googles your research area, or even an expert who is interested in your results. As such, your website should be targeted towards a general audience. Not everyone needs to know the details of your work immediately; instead, the goal of your website should be to get the general public interested in your project and why it is impactful, and to encourage them to read further if interested. Realistically, nobody is going to read your report or look at the code in your GitHub repository – both of which should be linked from your website – unless they have a good reason to.
+
+Your website will be the most prominent and public-facing of all the deliverables you create. As such, you should strive to create a high-quality website that you and your mentor are proud of. Prior instructors tell us that hiring managers for industry jobs are more likely to respond to candidates who include links to project websites on their resumes!
+
+When creating your website, you may certainly borrow material from your report, but you should reduce the amount of material and make stylistic changes to make it appropriate for a general audience. With that said, your site will contain many of the same sections as your report – expect your site to contain an introduction, a methods section, a results section, and a conclusion section.
+
+    The introduction section should motivate the problem being addressed and justify its relevance to the reader. It should also introduce the methods being used.
+    The methods section should describe how you approached the problem. The level of detail provided depends on the target audience.
+    The results and conclusion sections (perhaps even just one big section in the website) should talk about the impact of the work.
+
+You can tailor your website for different audiences by hiding in-depth technical details behind links or dropdown menus, like the one below.
+Example dropdown
+
+Note that your website should be simple and easy to navigate!
+
+    Refrain from using complicated layouts and too many pages - readers like to scroll, not click. All you’re trying to do is motivate your project.
+    Pictures and plots should tell your whole story, just like in your poster – just by skimming your figures, readers should be able to get the main idea of what you’ve done.
+    It’s a good idea to review what you did in DSC 106.
+
+You don’t need to write everything from scratch – feel free to re-use material from your report. However, your website should feel more informal and welcoming than your report, and so you may need to tailor your language and explanations accordingly.
+Requirements
+
+Unless you ask the instructor for explicit permission otherwise, your website should be hosted on GitHub Pages. Fortunately, you learned how to create websites on GitHub pages – you had to create one in Methodology Assignment 5 last quarter!
+
+In some special cases, your group may be working on developing a “product”, like a dashboard, an application, or some sort of service. If that’s the case, you will create and submit both:
+
+    Your actual product.
+    A separate, static website that explains your project, according to the guidelines above. This is the way most people will acquaint themselves with your project. You should include a prominent link to your interactive webpage from your static page.
+
+Primary vs. Secondary Deliverables
+If your project is a traditional methods or analysis project, your primary deliverable is your report and your secondary deliverable is your website.
+
+If your project is building a product (e.g. an application or dashboard), your primary deliverable is your product itself and your secondary deliverable is your report, though as mentioned above, you must still produce a static webpage, and it is that webpage that you should submit a checkpoint for.
+
+    Checkpoint (due Sunday, February 23rd)
+
+    All that’s required for the checkpoint is that you set up the skeleton/outline of your project webpage. It should contain titles and headers, but doesn’t need to contain content – all we need to see is that you put thought into how your webpage is organized.
+
+    To submit the checkpoint, you’ll submit a link to the repository containing the code to your website (not the link to your website itself). The README.md in that code repository should contain a link to the website itself, which we can use to visit your page. Your TA will review your website with you in during Week 8 or 9.
+
+
+You’ll need to start by creating an artifacts repository.
+
+Skip to main content
+DSC 180AB
+
+    🏡 Home
+    📓 Syllabus
+    📆 Office Hours
+    🙋 Staff
+    👨‍🏫 Mentor Guide
+    💾 Archive
+
+This site uses Just the Docs, a documentation theme for Jekyll.
+
+    Gradescope
+    Piazza
+    Domain Descriptions 
+
+🛠 LaTeX, Markdown, and GitHub Pages
+Latex, Markdown and Github Pages + Methodology Assignment 4
+
+This week’s Methodology Lesson and Methodology Assignment are combined into a single document, structured as a tutorial. The tutorial is made up of two parts:
+
+    LaTeX: Here, you’ll be exposed to the basics of the LaTeX typesetting system. You’ll complete a short activity that requires you to replicate a hand-written document using LaTeX, and will be introduced to the LaTeX template that you’re required to use for your Quarter 1 Project report, Quarter 2 Project Proposal report, and Quarter 2 Project report.
+    Markdown and GitHub Pages: Here, you’ll learn how to create and host a static website using GitHub Pages. You’ll complete a short activity that requires you to create a public website on which you answer some reflection questions. This is to prepare you for the website you’ll need to make for your Quarter 2 Project next quarter.
+
+There are two “tasks” for Methodology Assignment 4, one for each part. You should submit your work for both tasks to the Methodology Assignment 4 portal on Gradescope by Monday, Nov 10th at 11:59PM. Post questions with the assignment on Piazza. Avoid last minute questions OR submissions.
+
+    Part 1: LaTeX
+        Introduction
+        Examples and the Capstone LaTeX Template
+        Methodology Assignment 4, Task 1
+    Part 2: GitHub Pages
+        Markdown
+        Websites
+        GitHub Pages
+        GitHub Pages and Jekyll
+        Methodology Assignment 4, Task 2
+
+Part 1: LaTeX
+Introduction
+
+From The LaTeX Project’s website:
+
+    LaTeX is a high-quality typesetting system; it includes features designed for the production of technical and scientific documentation. LaTeX is the de facto standard for the communication and publication of scientific documents. LaTeX is available as free software.
+
+LaTeX is based on TeX, originally developed by Donald Knuth, the “father of the analysis of algorithms,” in 1978. While LaTeX can be used to create entire documents – and you’re going to use it for this purpose shortly – the easiest way to use LaTeX is to use it to format mathematical formulas in places you’re already used to writing, like in a Jupyter Notebook, or any other environment that uses Markdown (see more in Part 2). To format formulas – that is, to include formulas among words in a sentence – surround the formulas with $single dollar signs$, if you’d like them to appear inline with other text, or with $$double dollar signs$$, if you’d like them to appear on their own lines.
+
+For example, if you placed the following in a Jupyter notebook text cell,
+
+If $x_1, x_2, ..., x_n$ are positive real numbers, then
+
+$$\frac{n}{\sum_{i = 1}^n \frac{1}{x_i}}$$
+
+is their harmonic mean.
+
+the rendered output would look like:
+
+
+If x1,x2,...,xn are positive real numbers, then
+n∑ni=11xi
+
+is their harmonic mean.
+
+A more sophisticated way of using LaTeX is to format entire documents. We do this a lot — many DSC exams and homeworks you’ve taken were authored in LaTeX. To author documents in LaTeX, you need to have access to a LaTeX distribution. One way to do this is to download a distribution, like MacTeX, to your computer, but this can be a little finicky.
+
+An easier way to get started with creating documents in LaTeX is to use Overleaf. Overleaf allows you to create .tex files (the format used for LaTeX documents) and upload supporting files and images and render a preview of your documents directly in your browser. Overleaf’s free tier also allows you to collaborate with other users just by sharing with them a link to your project; think of it like Google Docs for LaTeX.
+
+The Overleaf UI.
+
+You’ll need to make a Overleaf account, both to work on your capstone reports and to complete this Methodology Assignment. Do that right now if you don’t already have one.
+
+Once you have an Overleaf account, you’ll need to create a new blank project for the Methodology Assignment. To do so, you can go to overleaf.com/projects, click “New Project” in the top left, and then click “Blank Project.” Enter “DSC 180A Methodology Assignment 4” as the project name. You’ll be brought to an environment that looks just like this one:
+
+A blank project titled "DSC 180A Methodology Assignment 4."
+
+As you enter text on the left in main.tex, you can hit Control/Command + Enter to re-render the PDF corresponding to main.tex. Keep this project open in a separate tab, you’ll need to come back to it below.
+Examples and the Capstone LaTeX Template
+
+Now that you have a place to write and render LaTeX, it’s time to get to writing! You might not already know how to format any mathematical formulas in LaTeX, and that’s fine. This cheat sheet lists many of the mathematical symbols LaTeX knows about, but if you’re ever unsure of how to format something, you’re only one Google search (or ChatGPT query) away.
+
+Another useful resource is this official tutorial from Overleaf; the slides for Part 1 can be found embedded below.
+
+As for formatting actual documents, a good way to get started is to use templates created by others. That’s what we’re going to require you to do in the capstone. In fact, we’ve prepared a LaTeX template on Overleaf that you’re required to use for your Quarter 1 Project report, Quarter 2 Project Proposal report, and Quarter 2 Report! One of the benefits of having everyone use a template, other than exposing you to LaTeX, is ensuring some sort of uniformity in the submitted reports. Academic conferences do this all the time.
+
+Access the LaTeX template on Overleaf here.
+
+The link above is set to read-only. To make your own copy of the template, click the “Menu” button in the top left, then click “Copy Project.” This will bring an editable copy of the template into your Overleaf account. To share the project with your group members, click “Share” in the top menu bar, turn on link sharing, and send the edit link to your group members.
+
+Once you open the template, in report.tex (the file with all of your content), you’ll see many lines of text in blue. Those are instructions from us; remove them or comment them out with % as you actually edit the template. Your actual submissions should not have any blue in them.
+
+As mentioned above, the template mostly exists for style purposes. Not all headings provided in the template will actually be useful for you; you can add or remove headings as you please, and the headings you end up using are up to you and your mentor. Look to the “Anatomy of a Scientific Paper” section of Methodology Lesson 4 for guidance on which headings to use. Additionally, the top of the template asks you to put links to a website and code; for your Quarter 1 Project, you won’t link a website, but will link your code; for your Quarter 2 Proposal, you won’t link either of these; for your actual Quarter 2 Project, you’ll link both of these.
+
+Section 6 of the template contains several examples on how to format various things (bold text, code, lists, formulas, images, algorithms, etc.) in LaTeX – read it now before working on the exercise below!
+
+The end of the template contains a “References” section, whose contents are defined in reference.bib. Many conference websites format citations in BibTeX that you can copy into reference.bib directly; you can also search for the paper on Google Scholar, click “Cite”, and then click BibTeX” (here’s an example).
+
+If you’re curious, the reason that the font, margins, colors, etc. in this document are different than that of the default document you created is due to the inclusion of styles/dsc180reportstyle.sty. .sty files allow you to custmomize the appearance of a LaTeX document. You don’t really need to tweak with this.
+Methodology Assignment 4, Task 1
+
+The first task in this Methodology Assignment is to re-create the PDF below in the blank project named “DSC 180A Methodology Assignment 4” you created above. You should do this individually.
+
+Some guidance:
+
+    Make sure to re-create the document exactly. Make sure it fits exactly on one page. You’ll need to use several different commands and environments. Most of them are illustrated in the Capstone LaTeX template, though you may need to do a little bit of Googling (this is intentional)!
+        There are some details you’ll need to change: change Suraj Rampure, srampure@ucsd.edu, and November 26th, 1998 to your full name, UCSD email, and birthday, respectively.
+    You’ll need to import a few packages in the header of main.tex (before \begin{document}) using \usepackage:
+        The default margins are too large. To fix them, use \usepackage[a4paper, total={6in, 11in}]{geometry}.
+        The “here” in “some of which are taken from here” is a hyperlink to this website. To enable hyperlinks, use \usepackage{hyperref}. There are several articles online which show you how to use the \href command (imported from hyperref) to make hyperlinks.
+        To align the equations in section 1.1, you’ll need to use the align* environment, defined by \begin{align*} and \end{align*}. To use the align* environment, though, you’ll need to use \usepackage{amsmath}. (AMS stands for the American Mathematical Society.)
+    In Section 2, to make the table with asymptotic runtimes, use the tabular environment. You’ll probably need to do some experimenting to get it to look exactly right; don’t hesitate to post on Ed if you’re stuck. This might be the trickiest part.
+    In Section 3, you can either use this picture and include the picture of a dog, Junior, or use a different picture of your own pet/favorite animal. If you use a picture of a different animal, replace the two bullet points about Junior with two bullet points about your chosen animal.
+        If you try to write "Junior.", you’ll see that the quotes appear strangely. Instead, you’ll need to use
+
+          ``Junior."
+
+        The \includegraphics command takes two arguments, meaning you call it like \includegraphics{arg1}{arg2}. arg1, if you provide it, should be a specification of how big the image should be. Try using something like width=0.8\textwidth. What happens? Experiment until the entire document fits on a single page. arg2 should be a local path to the image; you can’t link to images on the internet in LaTeX, you’ll have to upload the image you want to Overleaf first and provide a relative path.
+
+Once you’re done, download your PDF by clicking the following button.
+
+Once you’re ready to submit, upload both your main.tex and PDF to Task 1 in the “Methodology Assignment 4” portal on Gradescope.
+
+Fun fact: LaTeX is actually Turing complete!
+Part 2: GitHub Pages
+Markdown
+
+Markdown, like HTML (and LaTeX, to some degree), is a markup language. This means that we can use it to format plain-text. As mentioned at the start of Part 1, Jupyter Notebook text cells use Markdown, so you’ve likely already used Markdown to format text.
+
+For example, if you placed the following in a Jupyter notebook text cell,
+
+**Hey there!** My name is [Umesh Bellur](https://ubellur.github.io).
+- I live in San Diego, California.
+- This quarter, I'm teaching DSC 180A.
+- Here's a function that calculates $\frac{n}{\sum_{i = 1}^n \frac{1}{x_i}}$:
+
+```py
+def harmonic_mean(xs):
+	return len(xs) / sum([1 / x for x in xs])
+```
+
+the rendered output would look like:
+
+
+Hey there! My name is Umesh Bellur.
+
+    I live in San Diego, California.
+    This quarter, I’m teaching DSC 180A.
+    Here’s a function that calculates n∑ni=11xi:
+
+def harmonic_mean(xs):
+	return len(xs) / sum([1 / x for x in xs])
+
+Jupyter Notebook text cells aren’t the only place you’ve already written Markdown – the README.md file in every GitHub repo you’ve made is also written in Markdown.
+Websites
+
+The point of the second half of this lesson is not to teach you how to use Markdown. There are several other resources dedicated to that, from Markdown Guide’s Getting Started tutorial to the Basics page on Markdown creator John Gruber’s website.
+
+Rather, it’s to show you how to build websites using Markdown. This is because you’re required to build a website for your Quarter 2 Project next quarter, and knowing Markdown will allow you to build your website quickly. Here, we’ll just look at how to make such a website, not what content to put on it. We’ll discuss the purpose of your Quarter 2 Project website when the time comes.
+
+Before we get started, it’s worth noting that there exist a variety of no-code platforms for building websites, like Google Pages and Squarespace, that people use frequently. Those tools serve their purposes, but you cannot use them for your capstone websites; instead, you must create your websites using code, and you must be able to store that code in a public GitHub repository. By owning your website’s code yourself, you can choose the hosting service you’d like to deploy it on, and are protected in any sudden changes in access (for instance, you lose access to UCSD Google Pages after you graduate).
+
+That is not to say that you must write every single line of HTML, CSS, and Javascript yourself – while you’re certainly free to, you can instead use existing templates, or use frameworks that generate HTML from other formats that are easier to write. We’ll point you in the direction of using Jekyll, a framework that integrates with GitHub Pages that takes a set of Markdown files and creates a website, and while you have to use Jekyll for Methodology Assignment 4, you can use whatever framework you’d like for your actual Quarter 2 Project website.
+
+There are two general types of websites – static websites and dynamic websites. Read this page for an excellent example that distinguishes the two.
+
+    Static websites run all computation in the client (web browser). They are created using HTML (content), CSS (styling), and Javascript (interactivity), though remember that you can create HTML, CSS, and Javascript using Markdown through frameworks like Jekyll. Static websites are not only easier to get up and running, but are also free (e.g. through GitHub Pages) or very cheap to run.
+    Dynamic websites require server-side computation. In summary, the client (web browser) sends a request to a server, which sends a response back to the client. To run a dynamic website, you must either run and maintain a server of your own or pay for a cloud hosting service; either way, as your website becomes more popular, your costs will increase. Examples of dynamic websites include websites that access information stored in databases and websites that allow users to upload datasets and return predictions from an ML model.
+
+Unless your project involves creating a web-based product (e.g. a dashboard or marketplace), your project website should be a static website to minimize overhead. You’d be surprised at the level of interactivity that is possible with a static webpage (including model execution – look at Tensorflow JS, for instance.)
+
+For instance, here is an interactive map created with plotly that students in DSC 80 need to create in Project 2. You can drag and zoom with it.
+
+If you think you need a dynamic webpage, you likely have already looked into how to set one up, but feel free to contact methodology staff if you have any questions.
+GitHub Pages
+
+GitHub Pages hosts static websites for free; I personally make heavy use of this feature and encourage you to as well.
+
+    Each GitHub user is allowed to create one personal website, published at <username>.github.io.
+        For instance, the capstone course website, dsc-capstone.github.io, is the personal website for the GitHub user dsc-capstone; the code for the website is stored at github.com/dsc-capstone/dsc-capstone.github.io.
+        As another example, is at ubellur.github.io, and its source code is in github.com/ubellur/ubellur.github.io.
+    Each project you create can have a project website, published at <username>.github.io/<reponame>.
+        For instance, the site for the repository github.com/dsc-capstone/showcase-24 is hosted at dsc-capstone.github.io/showcase-24, and because dsc-capstone.github.io uses the custom domain name dsc-capstone.org, this appears as dsc-capstone.org/showcase-24.
+
+You may opt to host your site out of a separate branch in your existing public repository, like gh-pages, or create a separate repository solely for your website.
+
+To create the most basic possible page on GitHub Pages:
+
+    Create a repository (or branch in a repository) named <project>.
+    Add, commit, and push a basic index.html file.
+    Go to your repository’s settings, then click “Pages” on the left, and select a source and branch. (See Publishing from a branch for more details.)
+
+We recommend you don’t do this, since it’s likely more work than is necessary, but you’re free to. If you want to go this route, you may find the GitHub Pages landing page to be helpful.
+GitHub Pages and Jekyll
+
+Jekyll is a Ruby-based tool that takes a set of Markdown files and images and turns it into HTML automatically. It allows you to create a static website by mostly editing Markdown files. It’s particularly useful for websites that have multiple pages, but it’s also useful when you don’t want to worry too much about formatting.
+
+GitHub Pages has Jekyll installed on its servers; this means that all you have to do is push Markdown code and your assets to a repository, and GitHub will handle the deployment.
+
+To create a Jekyll-based site using GitHub Pages, follow the instructions here. In short, you’ll have to:
+
+    Create a repository (or branch in a repository) named <project>.
+    Go to your repository’s settings, then click “Pages” on the left, then select a source and branch.
+
+Here is a barebones example of a Jekyll site; you can view the source code here.
+
+    Note that the _config.yml file specifies that the site’s theme is cayman. There are several existing themes; browse them here and read more about changing themes here.
+
+To see the source code for a more complicated Jekyll site, in addition to looking at last year’s capstone websites, you can look at the source code for dsc-capstone.github.io.
+
+    The _layouts folder contains templates for various kinds of pages.
+    In most pages’ source code, like this one (meta!), you will see front matter, delimited by ---, at the top of the page. Front matter provides metadata for a particular page; for instance, it may specify which template in _layouts to use.
+
+More examples are linked below.
+
+    Aaron Fraenkel’s malware domain site; given the link to the site’s repo, can you find the site itself?
+    GitHub Pages’ gallery of sites.
+
+The instructions above only show you how to configure a Jekyll site directly on GitHub Pages. If you’d like to render your Jekyll site locally, you’ll need to install Jekyll (which means you’ll also need to install Ruby). I recommend setting this up, as it’ll make it easy to make large changes to your site at once. Instructions can be found here; click the link corresponding to your operating system.
+
+Here are a few additional resources for creating sites on GitHub Pages.
+
+    The official GitHub Pages documentation.
+    Jonathon McGlone’s through, from the start, tutorial with demo code.
+    Jekyll documentation, mentioned above.
+    More examples of visualization tools by TA Kengchi Chang.
+
+Methodology Assignment 4, Task 2
+
+The second task in Methodology Assignment 4 is to create a barebones static website using GitHub Pages and Jekyll, and use it to answer a few questions. You’ll do this individually.
+
+First, create a public repository named DSC180A-Methodology-4. Then, using the instructions above, enable GitHub Pages for your site, using Jekyll. Add a _config.yml file for the site that specifies the theme that you’d like.
+
+Then, create the file index.md, and in it, add:
+
+    Your name and UCSD email address, formatted however you’d like.
+    The name of your section and your mentor, formatted however you’d like.
+    The answers to the following four prompts, which are meant to help you brainstorm for your Quarter 2 Project Proposal, due on December 2nd. For each prompt, state the question that you’re answering in bold and write your answer immediately underneath on a new line. Make sure you’ve familarized yourself with the Quarter 2 Project Proposal specifications before proceeding!
+        What is the most interesting topic covered in your domain this quarter?
+        Describe a potential investigation you would like to pursue for your Quarter 2 Project.
+        What is a potential change you’d make to the approach taken in your current Quarter 1 Project?
+        What other techniques would you be interested in using in your project?
+
+Note: You should answer these prompts individually. If you are in a domain where the Quarter 2 Project is already determined, this is still a useful (and mandatory) exercise. Do not just answer with the project you think you are doing; give the questions thought and respond with possible related projects that you could work on if you get to go further than expected with your current project or if your current project doesn’t pan out. All data scientists must have the ability to develop topics of investigation given a dataset and some domain knowledge.
+
+Make sure your site renders properly and that other people can see it, given the link.
+
+Once you’re ready to submit, upload both a link to your public website and your index.md to Task 2 in the “Methodology Assignment 4” portal on Gradescope.
+
+We’d also like you to reflect on whether or not your domain is on track to complete your Quarter 1 Project deliverables and propose something interesting and feasible for Quarter 2. If you’re concerned about your domain’s progress, email the instuctor ASAP!
+
+
+Skip to main content
+DSC 180AB
+
+    🏡 Home
+    📓 Syllabus
+    📆 Office Hours
+    🙋 Staff
+    👨‍🏫 Mentor Guide
+    💾 Archive
+
+This site uses Just the Docs, a documentation theme for Jekyll.
+
+    Gradescope
+    Piazza
+    Domain Descriptions 
+
+🗺️ Poster and Presentation – Quarter 2 Project
+
+🔙 to the main Quarter 2 Project page
+
+    Poster checkpoint due Sunday, February 22nd
+    Presentation checkpoint delivered during Week 9
+    Final poster due Sunday, March 8th
+    Presentation delivered at capstone showcase on Friday, March 13th
+    Poster content graded by mentors, presentation graded by your TA
+
+Submit your poster for printing to Triton Print by March 8th. Final submissions of all material for the capstone project will be due by 8th March
+Table of contents
+
+    Overview
+    Conversations
+        Preparation
+        Checkpoint and Submission
+    Posters
+        Requirements
+        Poster Design
+        Branding
+        Guidance
+        Checkpoint and Submission
+
+Overview
+
+The capstone showcase on Friday, March 13th will be a poster session, which means you will present your project using a poster. During your assigned block, you and your group will stand next to your poster as attendees approach you to ask and hear about your work.
+
+If you’ve never seen a poster session before, you can see footage of the 2018 CSE Internship Symposium poster session below.
+
+And here’s a picture of an older capstone showcase (which was the first in-person capstone showcase):
+
+That’ll be you soon!
+Conversations
+
+At the poster session, when someone approaches you and your poster, the first question you can expect them to ask is
+
+    So, what’s your project about?
+
+To answer their question, you’ll give a short, well-rehearsed elevator pitch that introduces your project, the context in which it lies, and its impact. As a reminder, attendees at the capstone showcase will come from a variety of backgrounds:
+
+    Fellow capstone students.
+    Other UCSD students (some data science, some not).
+    Faculty mentors.
+    Industry mentors.
+
+As such, the elevator pitch you start with should be general enough so that all audiences will be able to understand the core elements of your work just by listening to it. As you did for the elevator pitch you recorded in Quarter 1, you should structure your elevator pitch as follows:
+
+    Context: Tell the audience what you are going to tell them – tell them why they should care.
+    Content: Tell them about your approach and results.
+    Conclusion: Recap your content, and how it is relevant with regards to the context you provided at the start.
+
+Keep your elevator pitch short, no more than 2 minutes long. This is so that, after hearing your elevator pitch, attendees have time to ask questions to hear more about the parts of your project that interest them, before they walk away to another project. While your elevator pitch will be general, you should be prepared to answer questions that involve varying levels of detail; a first-year data science major in DSC 10 will ask different questions than a data science professor who is mentoring other groups will.
+Preparation
+
+The first key to success is rehearsing your elevator pitch. You’ll be required to do this with your mentor in section, and with TAs in Week 8. But you’ll need to practice much, much more than twice – in the weeks leading up to the showcase, plan to practice your elevator pitch repeatedly with friends and family of a variety of academic backgrounds. No matter how confident you are in your presentation skills, practice, practice, practice!
+
+When practicing your elevator pitch, you may find it useful to use slides to structure your presentation (though, of course, you will not be able to actually present the slides at the poster session). We suggested this approach in the Quarter 2 Proposal Elevator Pitch assignment in Quarter 1. Ultimately, though, you’ll need to be able to deliver your elevator pitch without referring to notes of any kind. Sure, you’ll have your poster, but while you’re speaking, your poster should serve as a visual aid that contains visualizations and summaries of key results. You can point to various figures and sections of your poster, but make sure you are not simply reading off your poster – that’s not engaging.
+
+The best way to prepare for the questions you’ll receive at the showcase is to let your audiences during your practice runs ask questions, and come up with answers to all of them. This is why it’s important to practice giving your pitch to different audiences – different audiences will be curious about different aspects of your project and will require different levels of detail to be satisfied. As we said in the Quarter 2 Proposal Elevator Pitch guidelines, make sure that you can turn your pitch into a conversation if someone asks a question in the middle.
+Checkpoint and Submission
+
+    Presentation Checkpoint (given during your Week 8 Check-In)
+
+    In Week 8, you will make an appointment with your TA to practice giving presentations about your project using your poster. Signups will be released in Week 7.
+
+At the capstone showcase itself, your TA will come to your table and grade your final presentation, while your mentor will grade your final poster. The rubric that TAs will use to grade your oral presentation at the showcase is as follows.
+
+Each of the six bullet points below are worth 1 point.
+
+    Introduced the domain to a general audience.
+    Explained why the domain is interesting to a general audience.
+    Described the specific problem being approached in sufficient detail.
+    Described the methods used in sufficient detail.
+    Described the results of the project in sufficient detail.
+    Described the impact of the project’s results to a general audience.
+
+Letter Grade	Points
+A	4
+B	3
+C	2
+F	0
+
+Note that these don’t all have to be touched on in your “elevator pitch”; they can be revealed in the conversations you have with your TA / other attendees. With that said, all group members will receive an individual presentation grade – so all group members need to be able to talk and answer questions about the project at the showcase.
+Posters
+Requirements
+
+From the UC Davis Undergraduate Research Center:
+
+    At a poster session, your ultimate goal is to share the story of your work with as many people as possible. This will give you the opportunity to network with people that may be future advisers, employers, or collaborators and you can receive important feedback on your work. To bring people in, your poster should communicate the topic quickly and include visual elements such as pictures, graphs, maps and diagrams as well as text. At its core, an effective poster is centered on a concise and powerful story. With the help of visuals, the presenter can share the story of the work in just five minutes.
+
+Your poster will primarily serve as a visual aid as you present your work. It must contain:
+
+    A prominent, informative title, that immediately tells the viewer what the project is about. (This should be the same as the title of your paper; if you haven’t thought about what this will be, now is as good of a time as any.)
+    The names and emails for all group members, including your mentor, directly underneath the title of your poster. Your mentor’s name should always appear last. See more in Branding.
+    One section for each section of your report, in which the key points are summarized as short bullet points and in tables and graphs where possible.
+        You can include an acknowledgements section, but it shouldn’t be longer than two sentences.
+        Only include the references that are directly relevant for the material on the poster (should only be 2-3 max); don’t include your entire bibliography.
+    A single QR code that links to your project website. Your project website should itself have links to your report and GitHub repository.
+
+Additionally:
+
+    Your poster will ultimately be submitted as a PDF of size 48” x 36”.
+    Make sure that all text and figures on your poster are large and legible – to do this, ensure that your figures are exported at a resolution of 300 DPI (dots per inch). See here for some guidelines. As is mentioned below, you’re free to use any software you’d like to edit your poster, but you should frequently export it as a PDF and zoom in to make sure all figures are high quality.
+
+**While we won’t enforce a particular poster template, we do ask that you follow the above guidelines carefully. Last year, many groups didn’t include emails or their mentor’s names.
+
+While the focus should be on visuals, your poster should also be self-contained – just by looking at your poster, someone should be able to understand the main idea behind your project, the context in which it exists, and its impact, without you having to be present. After all, your poster may eventually be hung up in the hallway of the new HDSI building – passerbys looking at your poster should be able to understand what you did.
+Poster Design
+
+For actually creating your poster, you’re free to use any tools you’d like, though two common choices are LaTeX and Google Slides/Powerpoint. You’ll find templates in all sorts of formats online. For one, Kengchi Chang (a methodology TA) has provided links to two LaTeX templates he has used; Example 1 looks like this:
+
+Start early. Figure out what content you’d like to put on your poster, and then try and find a template (or create your own) that works for your content.
+Branding
+
+This section is new: it was only added on February 21st. Make sure to read it carefully!
+
+Some requirements:
+
+    The names and emails of all group members, including your mentor, should appear at the top of your poster, directly underneath the title of your poster. Your mentor’s name should always appear last.
+        Many checkpoint submissions didn’t follow this rule!
+        Make sure individuals’ emails appear directly underneath their names, rather than somewhere else on the page.
+        For your mentor’s name, you should put “Mentor:” before their name, e.g. “Mentor: Umesh Bellur” (and then underneath that, ubellur@ucsd.edu).
+        Since we’re including the HDSI logo (see below), there’s no need to separately write “Halıcıoğlu Data Science Institute.”
+    You must place one of the following two HDSI logos in the top right corner of your poster:
+
+Option 1: Blue and Gold (download high-res version here)
+
+
+
+Option 2: White (download high-res version here)
+Yes, this is intentionally hard to see on a white background – only use this logo if the top of your poster is a dark color!
+
+Here’s a barebones example of a poster that follows the branding and formatting requirements exactly:
+
+If you’re working with an industry partner, ask your mentor if they want their company’s logo to be on the poster. If they say they’d like it to be, then either put their logo to the right of the HDSI one, or in the top left corner of the poster – it’s up to you.
+Guidance
+
+We won’t reinvent the wheel here – there is a wealth of resources available online that you can consult for guidance on how to produce a poster. Your mentor is also a valuable resource – they’ve almost certainly created a poster before, and ultimately they will be the ones grading your poster.
+
+Start by reading the following articles.
+
+    Haq, Making the most of your conference poster. This set of slides clearly describe what the purpose of a scientific poster is and how to structure one.
+    Alley, Scientific Posters. A good, quick page to read to understand the purpose of a scientific poster, with examples.
+    Ellis, Data Science Presentations. Not all of the content in these slides are directly applicable, since you’re not creating slides, but many of the examples towards the end of how to produce effective visualizations are directly relevant, since much of your poster will consist of visuals.
+    NeuroWire, Tips for presenting your scientific poster at a conference. An excellent article that details what the role of your poster is in your overall presentation, and how to prepare for the poster session more generally.
+
+Then, consult the following links for additional guidance.
+
+Templates:
+
+    Overleaf has a large library of ready-to-go LaTeX templates.
+    Nathaniel Johnston’s LaTeX Poster Template.
+
+Examples:
+
+    UC Davis Academic Posters. This is a gallery of posters created by undergraduate student researchers at UC Davis.
+    UCSD CSE Internship Symposium 2021. Click around to see several examples of posters, though the examples you’ll see here fit a slightly different role (they aren’t tied to scientific papers). Many of the resources linked on this page are taken from here.
+
+Guidelines:
+
+    Hall, Fixing academic posters: the #BetterPoster approach. This poster template looks clean, but the design is quite radical – ask your mentor for their thoughts on this design.
+        A related video: How to create a better research poster in less time.
+    Cranor, Research Posters 101.
+
+
+Checkpoint and Submission
+
+    Poster Checkpoint (due Sunday, February 15th)
+
+    For this checkpoint, all you need to do is submit a draft of your poster as a PDF. Your mentor will provide feedback on this draft.
+
+Once again, you must place your print order with Triton Print for the poster by March 8th. Final submissions of the all capstone material will be due by March 8th 11.59pm
+
+We will pay for the printing costs of your poster. Instructions have been posted on Piazza.

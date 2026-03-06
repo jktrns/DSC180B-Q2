@@ -1,0 +1,411 @@
+@import url('https://cdn.jsdelivr.net/npm/@fontsource/libertinus-serif@5/400.css');
+@import url('https://cdn.jsdelivr.net/npm/@fontsource/libertinus-serif@5/400-italic.css');
+@import url('https://cdn.jsdelivr.net/npm/@fontsource/libertinus-serif@5/500.css');
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap');
+
+:root {
+  --text: #2b2b2b;
+  --text-muted: #555;
+  --text-light: #888;
+  --bg: #fff;
+  --bg-alt: #fafafa;
+  --rule: #ddd;
+  --accent: #66001a;
+  --accent-hover: #8a0022;
+  --url: #1a5c2a;
+  --max-width: 960px;
+  --serif: 'Libertinus Serif', Georgia, 'Times New Roman', serif;
+  --mono: 'Fira Code', Consolas, monospace;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--serif);
+  font-size: 17px;
+  line-height: 1.75;
+  color: var(--text);
+  background: var(--bg);
+  margin: 0;
+  padding: 0;
+}
+
+/* --- Navigation --- */
+
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--rule);
+  padding: 0.55rem 0;
+}
+
+nav .nav-inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+nav .nav-title {
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: 15px;
+  color: var(--text);
+  text-decoration: none;
+}
+
+nav .nav-links {
+  display: flex;
+  gap: 1.6rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+nav .nav-links a {
+  font-size: 14px;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+nav .nav-links a:hover {
+  color: var(--accent);
+}
+
+/* --- Main --- */
+
+main {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 2rem 5rem;
+}
+
+/* --- Header --- */
+
+.header {
+  text-align: center;
+  padding: 3.5rem 0 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.header h1 {
+  font-family: var(--serif);
+  font-size: 32px;
+  font-weight: 500;
+  line-height: 1.25;
+  margin: 0 auto 1.2rem;
+  max-width: 720px;
+}
+
+.header .authors {
+  font-size: 17px;
+  margin-bottom: 0.2rem;
+}
+
+.header .authors a {
+  color: var(--text);
+  text-decoration: none;
+}
+
+.header .authors a:hover {
+  color: var(--accent);
+}
+
+.header .emails {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text-light);
+  margin-bottom: 0.6rem;
+}
+
+.header .affiliation {
+  font-size: 15px;
+  color: var(--text-muted);
+  margin-bottom: 1.6rem;
+}
+
+.header .links {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.header .links a {
+  display: inline-block;
+  padding: 0.35rem 1rem;
+  font-size: 13px;
+  color: var(--url);
+  border: 1px solid var(--url);
+  border-radius: 3px;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+}
+
+.header .links a:hover {
+  background: var(--url);
+  color: #fff;
+}
+
+/* --- Abstract --- */
+
+.abstract {
+  max-width: 720px;
+  margin: 0 auto 3rem;
+  padding: 1.5rem 2rem;
+  background: var(--bg-alt);
+  border-radius: 4px;
+  font-size: 15.5px;
+  line-height: 1.7;
+  color: var(--text-muted);
+}
+
+.abstract p {
+  margin: 0;
+}
+
+/* --- Typography --- */
+
+p {
+  margin: 0 0 1.1rem;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* --- Headings --- */
+
+h2 {
+  font-family: var(--serif);
+  font-size: 26px;
+  font-weight: 500;
+  color: var(--text);
+  margin: 3rem 0 1rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+h3 {
+  font-family: var(--serif);
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--text);
+  margin: 2rem 0 0.7rem;
+}
+
+h4 {
+  font-family: var(--serif);
+  font-size: 17px;
+  font-weight: 500;
+  font-style: italic;
+  color: var(--text);
+  margin: 1.5rem 0 0.5rem;
+}
+
+/* --- Figures --- */
+
+figure {
+  margin: 2rem 0;
+  text-align: center;
+}
+
+figure img {
+  max-width: 100%;
+  height: auto;
+}
+
+figcaption {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-top: 0.6rem;
+  line-height: 1.5;
+}
+
+.row {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.row figure {
+  flex: 1;
+  min-width: 280px;
+}
+
+/* --- Tables --- */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: 15px;
+}
+
+thead {
+  border-top: 2px solid var(--text);
+  border-bottom: 1px solid var(--text);
+}
+
+th {
+  font-weight: 500;
+  text-align: left;
+  padding: 0.55rem 0.75rem;
+}
+
+td {
+  padding: 0.45rem 0.75rem;
+}
+
+tbody tr:last-child {
+  border-bottom: 2px solid var(--text);
+}
+
+/* --- Code --- */
+
+code {
+  font-family: var(--mono);
+  font-size: 0.82em;
+  background: var(--bg-alt);
+  padding: 0.15em 0.35em;
+  border-radius: 3px;
+}
+
+pre {
+  background: var(--bg-alt);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: 1rem 1.2rem;
+  overflow-x: auto;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+pre code {
+  background: none;
+  padding: 0;
+}
+
+/* --- Lists --- */
+
+ul, ol {
+  padding-left: 1.5em;
+  margin: 0 0 1.1rem;
+}
+
+li {
+  margin-bottom: 0.3rem;
+}
+
+/* --- Blockquote --- */
+
+blockquote {
+  margin: 1.2rem 0 1.2rem 0;
+  padding: 0.8rem 1.5rem;
+  border-left: 3px solid var(--rule);
+  color: var(--text-muted);
+  font-style: italic;
+  background: var(--bg-alt);
+  border-radius: 0 4px 4px 0;
+}
+
+blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+/* --- Details/dropdown --- */
+
+details {
+  margin: 1.2rem 0;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: 0.7rem 1.2rem;
+}
+
+summary {
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 15px;
+  color: var(--accent);
+}
+
+details[open] summary {
+  margin-bottom: 0.6rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+/* --- Horizontal rule --- */
+
+hr {
+  border: none;
+  border-top: 1px solid var(--rule);
+  margin: 2rem 0;
+}
+
+/* --- Footer --- */
+
+footer {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 1.5rem 2rem;
+  border-top: 1px solid var(--rule);
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-light);
+}
+
+/* --- Responsive --- */
+
+@media (max-width: 700px) {
+  main {
+    padding: 0 1.2rem 3rem;
+  }
+
+  .header h1 {
+    font-size: 24px;
+  }
+
+  .abstract {
+    padding: 1rem 1.2rem;
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  h2 { font-size: 22px; }
+  h3 { font-size: 18px; }
+
+  nav .nav-inner {
+    padding: 0 1.2rem;
+  }
+
+  nav .nav-links {
+    gap: 0.8rem;
+    font-size: 13px;
+  }
+
+  .row {
+    flex-direction: column;
+  }
+}

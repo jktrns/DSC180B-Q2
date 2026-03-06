@@ -1,0 +1,4 @@
+title: "Training-based vs. Training-free Differential Privacy for Data Synthesis"
+description: "Comparing DP-SGD and Private Evolution on Intel DCA telemetry data"
+baseurl: "/DSC180B-Q2"
+url: "https://mekapur.github.io"
