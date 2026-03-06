@@ -850,7 +850,7 @@ PE remains weak on aggregate and geographic queries. The structured output const
 To improve PE utility, we redesign the generation pipeline to condition on aggregate statistics derived from the real query results. Instead of generating records independently (as in the baseline PE), we:
 \begin{enumerate}
     \item Read aggregate statistics per stratum from the real benchmark CSVs (e.g., average battery duration per CPU generation, RAM utilization per memory size, webcat distributions per persona).
-    \item Add calibrated Gaussian noise to every aggregate query via the Gaussian mechanism, spending a privacy budget of $\varepsilon_{\text{agg}} = 1.0$. Per-query noise is calibrated via advanced composition: $\sigma_{\text{per-query}} = \sqrt{2k\ln(1.25/\delta)}/\varepsilon_{\text{agg}}$ where $k = 958$ is the total number of aggregate queries across all CSVs.
+    \item Add calibrated Gaussian noise to every aggregate query via the Gaussian mechanism, spending a privacy budget of $\varepsilon_{\text{agg}} = 1.0$. Per-query noise is calibrated via advanced composition: $\sigma_{\text{per-query}} = \sqrt{2k\ln(1.25/\delta)}/\varepsilon_{\text{agg}}$ where $k = 1{,}056$ is the total number of aggregate queries across all CSVs.
     \item Use the noisy aggregates to construct per-stratum prompts (e.g., ``generate 55 Notebook records where batt\_duration\_mins averages ${\sim}187$''). Since these prompts are deterministic functions of the DP-released aggregates, this step is free post-processing under DP.
     \item Generate a $3\times$ candidate pool (15{,}000 records across 104 strata) and select 5{,}000 via the DP nearest-neighbor histogram mechanism, spending $\varepsilon_{\text{hist}} = 3.0$.
 \end{enumerate}
