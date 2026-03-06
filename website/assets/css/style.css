@@ -4,14 +4,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap');
 
 :root {
-  --text: #2b2b2b;
-  --text-muted: #555;
-  --text-light: #888;
-  --bg: #fff;
-  --bg-alt: #fafafa;
-  --rule: #ddd;
-  --max-width: 960px;
-  --prose: 640px;
+  --text: #e0ddd5;
+  --text-muted: #a8a49a;
+  --text-light: #7a766e;
+  --bg: #141414;
+  --bg-alt: #1c1c1c;
+  --rule: #2e2e2e;
+  --max-width: 650px;
   --serif: 'Libertinus Serif', Georgia, 'Times New Roman', serif;
   --mono: 'Fira Code', Consolas, monospace;
 }
@@ -24,12 +23,13 @@
 
 html {
   scroll-behavior: smooth;
+  color-scheme: dark;
 }
 
 body {
   font-family: var(--serif);
-  font-size: 17px;
-  line-height: 1.75;
+  font-size: 16px;
+  line-height: 1.7;
   color: var(--text);
   background: var(--bg);
   margin: 0;
@@ -42,7 +42,7 @@ nav {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(20, 20, 20, 0.92);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--rule);
@@ -52,7 +52,7 @@ nav {
 nav .nav-inner {
   max-width: var(--max-width);
   margin: 0 auto;
-  padding: 0 2rem;
+  padding: 0 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -68,14 +68,14 @@ nav .nav-title {
 
 nav .nav-links {
   display: flex;
-  gap: 1.6rem;
+  gap: 1.4rem;
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
 nav .nav-links a {
-  font-size: 14px;
+  font-size: 13px;
   color: var(--text-muted);
   text-decoration: none;
   transition: color 0.15s;
@@ -85,44 +85,33 @@ nav .nav-links a:hover {
   color: var(--text);
 }
 
-/* --- Main --- */
+/* --- Wrapper / Main --- */
 
 main {
   max-width: var(--max-width);
   margin: 0 auto;
-  padding: 0 2rem 5rem;
-}
-
-/* --- Prose width constraint --- */
-
-section > p,
-section > ul,
-section > ol,
-section > blockquote,
-section > details,
-section > .callout {
-  max-width: var(--prose);
+  padding: 0 20px 5rem;
 }
 
 /* --- Header --- */
 
 .header {
   text-align: center;
-  padding: 3.5rem 0 2.5rem;
+  padding: 3rem 0 2rem;
   margin-bottom: 0.5rem;
 }
 
 .header h1 {
   font-family: var(--serif);
-  font-size: 32px;
+  font-size: 28px;
   font-weight: 500;
   line-height: 1.25;
-  margin: 0 auto 1.2rem;
-  max-width: 720px;
+  margin: 0 auto 1rem;
+  color: var(--text);
 }
 
 .header .authors {
-  font-size: 17px;
+  font-size: 16px;
   margin-bottom: 0.2rem;
 }
 
@@ -137,15 +126,15 @@ section > .callout {
 
 .header .emails {
   font-family: var(--mono);
-  font-size: 12px;
+  font-size: 11px;
   color: var(--text-light);
-  margin-bottom: 0.6rem;
+  margin-bottom: 0.5rem;
 }
 
 .header .affiliation {
-  font-size: 15px;
+  font-size: 14px;
   color: var(--text-muted);
-  margin-bottom: 1.6rem;
+  margin-bottom: 1.4rem;
 }
 
 .header .links {
@@ -157,8 +146,8 @@ section > .callout {
 
 .header .links a {
   display: inline-block;
-  padding: 0.35rem 1rem;
-  font-size: 13px;
+  padding: 0.3rem 0.9rem;
+  font-size: 12px;
   color: var(--text-muted);
   border: 1px solid var(--rule);
   text-decoration: none;
@@ -173,31 +162,30 @@ section > .callout {
 /* --- Abstract --- */
 
 .abstract {
-  max-width: 720px;
-  margin: 0 auto 3rem;
-  padding: 1.5rem 2rem;
+  margin: 0 0 2.5rem;
+  padding: 1.2rem 1.5rem;
   background: var(--bg-alt);
-  font-size: 15.5px;
-  line-height: 1.7;
+  border-left: 3px solid var(--rule);
+  font-size: 15px;
+  line-height: 1.65;
   color: var(--text-muted);
 }
 
 .abstract p {
   margin: 0;
-  max-width: none;
 }
 
 /* --- Typography --- */
 
 p {
-  margin: 0 0 1.1rem;
+  margin: 0 0 1rem;
 }
 
 a {
   color: var(--text);
   text-decoration: underline;
   text-underline-offset: 2px;
-  text-decoration-color: var(--rule);
+  text-decoration-color: var(--text-light);
 }
 
 a:hover {
@@ -208,37 +196,35 @@ a:hover {
 
 h2 {
   font-family: var(--serif);
-  font-size: 26px;
+  font-size: 22px;
   font-weight: 500;
   color: var(--text);
-  margin: 3rem 0 1rem;
-  padding-bottom: 0.4rem;
+  margin: 2.5rem 0 0.8rem;
+  padding-bottom: 0.35rem;
   border-bottom: 1px solid var(--rule);
-  max-width: var(--prose);
 }
 
 h3 {
   font-family: var(--serif);
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 500;
   color: var(--text);
-  margin: 2rem 0 0.7rem;
-  max-width: var(--prose);
+  margin: 1.8rem 0 0.6rem;
 }
 
 h4 {
   font-family: var(--serif);
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 500;
   font-style: italic;
   color: var(--text);
-  margin: 1.5rem 0 0.5rem;
+  margin: 1.3rem 0 0.4rem;
 }
 
 /* --- Figures --- */
 
 figure {
-  margin: 2rem 0;
+  margin: 1.5rem 0;
   text-align: center;
 }
 
@@ -248,64 +234,51 @@ figure img {
 }
 
 figcaption {
-  font-size: 14px;
+  font-size: 13px;
   color: var(--text-muted);
-  margin-top: 0.6rem;
+  margin-top: 0.5rem;
   line-height: 1.5;
-  max-width: var(--prose);
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.row {
-  display: flex;
-  gap: 1.5rem;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.row figure {
-  flex: 1;
-  min-width: 280px;
 }
 
 /* --- Tables --- */
 
 .table-wrapper {
   overflow-x: auto;
-  margin: 1.5rem 0;
+  margin: 1.2rem 0;
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 15px;
+  font-size: 14px;
 }
 
 thead {
-  border-top: 2px solid var(--text);
-  border-bottom: 1px solid var(--text);
+  border-top: 2px solid var(--text-muted);
+  border-bottom: 1px solid var(--text-muted);
 }
 
 th {
   font-weight: 500;
   text-align: left;
-  padding: 0.55rem 0.75rem;
+  padding: 0.45rem 0.6rem;
+  color: var(--text-muted);
 }
 
 td {
-  padding: 0.45rem 0.75rem;
+  padding: 0.4rem 0.6rem;
+  border-bottom: 1px solid var(--rule);
 }
 
 tbody tr:last-child {
-  border-bottom: 2px solid var(--text);
+  border-bottom: 2px solid var(--text-muted);
 }
 
-/* Score cells (functional colors preserved) */
-.cell-pass    { background: #e8f0eb; color: #2d6a4f; }
-.cell-fail    { background: #f5e6e6; color: #9b2226; }
-.cell-partial { background: #f5f0e0; color: #7c5e10; }
-.cell-na      { background: #f5f5f5; color: #999; }
+/* Score cells (functional colors, dark-adapted) */
+.cell-pass    { background: #1a2e22; color: #6fcf97; }
+.cell-fail    { background: #2e1a1a; color: #eb8080; }
+.cell-partial { background: #2e2a1a; color: #d4b85c; }
+.cell-na      { background: var(--bg-alt); color: var(--text-light); }
 
 /* --- Code --- */
 
@@ -313,16 +286,17 @@ code {
   font-family: var(--mono);
   font-size: 0.82em;
   background: var(--bg-alt);
-  padding: 0.15em 0.35em;
+  padding: 0.15em 0.3em;
+  color: var(--text);
 }
 
 pre {
   background: var(--bg-alt);
   border: 1px solid var(--rule);
-  padding: 1rem 1.2rem;
+  padding: 0.8rem 1rem;
   overflow-x: auto;
   font-size: 13px;
-  line-height: 1.6;
+  line-height: 1.55;
 }
 
 pre code {
@@ -333,20 +307,20 @@ pre code {
 /* --- Lists --- */
 
 ul, ol {
-  padding-left: 1.5em;
-  margin: 0 0 1.1rem;
+  padding-left: 1.4em;
+  margin: 0 0 1rem;
 }
 
 li {
-  margin-bottom: 0.3rem;
+  margin-bottom: 0.25rem;
 }
 
 /* --- Blockquote / Callout --- */
 
 blockquote,
 .callout {
-  margin: 1.2rem 0;
-  padding: 0.8rem 1.5rem;
+  margin: 1rem 0;
+  padding: 0.7rem 1.2rem;
   border-left: 3px solid var(--rule);
   color: var(--text-muted);
   background: var(--bg-alt);
@@ -361,28 +335,24 @@ blockquote p:last-child,
   margin-bottom: 0;
 }
 
-.callout p {
-  max-width: none;
-}
-
 /* --- Details/dropdown --- */
 
 details {
-  margin: 1.2rem 0;
+  margin: 1rem 0;
   border: 1px solid var(--rule);
-  padding: 0.7rem 1.2rem;
+  padding: 0.6rem 1rem;
 }
 
 summary {
   cursor: pointer;
   font-weight: 500;
-  font-size: 15px;
+  font-size: 14px;
   color: var(--text-muted);
 }
 
 details[open] summary {
-  margin-bottom: 0.6rem;
-  padding-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.4rem;
   border-bottom: 1px solid var(--rule);
 }
 
@@ -391,90 +361,70 @@ details[open] summary {
 hr {
   border: none;
   border-top: 1px solid var(--rule);
-  margin: 2.5rem 0;
+  margin: 2rem 0;
 }
 
 /* --- Results summary cards --- */
 
 .results-summary {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 1rem;
-  margin: 1.5rem 0;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.8rem;
+  margin: 1.2rem 0;
 }
 
 .score-card {
   text-align: center;
-  padding: 1.2rem 1rem;
+  padding: 1rem 0.8rem;
   border: 1px solid var(--rule);
   background: var(--bg-alt);
 }
 
 .score-card h3 {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 500;
-  margin: 0 0 0.4rem;
-  max-width: none;
+  margin: 0 0 0.3rem;
   border: none;
   padding: 0;
 }
 
 .score-card .score {
-  font-size: 1.8rem;
+  font-size: 1.6rem;
   font-weight: 400;
   margin: 0;
   line-height: 1.2;
 }
 
 .score-card .small {
-  font-size: 13px;
+  font-size: 12px;
   color: var(--text-muted);
-  margin: 0.3rem 0 0;
+  margin: 0.2rem 0 0;
 }
 
 /* --- Chart containers --- */
 
 .chart-container {
-  margin: 2rem 0;
+  margin: 1.5rem 0;
 }
 
 .chart-title {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 500;
   color: var(--text-muted);
-  margin-bottom: 0.5rem;
-  max-width: none;
-}
-
-/* --- Compare grid --- */
-
-.compare-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-  margin-top: 1rem;
+  margin-bottom: 0.4rem;
 }
 
 /* --- Small text --- */
 
 .small {
-  font-size: 14px;
+  font-size: 13px;
   color: var(--text-muted);
 }
 
 .caption {
-  font-size: 14px;
+  font-size: 13px;
   color: var(--text-muted);
   line-height: 1.5;
-}
-
-/* --- Lead paragraph --- */
-
-.lead {
-  font-size: 19px;
-  line-height: 1.65;
-  color: var(--text-muted);
-  max-width: var(--prose);
 }
 
 /* --- Footer --- */
@@ -482,10 +432,10 @@ hr {
 footer {
   max-width: var(--max-width);
   margin: 0 auto;
-  padding: 1.5rem 2rem;
+  padding: 1.2rem 20px;
   border-top: 1px solid var(--rule);
   text-align: center;
-  font-size: 13px;
+  font-size: 12px;
   color: var(--text-light);
 }
 
@@ -493,37 +443,27 @@ footer {
 
 @media (max-width: 700px) {
   main {
-    padding: 0 1.2rem 3rem;
+    padding: 0 16px 3rem;
   }
 
   .header h1 {
-    font-size: 24px;
+    font-size: 22px;
   }
 
   .abstract {
-    padding: 1rem 1.2rem;
-    margin-left: 0;
-    margin-right: 0;
+    padding: 0.8rem 1rem;
   }
 
-  h2 { font-size: 22px; }
-  h3 { font-size: 18px; }
+  h2 { font-size: 20px; }
+  h3 { font-size: 16px; }
 
   nav .nav-inner {
-    padding: 0 1.2rem;
+    padding: 0 16px;
   }
 
   nav .nav-links {
-    gap: 0.8rem;
-    font-size: 13px;
-  }
-
-  .row {
-    flex-direction: column;
-  }
-
-  .compare-grid {
-    grid-template-columns: 1fr;
+    gap: 0.7rem;
+    font-size: 12px;
   }
 
   .results-summary {

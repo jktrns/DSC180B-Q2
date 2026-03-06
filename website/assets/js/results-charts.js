@@ -6,7 +6,7 @@
   'use strict';
 
   var METHODS = ['Wide DP-SGD', 'Per-table DP-SGD', 'MST', 'Private Evolution'];
-  var COLORS  = ['#888', '#2b2b2b', '#555', '#aaa'];
+  var COLORS  = ['#a8a49a', '#7a766e', '#e0ddd5', '#5c5955'];
 
   function buildQueryTable(data) {
     var container = document.getElementById('queryTable');
@@ -65,10 +65,11 @@
       x: labels, y: values, type: 'bar', text: text, textposition: 'outside',
       marker: { color: COLORS }
     }], {
-      yaxis: { title: 'Queries passed', range: [0, Math.max.apply(null, values) + 2] },
+      yaxis: { title: 'Queries passed', range: [0, Math.max.apply(null, values) + 2], gridcolor: '#2e2e2e', color: '#a8a49a' },
+      xaxis: { color: '#a8a49a' },
       margin: { t: 20, r: 20, b: 60, l: 50 },
       paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
-      font: { family: "'Libertinus Serif', Georgia, serif" }
+      font: { family: "'Libertinus Serif', Georgia, serif", color: '#e0ddd5' }
     }, { responsive: true, displayModeBar: false });
   }
 
@@ -97,11 +98,12 @@
 
     Plotly.newPlot(el, traces, {
       barmode: 'group',
-      yaxis: { title: 'Avg score (0\u20131)', range: [0, 1] },
-      legend: { orientation: 'h', y: -0.25 },
+      yaxis: { title: 'Avg score (0\u20131)', range: [0, 1], gridcolor: '#2e2e2e', color: '#a8a49a' },
+      xaxis: { color: '#a8a49a' },
+      legend: { orientation: 'h', y: -0.25, font: { color: '#a8a49a' } },
       margin: { t: 20, r: 20, b: 80, l: 50 },
       paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
-      font: { family: "'Libertinus Serif', Georgia, serif" }
+      font: { family: "'Libertinus Serif', Georgia, serif", color: '#e0ddd5' }
     }, { responsive: true, displayModeBar: false });
   }
 
