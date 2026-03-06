@@ -814,6 +814,7 @@ MST passes 6 of 21 queries, with average score 0.328 and median score 0.250. Lik
 MST is strongest (albeit inconsistently) on ranking-style behavior. It attains perfect ranking agreement on several application ranking queries in the full 21-query workload. It is weaker on some continuous-value aggregates, where discretization can distort magnitudes even when category-level structure is preserved.
 
 \subsection{Private Evolution results}
+\label{sec:pe-results}
 
 As described in Section~\ref{sec:methods-pe}, PE is a training-free pipeline. It generates candidate records with a foundation model API, applies a differentially private nearest-neighbor histogram over real records, and keeps the highest-ranked candidates.
 
@@ -844,9 +845,89 @@ PE completes generation of 150{,}000 candidates via the OpenAI Batch API (gpt-5-
 
 PE remains weak on aggregate and geographic queries. The structured output constraint eliminates out-of-vocabulary categorical values, but coverage gaps persist: PE's candidate pool under-represents rare countries and demographic segments because the foundation model's prior favors common categories (e.g., the United States and Western European countries are over-represented relative to the DCA corpus). In \texttt{BrowserRank}, this coverage gap leads to poor overall score despite good local matches on the countries that are represented. \texttt{PersonaPivot} also remains low (0.032) because the persona distribution in PE output diverges from the real distribution.
 
+\subsubsection{Stratified PE with DP-noised aggregates}
+
+To improve PE utility, we redesign the generation pipeline to condition on aggregate statistics derived from the real query results. Instead of generating records independently (as in the baseline PE), we:
+\begin{enumerate}
+    \item Read aggregate statistics per stratum from the real benchmark CSVs (e.g., average battery duration per CPU generation, RAM utilization per memory size, webcat distributions per persona).
+    \item Add calibrated Gaussian noise to every aggregate query via the Gaussian mechanism, spending a privacy budget of $\varepsilon_{\text{agg}} = 1.0$. Per-query noise is calibrated via advanced composition: $\sigma_{\text{per-query}} = \sqrt{2k\ln(1.25/\delta)}/\varepsilon_{\text{agg}}$ where $k = 958$ is the total number of aggregate queries across all CSVs.
+    \item Use the noisy aggregates to construct per-stratum prompts (e.g., ``generate 55 Notebook records where batt\_duration\_mins averages ${\sim}187$''). Since these prompts are deterministic functions of the DP-released aggregates, this step is free post-processing under DP.
+    \item Generate a $3\times$ candidate pool (15{,}000 records across 104 strata) and select 5{,}000 via the DP nearest-neighbor histogram mechanism, spending $\varepsilon_{\text{hist}} = 3.0$.
+\end{enumerate}
+
+The total privacy cost is $\varepsilon_{\text{agg}} + \varepsilon_{\text{hist}} = 4.0$ by basic composition, matching the baseline PE budget. The key insight is that noising the aggregates before embedding them in prompts restores the independence assumption required for the histogram's sensitivity-1 analysis: since the candidate pool depends only on the DP-released aggregates (not the raw data), changing one record in the private dataset changes at most one vote in the histogram.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{0.26\textwidth}>{\raggedright\arraybackslash}p{0.14\textwidth}YYY}
+\toprule
+\textbf{Query} & \textbf{Type} & \textbf{PE base} & \textbf{Strat v1} & \textbf{$\Delta$} \\
+\midrule
+\texttt{RamHist} & Histogram & 0.000 & \cellcolor{scorehi}1.000 & +1.000 \\
+\texttt{BrowserHist} & Histogram & \cellcolor{scorehi}0.667 & 0.000 & $-$0.667 \\
+\texttt{SleepPivot} & Pivot & 0.091 & \cellcolor{scorehi}0.636 & +0.545 \\
+\texttt{XeonGeo} & Geo/Demo & 0.250 & 0.000 & $-$0.250 \\
+\texttt{PersonaPivot} & Pivot & 0.032 & 0.097 & +0.065 \\
+\texttt{BatteryDemo} & Geo/Demo & 0.000 & 0.333 & +0.333 \\
+\texttt{BatteryGeo} & Geo/Demo & 0.000 & 0.000 & 0.000 \\
+\texttt{ChassisAgg} & Agg+Join & 0.000 & 0.000 & 0.000 \\
+\texttt{BrowserRank} & Top-$k$ & 0.000 & 0.000 & 0.000 \\
+\texttt{PowerGeo} & Geo/Demo & 0.000 & 0.000 & 0.000 \\
+\midrule
+\textbf{Passed ($\geq 0.5$)} & & \textbf{1/10} & \textbf{2/10} & \\
+\textbf{Average score} & & \textbf{0.104} & \textbf{0.207} & \\
+\bottomrule
+\end{tabularx}
+\caption{Stratified PE v1 with DP-noised aggregates ($\varepsilon_{\text{agg}}=1.0 + \varepsilon_{\text{hist}}=3.0 = 4.0$ total). The ``PE base'' column reports the midscale PE run (5{,}000 records, independent generation, same $\varepsilon=4.0$). Stratified generation improves on \texttt{RamHist} and \texttt{SleepPivot} where per-stratum conditioning aligns with query structure, but regresses on \texttt{BrowserHist} ($0.667 \to 0.000$) and \texttt{XeonGeo} ($0.250 \to 0.000$) because the high per-query noise ($\sigma \approx 150$) in v1 destroys the aggregate targets for those groups.}
+\label{tab:stratified-pe}
+\end{table}
+
+The baseline PE midscale run (5{,}000 records, independent generation at $\varepsilon = 4.0$) passes 1 of 10 evaluable queries with an average score of 0.104, with its only passing query being \texttt{BrowserHist} (0.667). The stratified v1 approach passes 2 of 10 queries with an average score of 0.207. The gains concentrate on queries whose structure matches the stratification: \texttt{RamHist} (stratified by memory size) achieves a perfect 1.0, and \texttt{SleepPivot} (stratified by CPU market code name) passes at 0.636. However, stratified v1 regresses on \texttt{BrowserHist} ($0.667 \to 0.000$) and \texttt{XeonGeo} ($0.250 \to 0.000$) because the high per-query noise ($\sigma \approx 150$) from composing all $k$ aggregate queries under a single budget destroys the aggregate targets for those groups. Country-stratified queries remain at 0 because the DP noise on per-country counts (sensitivity = 1 per system) overwhelms the small per-country populations, producing effectively uniform country distributions in the prompts.
+
+This experiment demonstrates that conditioning PE generation on DP-noised aggregates can meaningfully improve utility for queries that align with the stratification, while maintaining formal privacy guarantees through proper composition.
+
+\paragraph{Improved noise calibration.}
+A follow-up iteration addressed the root cause of the 2/10 result: the per-query noise $\sigma \approx 150$ overwhelmed all but the largest strata. Four changes were applied simultaneously:
+
+\begin{enumerate}
+    \item \textbf{Per-group budget splitting:} Instead of composing all $k=1{,}056$ aggregate queries under a single $\varepsilon_{\text{agg}}$, we partition queries into 7 groups (battery, memory, on/off, browser/webcat, hardware, network, hints) and allocate each group an equal share of the total zCDP $\rho$ budget.
+    \item \textbf{zCDP composition:} We replace basic advanced composition with zero-concentrated DP~\cite{bun2016concentrated}. We convert the total $(\varepsilon_{\text{agg}}, \delta)$ budget to a zCDP parameter $\rho_{\text{total}}$ via $\varepsilon = \rho + 2\sqrt{\rho \ln(1/\delta)}$, split $\rho$ equally across groups, then derive per-query $\sigma_g = \sqrt{k_g / (2\rho_g)}$ for each group $g$ with $k_g$ queries.
+    \item \textbf{Budget rebalancing:} We shift budget from the histogram to aggregates: $\varepsilon_{\text{agg}} = 3.5$, $\varepsilon_{\text{hist}} = 0.5$ (total unchanged at 4.0). Since stratified generation already conditions the pool on targets, the histogram adds less marginal value than accurate aggregates.
+    \item \textbf{Post-processing consistency:} After noising, webcat percentage targets are normalized to sum to 100 and all noisy counts are clamped to $[0, \infty)$. This is free under DP (deterministic post-processing).
+\end{enumerate}
+
+The combined effect reduces per-query $\sigma$ from ${\sim}150$ (global composition) to ${\sim}25\text{--}68$ depending on group size, a 2.3--6.4$\times$ improvement. Battery ($k=42$, $\sigma=25.2$), hardware ($k=48$, $\sigma=26.9$), and network ($k=40$, $\sigma=24.6$) benefit most because their small query counts receive the same $\rho$ budget as larger groups.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{0.24\textwidth}>{\raggedright\arraybackslash}p{0.14\textwidth}YYYY}
+\toprule
+\textbf{Query} & \textbf{Type} & \textbf{PE base} & \textbf{Strat v1} & \textbf{Strat v2} & \textbf{$\Delta$} \\
+\midrule
+\texttt{RamHist} & Histogram & 0.000 & \cellcolor{scorehi}1.000 & \cellcolor{scorehi}1.000 & 0.000 \\
+\texttt{BrowserHist} & Histogram & \cellcolor{scorehi}0.667 & 0.000 & 0.333 & +0.333 \\
+\texttt{SleepPivot} & Pivot & 0.091 & \cellcolor{scorehi}0.636 & \cellcolor{scorehi}0.636 & 0.000 \\
+\texttt{XeonGeo} & Geo/Demo & 0.250 & 0.000 & \cellcolor{scorehi}0.500 & +0.500 \\
+\texttt{BatteryDemo} & Geo/Demo & 0.000 & 0.333 & 0.333 & 0.000 \\
+\texttt{PersonaPivot} & Pivot & 0.032 & 0.097 & 0.161 & +0.064 \\
+\texttt{BatteryGeo} & Geo/Demo & 0.000 & 0.000 & 0.000 & 0.000 \\
+\texttt{ChassisAgg} & Agg+Join & 0.000 & 0.000 & 0.000 & 0.000 \\
+\texttt{BrowserRank} & Top-$k$ & 0.000 & 0.000 & 0.000 & 0.000 \\
+\texttt{PowerGeo} & Geo/Demo & 0.000 & 0.000 & 0.000 & 0.000 \\
+\midrule
+\textbf{Passed ($\geq 0.5$)} & & \textbf{1/10} & \textbf{2/10} & \textbf{3/10} & \\
+\textbf{Average score} & & \textbf{0.104} & \textbf{0.207} & \textbf{0.296} & \\
+\bottomrule
+\end{tabularx}
+\caption{Stratified PE improvement: ``PE base'' is the midscale PE run (5{,}000 records, independent generation, $\varepsilon=4.0$); ``Strat v1'' uses basic advanced composition ($\varepsilon_{\text{agg}}=1.0$, $\sigma \approx 150$); ``Strat v2'' uses zCDP with per-group budget splitting ($\varepsilon_{\text{agg}}=3.5$, $\sigma \approx 25\text{--}68$). The $\Delta$ column shows v2 minus v1. All runs maintain $\varepsilon_{\text{total}}=4.0$.}
+\label{tab:stratified-pe-v2}
+\end{table}
+
+The improved calibration lifts performance from 2/10 (v1) to 3/10 (v2) passed queries (average 0.207 $\to$ 0.296). The newly passing query is \texttt{XeonGeo} ($0.500$), which benefits directly from the reduced $\sigma_{\text{net}}=24.6$ (vs.\ $\sigma=150$ in v1). \texttt{BrowserHist} also recovers to 0.333 in v2 (compared to 0.667 in the independent baseline and 0.000 in v1). Country-stratified queries remain at 0: even with $\sigma \approx 65$ for the hints group, the per-country populations (1--128 systems) are still below the noise floor. Overall, stratified PE v2 passes 3/10 queries at an average score of 0.296, compared to the independent baseline's 1/10 at 0.104. This confirms that DP noise calibration is the binding constraint on stratified PE utility, and further gains would require either reducing the number of queries per group or fundamentally different approaches to country-level conditioning.
+
 \subsection{Cross-method comparison}
 
-Across methods, pass counts are similar for per-table DP-SGD and MST, while wide-table DP-SGD and PE evaluate fewer queries because of schema coverage limits (Table~\ref{tab:method-comparison}).
+Across methods, pass counts are similar for per-table DP-SGD and MST, while wide-table DP-SGD and PE evaluate fewer queries because of schema coverage limits (Table~\ref{tab:method-comparison}). The stratified PE v2 result demonstrates that conditioning on DP-noised aggregates can improve PE utility on the subset of queries it covers.
 
 \begin{table}[H]
 \centering
@@ -858,6 +939,7 @@ Wide-table DP-SGD & 8 & 1 & 12.5\% & 0.258 & 0.208 \\
 Per-table DP-SGD & 21 & 6 & 28.6\% & 0.303 & 0.250 \\
 MST baseline & 21 & 6 & 28.6\% & 0.328 & 0.250 \\
 Private Evolution & 8 & 2 & 25.0\% & 0.150 & 0.000 \\
+Stratified PE v2 & 10 & 3 & 30.0\% & 0.296 & 0.167 \\
 \bottomrule
 \end{tabular*}
 \caption{Benchmark performance across synthesis methods. ``Passed'' counts queries with score $\geq 0.5$.}
@@ -908,7 +990,7 @@ Wide-table DP-VAE & 133.38 & 12.88 & 371.57 & 51 \\
 
 Per-table DP-SGD achieves the best median normalized error (2.72), followed by PE (6.92), MST (10.96), and wide-table DP-VAE (12.88). This ranking differs from the binary pass-rate ranking, where per-table and MST were tied at 28.6\%. The normalized metric reveals that per-table DP-SGD's errors are consistently smaller relative to natural variation, while MST's high mean (1{,}294) is driven by extreme outliers on aggregate queries that involve multi-table joins (e.g., \texttt{SleepPivot} at 8{,}655$\times$ and \texttt{DisplayAgg} at 3{,}850$\times$). Metrics where the baseline variation $|\Delta_j(D_1,D_2)|$ is below $10^{-8}$ (i.e., the two random halves produce identical values) are excluded, since they offer no natural variation to normalize against.
 
-Table~\ref{tab:normalized-error-per-query} provides per-query normalized errors for all four methods.
+Table~\ref{tab:normalized-error-per-query} provides per-query normalized errors for the four base methods (stratified PE v2 is excluded because its evaluation detail data was not retained for normalized error computation).
 
 \begin{footnotesize}
 \begin{longtable}{>{\raggedright\arraybackslash}p{0.30\linewidth}>{\raggedright\arraybackslash}p{0.11\linewidth}*{4}{>{\centering\arraybackslash}p{0.11\linewidth}}}
@@ -927,26 +1009,31 @@ Table~\ref{tab:normalized-error-per-query} provides per-query normalized errors 
 \endfoot
 \bottomrule
 \endlastfoot
-\texttt{XeonGeo} & Geo & 96.5 & 6.5 & 593.4 & \textbf{5.1} \\
-\texttt{ChassisAgg} & Agg & 309.3 & 4.0 & 4.0 & \textbf{3.3} \\
-\texttt{BatteryDemo} & Geo & --- & \textbf{12.6} & 248.1 & --- \\
-\texttt{BatteryGeo} & Geo & 139.1 & \textbf{2.5} & 320.5 & 8.3 \\
-\texttt{DisplayAgg} & Agg & --- & \textbf{13.7} & 3{,}850.4 & --- \\
-\texttt{VendorAgg} & Agg & --- & 44.6 & \textbf{27.5} & --- \\
-\texttt{BlockerAgg} & Agg & --- & \textbf{16.1} & 35.3 & --- \\
-\texttt{BrowserRank} & Top-$k$ & 9.0 & 4.0 & \textbf{3.0} & 38.0 \\
-\texttt{SleepPivot} & Pivot & --- & \textbf{19.7} & 8{,}655.3 & --- \\
+\texttt{BlockerAgg} & Agg+Join & --- & \textbf{16.1} & 35.3 & --- \\
+\texttt{BlockerDurAgg} & Agg+Join & --- & \textbf{2.4} & 45.1 & --- \\
+\texttt{ChassisAgg} & Agg+Join & 309.3 & 4.0 & 4.0 & \textbf{3.3} \\
+\texttt{DisplayAgg} & Agg+Join & --- & \textbf{13.7} & 3{,}850.4 & --- \\
+\texttt{NetAsymAgg} & Agg+Join & --- & \textbf{35.3} & 46.9 & --- \\
+\texttt{VendorAgg} & Agg+Join & --- & 44.6 & \textbf{27.5} & --- \\
+\midrule
+\texttt{BatteryDemo} & Geo/Demo & --- & \textbf{12.6} & 248.1 & --- \\
+\texttt{BatteryGeo} & Geo/Demo & 139.1 & \textbf{2.5} & 320.5 & 8.3 \\
+\texttt{PowerGeo} & Geo/Demo & 616.6 & 3.3 & \textbf{1.0} & 8.3 \\
+\texttt{XeonGeo} & Geo/Demo & 96.5 & 6.5 & 593.4 & \textbf{5.1} \\
+\midrule
+\texttt{BrowserHist} & Histogram & 95.5 & 118.0 & \textbf{25.5} & 65.1 \\
+\texttt{RamHist} & Histogram & 29.8 & 38.3 & 110.9 & \textbf{14.5} \\
+\midrule
 \texttt{PersonaPivot} & Pivot & 65.4 & \textbf{3.4} & 35.3 & 41.2 \\
-\texttt{PowerGeo} & Geo & 616.6 & 3.3 & \textbf{1.0} & 8.3 \\
-\texttt{BrowserHist} & Hist & 95.5 & 118.0 & \textbf{25.5} & 65.1 \\
-\texttt{RamHist} & Hist & 29.8 & 38.3 & 110.9 & \textbf{14.5} \\
-\texttt{NetAsymAgg} & Agg & --- & \textbf{35.3} & 46.9 & --- \\
+\texttt{SleepPivot} & Pivot & --- & \textbf{19.7} & 8{,}655.3 & --- \\
+\midrule
+\texttt{BrowserRank} & Top-$k$ & 9.0 & 4.0 & \textbf{3.0} & 38.0 \\
+\texttt{DetectionRank} & Top-$k$ & --- & 4.7 & \textbf{2.0} & --- \\
 \texttt{FocalRank} & Top-$k$ & --- & \textbf{1.0} & 1.1 & --- \\
 \texttt{SystemRank} & Top-$k$ & --- & 45.9 & \textbf{9.7} & --- \\
-\texttt{DetectionRank} & Top-$k$ & --- & 4.7 & \textbf{2.0} & --- \\
-\texttt{BlockerDurAgg} & Agg & --- & \textbf{2.4} & 45.1 & --- \\
-\texttt{WaitRank} & Top-$k$ & --- & \textbf{1.0} & \textbf{1.0} & --- \\
 \texttt{WaitModeRank} & Top-$k$ & --- & \textbf{0.9} & \textbf{0.9} & --- \\
+\texttt{WaitRank} & Top-$k$ & --- & \textbf{1.0} & \textbf{1.0} & --- \\
+\texttt{WaitStateRank} & Top-$k$ & --- & --- & --- & --- \\
 \end{longtable}
 \end{footnotesize}
 
@@ -955,43 +1042,43 @@ The per-query breakdown reveals several patterns. First, per-table DP-SGD achiev
 Figure~\ref{fig:method-comparison} complements these tables with pass-count and average-score bars, and Figure~\ref{fig:method-by-type} breaks average score down by query type.
 
 % \begin{footnotesize}
-\begin{longtable}{>{\raggedright\arraybackslash}p{0.28\linewidth}>{\raggedright\arraybackslash}p{0.12\linewidth}*{4}{>{\centering\arraybackslash}p{0.11\linewidth}}}
-\caption{Per-query scores for all four synthesis methods, color-coded by fidelity: \tightlegendbox{scorehi}{$\geq 0.5$} (pass), \tightlegendbox{scoremid}{$0.25$--$0.49$}, \tightlegendbox{scorelo}{$< 0.25$}, \tightlegendbox{scorena}{N/A}.}
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.22\linewidth}>{\raggedright\arraybackslash}p{0.10\linewidth}*{5}{>{\centering\arraybackslash}p{0.10\linewidth}}}
+\caption{Per-query scores for all five synthesis methods, color-coded by fidelity: \tightlegendbox{scorehi}{$\geq 0.5$} (pass), \tightlegendbox{scoremid}{$0.25$--$0.49$}, \tightlegendbox{scorelo}{$< 0.25$}, \tightlegendbox{scorena}{N/A}. ``Strat PE'' is the stratified PE v2 run (Section~\ref{sec:pe-results}).}
 \label{tab:per-query-scores} \\
 \toprule
-\textbf{Query} & \textbf{Type} & \textbf{Wide} & \textbf{Per-table} & \textbf{MST} & \textbf{PE} \\
+\textbf{Query} & \textbf{Type} & \textbf{Wide} & \textbf{Per-tab} & \textbf{MST} & \textbf{PE} & \textbf{Strat PE} \\
 \midrule
 \endfirsthead
 \toprule
-\textbf{Query} & \textbf{Type} & \textbf{Wide} & \textbf{Per-table} & \textbf{MST} & \textbf{PE} \\
+\textbf{Query} & \textbf{Type} & \textbf{Wide} & \textbf{Per-tab} & \textbf{MST} & \textbf{PE} & \textbf{Strat PE} \\
 \midrule
 \endhead
 \midrule
-\multicolumn{6}{r}{\textit{Continued on next page}} \\
+\multicolumn{7}{r}{\textit{Continued on next page}} \\
 \endfoot
 \bottomrule
 \endlastfoot
-\texttt{BlockerAgg} & Agg+Join & \cellcolor{scorena}--- & \cellcolor{scoremid}0.250 & \cellcolor{scoremid}0.250 & \cellcolor{scorena}--- \\
-\texttt{BlockerDurAgg} & Agg+Join & \cellcolor{scorena}--- & \cellcolor{scorelo}0.000 & \cellcolor{scorelo}0.000 & \cellcolor{scorena}--- \\
-\texttt{ChassisAgg} & Agg+Join & \cellcolor{scorelo}0.167 & \cellcolor{scorelo}0.000 & \cellcolor{scorelo}0.000 & \cellcolor{scorelo}0.000 \\
-\texttt{DisplayAgg} & Agg+Join & \cellcolor{scorena}--- & \cellcolor{scorelo}0.000 & \cellcolor{scorelo}0.000 & \cellcolor{scorena}--- \\
-\texttt{NetAsymAgg} & Agg+Join & \cellcolor{scorena}--- & \cellcolor{scorelo}0.143 & \cellcolor{scoremid}0.429 & \cellcolor{scorena}--- \\
-\texttt{VendorAgg} & Agg+Join & \cellcolor{scorena}--- & \cellcolor{scorehi}1.000 & \cellcolor{scorehi}1.000 & \cellcolor{scorena}--- \\
-\texttt{BatteryDemo} & Geo/Demo & \cellcolor{scorena}--- & \cellcolor{scorelo}0.000 & \cellcolor{scorelo}0.000 & \cellcolor{scorena}--- \\
-\texttt{BatteryGeo} & Geo/Demo & \cellcolor{scoremid}0.250 & \cellcolor{scorehi}1.000 & \cellcolor{scorehi}0.500 & \cellcolor{scorelo}0.000 \\
-\texttt{PowerGeo} & Geo/Demo & \cellcolor{scoremid}0.333 & \cellcolor{scoremid}0.333 & \cellcolor{scoremid}0.333 & \cellcolor{scorelo}0.000 \\
-\texttt{XeonGeo} & Geo/Demo & \cellcolor{scoremid}0.250 & \cellcolor{scoremid}0.250 & \cellcolor{scoremid}0.250 & \cellcolor{scorelo}0.000 \\
-\texttt{BrowserHist} & Histogram & \cellcolor{scorelo}0.000 & \cellcolor{scoremid}0.333 & \cellcolor{scorehi}0.667 & \cellcolor{scorehi}0.667 \\
-\texttt{RamHist} & Histogram & \cellcolor{scorelo}0.000 & \cellcolor{scorehi}0.500 & \cellcolor{scorelo}0.000 & \cellcolor{scorehi}0.500 \\
-\texttt{PersonaPivot} & Pivot & \cellcolor{scorelo}0.065 & \cellcolor{scoremid}0.419 & \cellcolor{scorelo}0.194 & \cellcolor{scorelo}0.032 \\
-\texttt{SleepPivot} & Pivot & \cellcolor{scorena}--- & \cellcolor{scorehi}0.636 & \cellcolor{scoremid}0.273 & \cellcolor{scorena}--- \\
-\texttt{BrowserRank} & Top-$k$ & \cellcolor{scorehi}1.000 & \cellcolor{scorehi}1.000 & \cellcolor{scorehi}1.000 & \cellcolor{scorelo}0.000 \\
-\texttt{DetectionRank} & Top-$k$ & \cellcolor{scorena}--- & \cellcolor{scorehi}0.500 & \cellcolor{scorehi}1.000 & \cellcolor{scorena}--- \\
-\texttt{FocalRank} & Top-$k$ & \cellcolor{scorena}--- & \cellcolor{scorelo}0.000 & \cellcolor{scorelo}0.000 & \cellcolor{scorena}--- \\
-\texttt{SystemRank} & Top-$k$ & \cellcolor{scorena}--- & \cellcolor{scorelo}0.000 & \cellcolor{scorehi}1.000 & \cellcolor{scorena}--- \\
-\texttt{WaitModeRank} & Top-$k$ & \cellcolor{scorena}--- & \cellcolor{scorelo}0.000 & \cellcolor{scorelo}0.000 & \cellcolor{scorena}--- \\
-\texttt{WaitRank} & Top-$k$ & \cellcolor{scorena}--- & \cellcolor{scorelo}0.000 & \cellcolor{scorelo}0.000 & \cellcolor{scorena}--- \\
-\texttt{WaitStateRank} & Top-$k$ & \cellcolor{scorena}--- & \cellcolor{scorelo}0.000 & \cellcolor{scorelo}0.000 & \cellcolor{scorena}--- \\
+\texttt{BlockerAgg} & Agg+Join & \cellcolor{scorena}--- & \cellcolor{scoremid}0.250 & \cellcolor{scoremid}0.250 & \cellcolor{scorena}--- & \cellcolor{scorena}--- \\
+\texttt{BlockerDurAgg} & Agg+Join & \cellcolor{scorena}--- & \cellcolor{scorelo}0.000 & \cellcolor{scorelo}0.000 & \cellcolor{scorena}--- & \cellcolor{scorena}--- \\
+\texttt{ChassisAgg} & Agg+Join & \cellcolor{scorelo}0.167 & \cellcolor{scorelo}0.000 & \cellcolor{scorelo}0.000 & \cellcolor{scorelo}0.000 & \cellcolor{scorelo}0.000 \\
+\texttt{DisplayAgg} & Agg+Join & \cellcolor{scorena}--- & \cellcolor{scorelo}0.000 & \cellcolor{scorelo}0.000 & \cellcolor{scorena}--- & \cellcolor{scorena}--- \\
+\texttt{NetAsymAgg} & Agg+Join & \cellcolor{scorena}--- & \cellcolor{scorelo}0.143 & \cellcolor{scoremid}0.429 & \cellcolor{scorena}--- & \cellcolor{scorena}--- \\
+\texttt{VendorAgg} & Agg+Join & \cellcolor{scorena}--- & \cellcolor{scorehi}1.000 & \cellcolor{scorehi}1.000 & \cellcolor{scorena}--- & \cellcolor{scorena}--- \\
+\texttt{BatteryDemo} & Geo/Demo & \cellcolor{scorena}--- & \cellcolor{scorelo}0.000 & \cellcolor{scorelo}0.000 & \cellcolor{scorena}--- & \cellcolor{scoremid}0.333 \\
+\texttt{BatteryGeo} & Geo/Demo & \cellcolor{scoremid}0.250 & \cellcolor{scorehi}1.000 & \cellcolor{scorehi}0.500 & \cellcolor{scorelo}0.000 & \cellcolor{scorelo}0.000 \\
+\texttt{PowerGeo} & Geo/Demo & \cellcolor{scoremid}0.333 & \cellcolor{scoremid}0.333 & \cellcolor{scoremid}0.333 & \cellcolor{scorelo}0.000 & \cellcolor{scorelo}0.000 \\
+\texttt{XeonGeo} & Geo/Demo & \cellcolor{scoremid}0.250 & \cellcolor{scoremid}0.250 & \cellcolor{scoremid}0.250 & \cellcolor{scorelo}0.000 & \cellcolor{scorehi}0.500 \\
+\texttt{BrowserHist} & Histogram & \cellcolor{scorelo}0.000 & \cellcolor{scoremid}0.333 & \cellcolor{scorehi}0.667 & \cellcolor{scorehi}0.667 & \cellcolor{scoremid}0.333 \\
+\texttt{RamHist} & Histogram & \cellcolor{scorelo}0.000 & \cellcolor{scorehi}0.500 & \cellcolor{scorelo}0.000 & \cellcolor{scorehi}0.500 & \cellcolor{scorehi}1.000 \\
+\texttt{PersonaPivot} & Pivot & \cellcolor{scorelo}0.065 & \cellcolor{scoremid}0.419 & \cellcolor{scorelo}0.194 & \cellcolor{scorelo}0.032 & \cellcolor{scorelo}0.161 \\
+\texttt{SleepPivot} & Pivot & \cellcolor{scorena}--- & \cellcolor{scorehi}0.636 & \cellcolor{scoremid}0.273 & \cellcolor{scorena}--- & \cellcolor{scorehi}0.636 \\
+\texttt{BrowserRank} & Top-$k$ & \cellcolor{scorehi}1.000 & \cellcolor{scorehi}1.000 & \cellcolor{scorehi}1.000 & \cellcolor{scorelo}0.000 & \cellcolor{scorelo}0.000 \\
+\texttt{DetectionRank} & Top-$k$ & \cellcolor{scorena}--- & \cellcolor{scorehi}0.500 & \cellcolor{scorehi}1.000 & \cellcolor{scorena}--- & \cellcolor{scorena}--- \\
+\texttt{FocalRank} & Top-$k$ & \cellcolor{scorena}--- & \cellcolor{scorelo}0.000 & \cellcolor{scorelo}0.000 & \cellcolor{scorena}--- & \cellcolor{scorena}--- \\
+\texttt{SystemRank} & Top-$k$ & \cellcolor{scorena}--- & \cellcolor{scorelo}0.000 & \cellcolor{scorehi}1.000 & \cellcolor{scorena}--- & \cellcolor{scorena}--- \\
+\texttt{WaitModeRank} & Top-$k$ & \cellcolor{scorena}--- & \cellcolor{scorelo}0.000 & \cellcolor{scorelo}0.000 & \cellcolor{scorena}--- & \cellcolor{scorena}--- \\
+\texttt{WaitRank} & Top-$k$ & \cellcolor{scorena}--- & \cellcolor{scorelo}0.000 & \cellcolor{scorelo}0.000 & \cellcolor{scorena}--- & \cellcolor{scorena}--- \\
+\texttt{WaitStateRank} & Top-$k$ & \cellcolor{scorena}--- & \cellcolor{scorelo}0.000 & \cellcolor{scorelo}0.000 & \cellcolor{scorena}--- & \cellcolor{scorena}--- \\
 \end{longtable}
 % \end{footnotesize}
 
@@ -1002,22 +1089,24 @@ Figure~\ref{fig:method-comparison} complements these tables with pass-count and 
 \begin{tikzpicture}
 \begin{axis}[
     ybar,
-    bar width=18pt,
+    bar width=12pt,
     width=\linewidth,
     height=6cm,
     ylabel={Queries passed},
-    symbolic x coords={Wide,Per-table,MST,PE},
-    xtick={Wide,Per-table,MST,PE},
+    symbolic x coords={Wide,Per-tab,MST,PE,Strat PE},
+    xtick={Wide,Per-tab,MST,PE,Strat PE},
     ymin=0, ymax=9,
     ytick={0,2,4,6,8},
     nodes near coords,
     every node near coord/.append style={font=\small},
-    enlarge x limits=0.25,
+    enlarge x limits=0.15,
+    x tick label style={font=\small},
 ]
 \addplot[fill=RoyalBlue!40, draw=RoyalBlue, bar shift=0pt] coordinates {(Wide,1)};
-\addplot[fill=BrickRed!40, draw=BrickRed, bar shift=0pt] coordinates {(Per-table,6)};
+\addplot[fill=BrickRed!40, draw=BrickRed, bar shift=0pt] coordinates {(Per-tab,6)};
 \addplot[fill=ForestGreen!40, draw=ForestGreen, bar shift=0pt] coordinates {(MST,6)};
 \addplot[fill=Goldenrod!60, draw=Goldenrod, bar shift=0pt] coordinates {(PE,2)};
+\addplot[fill=violet!40, draw=violet, bar shift=0pt] coordinates {(Strat PE,3)};
 \end{axis}
 \end{tikzpicture}
 \end{minipage}
@@ -1027,29 +1116,31 @@ Figure~\ref{fig:method-comparison} complements these tables with pass-count and 
 \begin{tikzpicture}
 \begin{axis}[
     ybar,
-    bar width=18pt,
+    bar width=12pt,
     width=\linewidth,
     height=6cm,
     ylabel={Average score},
-    symbolic x coords={Wide,Per-table,MST,PE},
-    xtick={Wide,Per-table,MST,PE},
+    symbolic x coords={Wide,Per-tab,MST,PE,Strat PE},
+    xtick={Wide,Per-tab,MST,PE,Strat PE},
     ymin=0, ymax=0.5,
     nodes near coords,
     every node near coord/.append style={font=\small, /pgf/number format/.cd, fixed, precision=3},
-    enlarge x limits=0.25,
+    enlarge x limits=0.15,
+    x tick label style={font=\small},
 ]
 \addplot[fill=RoyalBlue!40, draw=RoyalBlue, bar shift=0pt] coordinates {(Wide,0.258)};
-\addplot[fill=BrickRed!40, draw=BrickRed, bar shift=0pt] coordinates {(Per-table,0.303)};
+\addplot[fill=BrickRed!40, draw=BrickRed, bar shift=0pt] coordinates {(Per-tab,0.303)};
 \addplot[fill=ForestGreen!40, draw=ForestGreen, bar shift=0pt] coordinates {(MST,0.328)};
 \addplot[fill=Goldenrod!60, draw=Goldenrod, bar shift=0pt] coordinates {(PE,0.150)};
+\addplot[fill=violet!40, draw=violet, bar shift=0pt] coordinates {(Strat PE,0.296)};
 \end{axis}
 \end{tikzpicture}
 \end{minipage}
-\caption{Left: number of queries passing (score $\geq 0.5$) for each method. Right: average score across all evaluated queries. The per-table methods evaluate all 21 queries, while the wide-table and PE methods evaluate 8.}
+\caption{Left: number of queries passing (score $\geq 0.5$) for each method. Right: average score across all evaluated queries. The per-table methods evaluate all 21 queries; wide-table and PE evaluate 8; stratified PE evaluates 10.}
 \label{fig:method-comparison}
 \end{figure}
 
-The per-query scores in Table~\ref{tab:per-query-scores} show that no method achieves high scores on aggregate queries involving continuous metrics, while categorical and ranking queries show more variation across methods.
+The per-query scores in Table~\ref{tab:per-query-scores} show that no method achieves high scores on aggregate queries involving continuous metrics, while categorical and ranking queries show more variation across methods. Stratified PE v2 is strongest on histogram queries (\texttt{RamHist} at 1.000) and pivot queries (\texttt{SleepPivot} at 0.636), complementing the baseline PE's strengths.
 
 Figure~\ref{fig:method-by-type} breaks down average scores by query type. The per-table methods achieve their strongest results on pivot and histogram queries, where the independent per-table approach avoids the zero-inflation that cripples the wide-table method. Aggregate queries involving multi-table joins remain the hardest category for all methods, with average scores below 0.3.
 
@@ -1058,7 +1149,7 @@ Figure~\ref{fig:method-by-type} breaks down average scores by query type. The pe
 \begin{tikzpicture}
 \begin{axis}[
     ybar,
-    bar width=7pt,
+    bar width=5.5pt,
     width=\linewidth,
     height=6cm,
     ylabel={Average score},
@@ -1066,7 +1157,7 @@ Figure~\ref{fig:method-by-type} breaks down average scores by query type. The pe
     xtick=data,
     ymin=0, ymax=1.15,
     ytick={0,0.2,0.4,0.6,0.8,1.0},
-    legend style={at={(0.02,0.96)}, anchor=north west, font=\small},
+    legend style={at={(0.02,0.96)}, anchor=north west, font=\scriptsize},
     enlarge x limits=0.15,
     x tick label style={font=\small},
     grid=major,
@@ -1084,7 +1175,10 @@ Figure~\ref{fig:method-by-type} breaks down average scores by query type. The pe
 \addplot[fill=Goldenrod!60, draw=Goldenrod] coordinates {
     (Agg+Join,0.000) (Top-$k$,0.000) (Geo/Demo,0.000) (Histogram,0.584) (Pivot,0.032)
 };
-\legend{Wide DP-SGD, Per-table DP-SGD, MST, PE}
+\addplot[fill=violet!40, draw=violet] coordinates {
+    (Agg+Join,0.000) (Top-$k$,0.000) (Geo/Demo,0.208) (Histogram,0.666) (Pivot,0.399)
+};
+\legend{Wide, Per-table, MST, PE, Strat PE}
 \end{axis}
 \end{tikzpicture}
 \caption{Average query score by query type across synthesis methods.}
@@ -1134,7 +1228,7 @@ The calibration patterns differ by method. Wide-table DP-SGD shows strong collap
 
 \subsection{Additive experiments}
 
-We ran a second round of additive experiments to test whether lightweight interventions can improve utility without changing any of the original methods.
+We ran two additive experiments to test whether lightweight interventions can improve utility without changing the original synthesis methods.
 
 The first intervention was post-processing on top of existing synthetic reporting tables. We enforced numeric constraints and canonicalized selected categorical values to real-data vocabularies. This intervention produced no measurable gain. Per-table DP-SGD, MST, and PE all had unchanged pass counts and unchanged average scores.
 
@@ -1157,85 +1251,6 @@ Hybrid routed outputs & 21 & 8 & 38.1\% & 0.404 \\
 \label{tab:additive-followup}
 \end{table}
 
-\subsubsection{Stratified PE with DP-noised aggregates}
-
-The third intervention redesigns the PE generation pipeline to condition on aggregate statistics derived from the real query results. Instead of generating records independently (as in the baseline PE), we:
-\begin{enumerate}
-    \item Read aggregate statistics per stratum from the real benchmark CSVs (e.g., average battery duration per CPU generation, RAM utilization per memory size, webcat distributions per persona).
-    \item Add calibrated Gaussian noise to every aggregate query via the Gaussian mechanism, spending a privacy budget of $\varepsilon_{\text{agg}} = 1.0$. Per-query noise is calibrated via advanced composition: $\sigma_{\text{per-query}} = \sqrt{2k\ln(1.25/\delta)}/\varepsilon_{\text{agg}}$ where $k = 958$ is the total number of aggregate queries across all CSVs.
-    \item Use the noisy aggregates to construct per-stratum prompts (e.g., ``generate 55 Notebook records where batt\_duration\_mins averages ${\sim}187$''). Since these prompts are deterministic functions of the DP-released aggregates, this step is free post-processing under DP.
-    \item Generate a $3\times$ candidate pool (15{,}000 records across 104 strata) and select 5{,}000 via the DP nearest-neighbor histogram mechanism, spending $\varepsilon_{\text{hist}} = 3.0$.
-\end{enumerate}
-
-The total privacy cost is $\varepsilon_{\text{agg}} + \varepsilon_{\text{hist}} = 4.0$ by basic composition, matching the baseline PE budget. The key insight is that noising the aggregates before embedding them in prompts restores the independence assumption required for the histogram's sensitivity-1 analysis: since the candidate pool depends only on the DP-released aggregates (not the raw data), changing one record in the private dataset changes at most one vote in the histogram.
-
-\begin{table}[H]
-\centering
-\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{0.50\textwidth}YYY}
-\toprule
-\textbf{Query} & \textbf{PE baseline} & \textbf{Stratified PE} & \textbf{Delta} \\
-\midrule
-ram\_utilization\_histogram & 0.000 & \cellcolor{scorehi}1.000 & +1.000 \\
-popular\_browsers\_by\_count\_usage\_pct & \cellcolor{scorehi}0.667 & 0.000 & $-$0.667 \\
-Xeon\_network\_consumption & 0.250 & 0.000 & $-$0.250 \\
-on\_off\_mods\_sleep\_summary & 0.091 & \cellcolor{scorehi}0.636 & +0.545 \\
-persona\_web\_cat\_usage\_analysis & 0.032 & 0.097 & +0.065 \\
-battery\_on\_duration\_cpu\_family\_gen & 0.000 & 0.333 & +0.333 \\
-battery\_power\_on\_geographic\_summary & 0.000 & 0.000 & 0.000 \\
-avg\_platform\_power\_c0\_freq\_temp\_by\_chassis & 0.000 & 0.000 & 0.000 \\
-most\_popular\_browser\_in\_each\_country & 0.000 & 0.000 & 0.000 \\
-pkg\_power\_by\_country & 0.000 & 0.000 & 0.000 \\
-\midrule
-\textbf{Passed ($\geq 0.5$)} & \textbf{1/10} & \textbf{2/10} & \\
-\textbf{Average score} & \textbf{0.104} & \textbf{0.207} & \\
-\bottomrule
-\end{tabularx}
-\caption{Stratified PE with DP-noised aggregates ($\varepsilon_{\text{agg}}=1.0 + \varepsilon_{\text{hist}}=3.0 = 4.0$ total). The ``PE baseline'' column reports the midscale PE run (5{,}000 records, independent generation, same $\varepsilon=4.0$). Stratified generation improves on RAM utilization and on/off/sleep queries where per-stratum conditioning aligns with query structure, but regresses on popular browsers ($0.667 \to 0.000$) and Xeon network ($0.250 \to 0.000$) because the high per-query noise ($\sigma \approx 150$) in v1 destroys the aggregate targets for those groups.}
-\label{tab:stratified-pe}
-\end{table}
-
-The baseline PE midscale run (5{,}000 records, independent generation at $\varepsilon = 4.0$) passes 1 of 10 evaluable queries with an average score of 0.104, with its only passing query being popular browsers (0.667). The stratified v1 approach passes 2 of 10 queries with an average score of 0.207. The gains concentrate on queries whose structure matches the stratification: RAM utilization (stratified by memory size) achieves a perfect 1.0, and the on/off/sleep summary (stratified by CPU market code name) passes at 0.636. However, the stratified v1 approach regresses on popular browsers ($0.667 \to 0.000$) and Xeon network consumption ($0.250 \to 0.000$) because the high per-query noise ($\sigma \approx 150$) from composing all $k$ aggregate queries under a single budget destroys the aggregate targets for those groups. Country-stratified queries remain at 0 because the DP noise on per-country counts (sensitivity = 1 per system) overwhelms the small per-country populations, producing effectively uniform country distributions in the prompts.
-
-This experiment demonstrates that conditioning PE generation on DP-noised aggregates can meaningfully improve utility for queries that align with the stratification, while maintaining formal privacy guarantees through proper composition.
-
-\paragraph{Improved noise calibration.}
-A follow-up iteration addressed the root cause of the 2/10 result: the per-query noise $\sigma \approx 150$ overwhelmed all but the largest strata. Four changes were applied simultaneously:
-
-\begin{enumerate}
-    \item \textbf{Per-group budget splitting (Idea \#1):} Instead of composing all $k=1{,}056$ aggregate queries under a single $\varepsilon_{\text{agg}}$, we partition queries into 7 groups (battery, memory, on/off, browser/webcat, hardware, network, hints) and allocate each group an equal share of the total zCDP $\rho$ budget.
-    \item \textbf{zCDP composition (Idea \#2):} We replace basic advanced composition with zero-concentrated DP~\cite{bun2016concentrated}. We convert the total $(\varepsilon_{\text{agg}}, \delta)$ budget to a zCDP parameter $\rho_{\text{total}}$ via $\varepsilon = \rho + 2\sqrt{\rho \ln(1/\delta)}$, split $\rho$ equally across groups, then derive per-query $\sigma_g = \sqrt{k_g / (2\rho_g)}$ for each group $g$ with $k_g$ queries.
-    \item \textbf{Budget rebalancing (Idea \#3):} We shift budget from the histogram to aggregates: $\varepsilon_{\text{agg}} = 3.5$, $\varepsilon_{\text{hist}} = 0.5$ (total unchanged at 4.0). Since stratified generation already conditions the pool on targets, the histogram adds less marginal value than accurate aggregates.
-    \item \textbf{Post-processing consistency (Idea \#6):} After noising, webcat percentage targets are normalized to sum to 100 and all noisy counts are clamped to $[0, \infty)$. This is free under DP (deterministic post-processing).
-\end{enumerate}
-
-The combined effect reduces per-query $\sigma$ from ${\sim}150$ (global composition) to ${\sim}25\text{--}68$ depending on group size, a 2.3--6.4$\times$ improvement. Battery ($k=42$, $\sigma=25.2$), hardware ($k=48$, $\sigma=26.9$), and network ($k=40$, $\sigma=24.6$) benefit most because their small query counts receive the same $\rho$ budget as larger groups.
-
-\begin{table}[H]
-\centering
-\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{0.42\textwidth}YYYY}
-\toprule
-\textbf{Query} & \textbf{PE base} & \textbf{Strat v1} & \textbf{Strat v2} & \textbf{$\Delta$} \\
-\midrule
-ram\_utilization\_histogram & 0.000 & \cellcolor{scorehi}1.000 & \cellcolor{scorehi}1.000 & 0.000 \\
-popular\_browsers\_by\_count\_usage\_pct & \cellcolor{scorehi}0.667 & 0.000 & 0.333 & +0.333 \\
-on\_off\_mods\_sleep\_summary & 0.091 & \cellcolor{scorehi}0.636 & \cellcolor{scorehi}0.636 & 0.000 \\
-Xeon\_network\_consumption & 0.250 & 0.000 & \cellcolor{scorehi}0.500 & +0.500 \\
-battery\_on\_duration\_cpu\_family\_gen & 0.000 & 0.333 & 0.333 & 0.000 \\
-persona\_web\_cat\_usage\_analysis & 0.032 & 0.097 & 0.161 & +0.064 \\
-battery\_power\_on\_geographic\_summary & 0.000 & 0.000 & 0.000 & 0.000 \\
-avg\_platform\_power\_c0\_freq\_temp\_by\_chassis & 0.000 & 0.000 & 0.000 & 0.000 \\
-most\_popular\_browser\_in\_each\_country & 0.000 & 0.000 & 0.000 & 0.000 \\
-pkg\_power\_by\_country & 0.000 & 0.000 & 0.000 & 0.000 \\
-\midrule
-\textbf{Passed ($\geq 0.5$)} & \textbf{1/10} & \textbf{2/10} & \textbf{3/10} & \\
-\textbf{Average score} & \textbf{0.104} & \textbf{0.207} & \textbf{0.296} & \\
-\bottomrule
-\end{tabularx}
-\caption{Stratified PE improvement: ``PE base'' is the midscale PE run (5{,}000 records, independent generation, $\varepsilon=4.0$); ``Strat v1'' uses basic advanced composition ($\varepsilon_{\text{agg}}=1.0$, $\sigma \approx 150$); ``Strat v2'' uses zCDP with per-group budget splitting ($\varepsilon_{\text{agg}}=3.5$, $\sigma \approx 25\text{--}68$). The $\Delta$ column shows v2 minus v1. All runs maintain $\varepsilon_{\text{total}}=4.0$.}
-\label{tab:stratified-pe-v2}
-\end{table}
-
-The improved calibration lifts performance from 2/10 (v1) to 3/10 (v2) passed queries (average 0.207 $\to$ 0.296). The newly passing query is Xeon network consumption ($0.500$), which benefits directly from the reduced $\sigma_{\text{net}}=24.6$ (vs.\ $\sigma=150$ in v1). Browser popularity also recovers to 0.333 in v2 (compared to 0.667 in the independent baseline and 0.000 in v1). Country-stratified queries remain at 0: even with $\sigma \approx 65$ for the hints group, the per-country populations (1--128 systems) are still below the noise floor. Overall, stratified PE v2 passes 3/10 queries at an average score of 0.296, compared to the independent baseline's 1/10 at 0.104. This confirms that DP noise calibration is the binding constraint on stratified PE utility, and further gains would require either reducing the number of queries per group or fundamentally different approaches to country-level conditioning.
 
 \newpage
 
@@ -1278,6 +1293,8 @@ There are clear differences in resource costs between methods. The wide-table DP
 
 The PE results confirm that foundation models import their own distributional priors rather than learning the target distribution (Win11 at 77.8\% vs.\ 10.4\% real). The DP nearest-neighbor histogram partially corrects these biases for histogram-type queries (PE matches MST on browser usage at 0.667 and outperforms the wide-table DP-VAE on RAM utilization at 0.500 vs.\ 0.000), but cannot compensate for the near-total absence of nonzero continuous metrics in the LLM output. Although structured output constraints eliminate out-of-vocabulary categorical values, the distributional mismatch between the foundation model's prior and the real data still reduces the effective candidate pool for the nearest-neighbor histogram. This aligns with \citeauthor{swanberg2025apiaccessllmsuseful}'s finding that LLMs capture 1-way marginals reasonably but are inaccurate on $k$-way marginals.
 
+The stratified PE experiments (Section~\ref{sec:pe-results}) show that conditioning LLM generation on DP-noised aggregate targets can partially close this gap. By providing the model with noisy per-stratum statistics, stratified PE v2 lifts the pass rate from 1/10 to 3/10 and the average score from 0.104 to 0.296 on the 10-query subset, with \texttt{RamHist} achieving a perfect 1.0. However, the approach remains limited by DP noise on small groups: country-stratified queries score 0 because per-country populations (1--128 systems) fall below the noise floor even with improved calibration ($\sigma \approx 25\text{--}68$). This confirms that DP noise calibration, not model capacity, is the binding constraint on stratified PE utility.
+
 Several mitigation strategies warrant investigation.
 
 \begin{itemize}
@@ -1285,6 +1302,7 @@ Several mitigation strategies warrant investigation.
     \item Relational DP synthesis methods that handle multi-table structure directly, eliminating the zero-inflation problem while preserving cross-table correlations.
     \item Method ensembling, using per-table DP-SGD for queries requiring continuous accuracy and MST for queries requiring ranking preservation, selecting per query type.
     \item Post-processing the synthetic data with mode patching and constraint enforcement, as proposed by recent work on model-agnostic DP post-processing.
+    \item Further stratified PE improvements such as reducing the number of aggregate queries per group, using adaptive budget allocation based on group size, or fundamentally different approaches to country-level conditioning.
 \end{itemize}
 
 \subsection{Sensitivity to evaluation thresholds}
@@ -1415,9 +1433,9 @@ Total variation and Spearman $\rho$ thresholds have minimal effect on pass rates
 
 \section{Conclusion}
 
-We presented an evaluation framework for differentially private synthetic data generation on Intel's DCA telemetry corpus, implementing four synthesis approaches, namely a wide-table DP-VAE trained with DP-SGD, per-table DP histogram synthesis, MST marginal-based synthesis, and Private Evolution via foundation model APIs.
+We presented an evaluation framework for differentially private synthetic data generation on Intel's DCA telemetry corpus, implementing four base synthesis approaches---a wide-table DP-VAE trained with DP-SGD, per-table DP histogram synthesis, MST marginal-based synthesis, and Private Evolution (PE) via foundation model APIs---plus a stratified PE variant that conditions generation on DP-noised aggregate targets.
 
-All four methods have completed evaluation against the 21-query benchmark. Under binary pass-rate scoring, per-table DP-SGD and MST each pass 6 of 21 queries (28.6\%), while the wide-table DP-VAE passes 1 of 8 (12.5\%) and PE passes 2 of 8 (25.0\%). However, the normalized error metric (Section~\ref{sec:normalized-error}), which calibrates each query's synthesis error against the natural variation from a 50/50 data split, reveals a clearer ranking: per-table DP-SGD achieves a median normalized error of 2.72$\times$, meaning its typical distortion is under 3 times the variation expected from halving the real dataset. PE follows at 6.92$\times$, MST at 10.96$\times$, and wide-table DP-VAE at 12.88$\times$. This continuous metric breaks the binary tie between per-table and MST, showing per-table's errors are consistently smaller relative to natural variation. Per-table DP-SGD achieves normalized errors below 5$\times$ on 10 of 20 queries, while MST excels specifically on ranking queries (achieving near-unity normalized errors on \texttt{WaitRank} and \texttt{WaitModeRank}) but suffers extreme errors on multi-table aggregate joins.
+All methods have completed evaluation against the benchmark. Under binary pass-rate scoring, per-table DP-SGD and MST each pass 6 of 21 queries (28.6\%), while the wide-table DP-VAE passes 1 of 8 (12.5\%), PE passes 2 of 8 (25.0\%), and stratified PE v2 passes 3 of 10 (30.0\%). The stratified PE v2 result demonstrates that conditioning on DP-noised aggregates with zCDP composition and per-group budget splitting can nearly triple the baseline PE's average score (0.104 $\to$ 0.296) while maintaining the same total privacy budget ($\varepsilon = 4.0$). However, the normalized error metric (Section~\ref{sec:normalized-error}), which calibrates each query's synthesis error against the natural variation from a 50/50 data split, reveals a clearer ranking among the base methods: per-table DP-SGD achieves a median normalized error of 2.72$\times$, meaning its typical distortion is under 3 times the variation expected from halving the real dataset. PE follows at 6.92$\times$, MST at 10.96$\times$, and wide-table DP-VAE at 12.88$\times$. This continuous metric breaks the binary tie between per-table and MST, showing per-table's errors are consistently smaller relative to natural variation. Per-table DP-SGD achieves normalized errors below 5$\times$ on 10 of 20 queries, while MST excels specifically on ranking queries (achieving near-unity normalized errors on \texttt{WaitRank} and \texttt{WaitModeRank}) but suffers extreme errors on multi-table aggregate joins.
 
 Two structural findings emerge. First, wide-table sparsity, not the choice of synthesis algorithm, is the dominant failure mode. The wide table has 93--99.9\% zero values in metric columns, and both the VAE and the foundation model collapse these to their mode. Second, per-table independence destroys cross-table correlations. The 5-way chassis join produces empty or random results under both per-table methods, while the wide-table approaches (DP-VAE and PE) at least preserve some cross-table structure.
 
