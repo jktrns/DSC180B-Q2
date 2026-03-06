@@ -1176,25 +1176,25 @@ The total privacy cost is $\varepsilon_{\text{agg}} + \varepsilon_{\text{hist}} 
 \textbf{Query} & \textbf{PE baseline} & \textbf{Stratified PE} & \textbf{Delta} \\
 \midrule
 ram\_utilization\_histogram & 0.000 & \cellcolor{scorehi}1.000 & +1.000 \\
-on\_off\_mods\_sleep\_summary & 0.000 & \cellcolor{scorehi}0.636 & +0.636 \\
+popular\_browsers\_by\_count\_usage\_pct & \cellcolor{scorehi}0.667 & 0.000 & $-$0.667 \\
+Xeon\_network\_consumption & 0.250 & 0.000 & $-$0.250 \\
+on\_off\_mods\_sleep\_summary & 0.091 & \cellcolor{scorehi}0.636 & +0.545 \\
+persona\_web\_cat\_usage\_analysis & 0.032 & 0.097 & +0.065 \\
 battery\_on\_duration\_cpu\_family\_gen & 0.000 & 0.333 & +0.333 \\
-persona\_web\_cat\_usage\_analysis & 0.000 & 0.097 & +0.097 \\
 battery\_power\_on\_geographic\_summary & 0.000 & 0.000 & 0.000 \\
-Xeon\_network\_consumption & 0.000 & 0.000 & 0.000 \\
 avg\_platform\_power\_c0\_freq\_temp\_by\_chassis & 0.000 & 0.000 & 0.000 \\
 most\_popular\_browser\_in\_each\_country & 0.000 & 0.000 & 0.000 \\
 pkg\_power\_by\_country & 0.000 & 0.000 & 0.000 \\
-popular\_browsers\_by\_count\_usage\_pct & 0.000 & 0.000 & 0.000 \\
 \midrule
-\textbf{Passed ($\geq 0.5$)} & \textbf{0/10} & \textbf{2/10} & \\
-\textbf{Average score} & \textbf{0.000} & \textbf{0.207} & \\
+\textbf{Passed ($\geq 0.5$)} & \textbf{1/10} & \textbf{2/10} & \\
+\textbf{Average score} & \textbf{0.104} & \textbf{0.207} & \\
 \bottomrule
 \end{tabularx}
-\caption{Stratified PE with DP-noised aggregates ($\varepsilon_{\text{agg}}=1.0 + \varepsilon_{\text{hist}}=3.0 = 4.0$ total). Results shown only for the 10 evaluable queries (11 queries require reporting tables not producible from the wide table). The stratified approach improves over baseline PE on RAM utilization and on/off/sleep queries where per-stratum conditioning aligns well with the query structure.}
+\caption{Stratified PE with DP-noised aggregates ($\varepsilon_{\text{agg}}=1.0 + \varepsilon_{\text{hist}}=3.0 = 4.0$ total). The ``PE baseline'' column reports the midscale PE run (5{,}000 records, independent generation, same $\varepsilon=4.0$). Stratified generation improves on RAM utilization and on/off/sleep queries where per-stratum conditioning aligns with query structure, but regresses on popular browsers ($0.667 \to 0.000$) and Xeon network ($0.250 \to 0.000$) because the high per-query noise ($\sigma \approx 150$) in v1 destroys the aggregate targets for those groups.}
 \label{tab:stratified-pe}
 \end{table}
 
-The stratified approach improves over baseline PE (which scored 0 on all 10 evaluable queries at $\varepsilon = 4.0$) by passing 2 of 10 queries with an average score of 0.207. The gains concentrate on queries whose structure matches the stratification: RAM utilization (stratified by memory size) achieves a perfect 1.0, and the on/off/sleep summary (stratified by CPU market code name) passes at 0.636. Country-stratified and browser queries remain at 0 because the DP noise on per-country counts (sensitivity = 1 per system) overwhelms the small per-country populations, producing effectively uniform country distributions in the prompts.
+The baseline PE midscale run (5{,}000 records, independent generation at $\varepsilon = 4.0$) passes 1 of 10 evaluable queries with an average score of 0.104, with its only passing query being popular browsers (0.667). The stratified v1 approach passes 2 of 10 queries with an average score of 0.207. The gains concentrate on queries whose structure matches the stratification: RAM utilization (stratified by memory size) achieves a perfect 1.0, and the on/off/sleep summary (stratified by CPU market code name) passes at 0.636. However, the stratified v1 approach regresses on popular browsers ($0.667 \to 0.000$) and Xeon network consumption ($0.250 \to 0.000$) because the high per-query noise ($\sigma \approx 150$) from composing all $k$ aggregate queries under a single budget destroys the aggregate targets for those groups. Country-stratified queries remain at 0 because the DP noise on per-country counts (sensitivity = 1 per system) overwhelms the small per-country populations, producing effectively uniform country distributions in the prompts.
 
 This experiment demonstrates that conditioning PE generation on DP-noised aggregates can meaningfully improve utility for queries that align with the stratification, while maintaining formal privacy guarantees through proper composition.
 
@@ -1217,25 +1217,25 @@ The combined effect reduces per-query $\sigma$ from ${\sim}150$ (global composit
 \textbf{Query} & \textbf{PE base} & \textbf{Strat v1} & \textbf{Strat v2} & \textbf{$\Delta$} \\
 \midrule
 ram\_utilization\_histogram & 0.000 & \cellcolor{scorehi}1.000 & \cellcolor{scorehi}1.000 & 0.000 \\
-on\_off\_mods\_sleep\_summary & 0.000 & \cellcolor{scorehi}0.636 & \cellcolor{scorehi}0.636 & 0.000 \\
-Xeon\_network\_consumption & 0.000 & 0.000 & \cellcolor{scorehi}0.500 & +0.500 \\
+popular\_browsers\_by\_count\_usage\_pct & \cellcolor{scorehi}0.667 & 0.000 & 0.333 & +0.333 \\
+on\_off\_mods\_sleep\_summary & 0.091 & \cellcolor{scorehi}0.636 & \cellcolor{scorehi}0.636 & 0.000 \\
+Xeon\_network\_consumption & 0.250 & 0.000 & \cellcolor{scorehi}0.500 & +0.500 \\
 battery\_on\_duration\_cpu\_family\_gen & 0.000 & 0.333 & 0.333 & 0.000 \\
-popular\_browsers\_by\_count\_usage\_pct & 0.000 & 0.000 & 0.333 & +0.333 \\
-persona\_web\_cat\_usage\_analysis & 0.000 & 0.097 & 0.161 & +0.064 \\
+persona\_web\_cat\_usage\_analysis & 0.032 & 0.097 & 0.161 & +0.064 \\
 battery\_power\_on\_geographic\_summary & 0.000 & 0.000 & 0.000 & 0.000 \\
 avg\_platform\_power\_c0\_freq\_temp\_by\_chassis & 0.000 & 0.000 & 0.000 & 0.000 \\
 most\_popular\_browser\_in\_each\_country & 0.000 & 0.000 & 0.000 & 0.000 \\
 pkg\_power\_by\_country & 0.000 & 0.000 & 0.000 & 0.000 \\
 \midrule
-\textbf{Passed ($\geq 0.5$)} & \textbf{0/10} & \textbf{2/10} & \textbf{3/10} & \\
-\textbf{Average score} & \textbf{0.000} & \textbf{0.207} & \textbf{0.296} & \\
+\textbf{Passed ($\geq 0.5$)} & \textbf{1/10} & \textbf{2/10} & \textbf{3/10} & \\
+\textbf{Average score} & \textbf{0.104} & \textbf{0.207} & \textbf{0.296} & \\
 \bottomrule
 \end{tabularx}
-\caption{Stratified PE improvement: ``Strat v1'' uses basic advanced composition ($\varepsilon_{\text{agg}}=1.0$, $\sigma \approx 150$); ``Strat v2'' uses zCDP with per-group budget splitting ($\varepsilon_{\text{agg}}=3.5$, $\sigma \approx 25\text{--}68$). Both maintain $\varepsilon_{\text{total}}=4.0$.}
+\caption{Stratified PE improvement: ``PE base'' is the midscale PE run (5{,}000 records, independent generation, $\varepsilon=4.0$); ``Strat v1'' uses basic advanced composition ($\varepsilon_{\text{agg}}=1.0$, $\sigma \approx 150$); ``Strat v2'' uses zCDP with per-group budget splitting ($\varepsilon_{\text{agg}}=3.5$, $\sigma \approx 25\text{--}68$). The $\Delta$ column shows v2 minus v1. All runs maintain $\varepsilon_{\text{total}}=4.0$.}
 \label{tab:stratified-pe-v2}
 \end{table}
 
-The improved calibration lifts performance from 2/10 to 3/10 passed queries (average 0.207 $\to$ 0.296). The newly passing query is Xeon network consumption ($0.500$), which benefits directly from the reduced $\sigma_{\text{net}}=24.6$ (vs.\ $\sigma=150$ in v1). Browser popularity also improves to 0.333. Country-stratified queries remain at 0: even with $\sigma \approx 65$ for the hints group, the per-country populations (1--128 systems) are still below the noise floor. This confirms that DP noise calibration is the binding constraint on stratified PE utility, and further gains would require either reducing the number of queries per group or fundamentally different approaches to country-level conditioning.
+The improved calibration lifts performance from 2/10 (v1) to 3/10 (v2) passed queries (average 0.207 $\to$ 0.296). The newly passing query is Xeon network consumption ($0.500$), which benefits directly from the reduced $\sigma_{\text{net}}=24.6$ (vs.\ $\sigma=150$ in v1). Browser popularity also recovers to 0.333 in v2 (compared to 0.667 in the independent baseline and 0.000 in v1). Country-stratified queries remain at 0: even with $\sigma \approx 65$ for the hints group, the per-country populations (1--128 systems) are still below the noise floor. Overall, stratified PE v2 passes 3/10 queries at an average score of 0.296, compared to the independent baseline's 1/10 at 0.104. This confirms that DP noise calibration is the binding constraint on stratified PE utility, and further gains would require either reducing the number of queries per group or fundamentally different approaches to country-level conditioning.
 
 \newpage
 
