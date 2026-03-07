@@ -53,6 +53,58 @@ function setActiveNav() {
 }
 
 // ============================================================================
+// QUERY EXPLORER
+// ============================================================================
+
+async function initQueryExplorer() {
+  const range = document.getElementById('queryRange');
+  const label = document.getElementById('queryLabel');
+  const typeEl = document.getElementById('queryType');
+  const descEl = document.getElementById('queryDesc');
+  const scoresEl = document.getElementById('queryScores');
+  const imgEl = document.getElementById('queryImg');
+  const capEl = document.getElementById('queryCaption');
+
+  if (!range || !label) return; // elements don't exist on this page
+
+  let data = [];
+  try {
+    const res = await fetch('data/results.json');
+    data = await res.json();
+  } catch (e) {
+    label.textContent = 'Could not load results.json';
+    return;
+  }
+
+  range.min = 0;
+  range.max = Math.max(0, data.length - 1);
+  range.value = 0;
+
+  function render(i) {
+    const q = data[i];
+    label.textContent = `${i + 1} of ${data.length} (${q.name})`;
+    typeEl.textContent = q.type ? `Type: ${q.type}` : '';
+    descEl.textContent = q.desc || '';
+    if (imgEl) imgEl.src = q.image || '';
+    if (capEl) capEl.textContent = q.caption || '';
+
+    if (scoresEl) {
+      scoresEl.innerHTML = '';
+      (q.scores || []).forEach((s) => {
+        const pill = document.createElement('div');
+        pill.className = 'score-pill';
+        const v = typeof s.value === 'number' ? s.value.toFixed(3) : String(s.value);
+        pill.innerHTML = `<span><strong>${s.method}</strong></span><span>${v}</span><span class="small">${s.note || ''}</span>`;
+        scoresEl.appendChild(pill);
+      });
+    }
+  }
+
+  range.addEventListener('input', () => render(Number(range.value)));
+  render(0);
+}
+
+// ============================================================================
 // IMAGE COMPARE SLIDER
 // ============================================================================
 
