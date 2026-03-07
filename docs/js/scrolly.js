@@ -12,7 +12,6 @@
   const progressText = document.querySelector('.progress-text');
   const progressBar = document.querySelector('.progress-bar');
   let currentStep = null;
-  let queryExplorerInitialized = false;
   let histogramInitialized = false;
 
   if (!steps.length || !panel) {
@@ -45,8 +44,8 @@
       case 'step-hero':
         html = `
           <div class="compare-panel">
-            <img src="assets/hero.jpeg" alt="Project overview workflow" style="width: 100%; border: 1px solid var(--border); border-radius: 10px;" />
-            <p class="caption" style="margin-top: 8px;">Workflow comparing training-based (DP-SGD) and training-free (Private Evolution) synthesis.</p>
+            <h4 style="margin:0 0 8px;">Project Overview</h4>
+            <p class="small" style="margin:0;">This section compares four differentially private synthetic data methods across 21 benchmark SQL queries. Scroll to inspect distributions, per-query comparisons, and final scorecards.</p>
           </div>
         `;
         break;
@@ -153,8 +152,7 @@
     panel.innerHTML = html;
 
     // Initialize components if not already done
-    if (stepId === 'step-queries' && !queryExplorerInitialized) {
-      queryExplorerInitialized = true;
+    if (stepId === 'step-queries') {
       setTimeout(() => {
         window.initBenchmarkQueryExplorer && window.initBenchmarkQueryExplorer();
       }, 100);

@@ -23,27 +23,9 @@
     <div class="scrolly-container">
       <!-- LEFT: NARRATIVE STEPS -->
       <div class="scrolly-text">
-        <!-- STEP 1: HERO -->
-        <section class="step" data-step="step-hero">
-          <h2>Step 1: Project Overview</h2>
-          <p>
-            This project compares four approaches to differentially private synthetic data generation:
-          </p>
-          <ul>
-            <li><strong>Wide-Table DP-VAE:</strong> Train a VAE on all columns flattened into one table.</li>
-            <li><strong>Per-Table DP-SGD:</strong> Train independent VAE models for each table separately.</li>
-            <li><strong>MST (Marginal):</strong> Reconstruct synthetic data from low-cardinality marginals using a Chow-Liu tree.</li>
-            <li><strong>Private Evolution:</strong> Use an LLM to generate candidates, then select via differential privacy.</li>
-          </ul>
-          <p>
-            All methods add differential privacy noise to protect individual privacy while maintaining data utility.
-            We benchmark each approach on 21 production-style SQL queries.
-          </p>
-        </section>
-
-        <!-- STEP 2: QUERY EXPLORER -->
+        <!-- STEP 1: QUERY SLIDER -->
         <section class="step" data-step="step-queries">
-          <h2>Step 2: Benchmark Queries</h2>
+          <h2>Step 1: Benchmark Queries</h2>
           <p>
             We executed 21 SQL queries grouped into four categories: aggregate (GROUP BY with metrics),
             distribution (histograms and percentages), ranking (top-K items), and row-level (summary statistics).
@@ -59,6 +41,24 @@
           </ul>
           <p>
             <strong>Green means passed</strong> (metric below threshold); <strong>red means failed</strong>.
+          </p>
+        </section>
+
+        <!-- STEP 2: PROJECT OVERVIEW -->
+        <section class="step" data-step="step-hero">
+          <h2>Step 2: Project Overview</h2>
+          <p>
+            This project compares four approaches to differentially private synthetic data generation:
+          </p>
+          <ul>
+            <li><strong>Wide-Table DP-VAE:</strong> Train a VAE on all columns flattened into one table.</li>
+            <li><strong>Per-Table DP-SGD:</strong> Train independent VAE models for each table separately.</li>
+            <li><strong>MST (Marginal):</strong> Reconstruct synthetic data from low-cardinality marginals using a Chow-Liu tree.</li>
+            <li><strong>Private Evolution:</strong> Use an LLM to generate candidates, then select via differential privacy.</li>
+          </ul>
+          <p>
+            All methods add differential privacy noise to protect individual privacy while maintaining data utility.
+            We benchmark each approach on 21 production-style SQL queries.
           </p>
         </section>
 
