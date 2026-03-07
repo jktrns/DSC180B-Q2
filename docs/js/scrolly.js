@@ -12,7 +12,6 @@
   const progressText = document.querySelector('.progress-text');
   const progressBar = document.querySelector('.progress-bar');
   let currentStep = null;
-  let queryExplorerInitialized = false;
   let histogramInitialized = false;
 
   if (!steps.length || !panel) {
@@ -44,30 +43,26 @@
     switch (stepId) {
       case 'step-hero':
         html = `
-          <div class="figure-placeholder">
-            <p>Project Overview Diagram</p>
-            <small>Workflow comparing training-based (DP-SGD) and training-free (Private Evolution) synthesis.</small>
+          <div class="compare-panel">
+            <h4 style="margin:0 0 8px;">Project Overview</h4>
+            <p class="small" style="margin:0;">This section compares four differentially private synthetic data methods across 21 benchmark SQL queries. Scroll to inspect distributions, per-query comparisons, and final scorecards.</p>
           </div>
         `;
         break;
 
       case 'step-queries':
         html = `
-          <div class="query-explorer-panel">
-            <div style="margin-bottom: 12px;">
-              <label for="queryRange" style="display: block; margin-bottom: 8px;"><strong>Query:</strong> <span id="queryLabel">Loading...</span></label>
-              <input id="queryRange" type="range" min="0" max="0" value="0" step="1" style="width: 100%;" />
+          <div class="benchmark-slider-panel">
+            <div class="benchmark-slider-controls">
+              <button type="button" id="benchPrev" class="bench-nav-btn">←</button>
+              <div style="width: 100%;">
+                <label for="benchRange" class="small"><strong>Query:</strong> <span id="benchLabel">Loading…</span></label>
+                <input id="benchRange" type="range" min="0" max="0" value="0" step="1" />
+              </div>
+              <button type="button" id="benchNext" class="bench-nav-btn">→</button>
             </div>
-            <div class="query-card" id="queryCard">
-              <div>
-                <p class="meta"><span id="queryType"></span></p>
-                <p id="queryDesc"></p>
-                <div class="scores" id="queryScores"></div>
-              </div>
-              <div class="query-figure">
-                <img id="queryImg" src="" alt="Query figure" style="width: 100%; border-radius: 8px; background: var(--card);" />
-                <p class="caption" id="queryCaption"></p>
-              </div>
+            <div class="benchmark-detail" id="benchDetail">
+              <p class="small">Loading benchmark results…</p>
             </div>
           </div>
         `;
@@ -162,10 +157,9 @@
     panel.innerHTML = html;
 
     // Initialize components if not already done
-    if (stepId === 'step-queries' && !queryExplorerInitialized) {
-      queryExplorerInitialized = true;
+    if (stepId === 'step-queries') {
       setTimeout(() => {
-        window.initQueryExplorer && window.initQueryExplorer();
+        window.initBenchmarkQueryExplorer && window.initBenchmarkQueryExplorer();
       }, 100);
     }
 
@@ -184,33 +178,39 @@
   }
 
   /**
-   * IntersectionObserver callback
+   * Determine active step by largest visible ratio in viewport.
    */
-  const observerCallback = (entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting && entry.intersectionRatio > 0.4) {
-        const stepId = entry.target.dataset.step;
-        if (stepId !== currentStep) {
-          currentStep = stepId;
-          const stepIndex = Array.from(steps).indexOf(entry.target);
-          setPanel(stepId);
-          updateProgress(stepIndex);
-          entry.target.classList.add('active');
-        }
-      } else {
-        entry.target.classList.remove('active');
+  function refreshActiveStep() {
+    let bestStep = null;
+    let bestRatio = -1;
+
+    steps.forEach((step) => {
+      const rect = step.getBoundingClientRect();
+      const visible = Math.max(0, Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, 0));
+      const ratio = rect.height > 0 ? visible / rect.height : 0;
+      if (ratio > bestRatio) {
+        bestRatio = ratio;
+        bestStep = step;
       }
     });
-  };
 
-  // Set up IntersectionObserver
-  const observer = new IntersectionObserver(observerCallback, {
-    threshold: [0.4, 0.6],
-  });
+    if (!bestStep || bestRatio < 0.15) return;
 
-  steps.forEach((step) => {
-    observer.observe(step);
-  });
+    const stepId = bestStep.dataset.step;
+    if (stepId !== currentStep) {
+      currentStep = stepId;
+      const stepIndex = Array.from(steps).indexOf(bestStep);
+      setPanel(stepId);
+      updateProgress(stepIndex);
+    }
+
+    steps.forEach((step) => {
+      step.classList.toggle('active', step === bestStep);
+    });
+  }
+
+  window.addEventListener('scroll', refreshActiveStep, { passive: true });
+  window.addEventListener('resize', refreshActiveStep);
 
   // Initialize first step manually
   if (steps.length > 0) {
@@ -218,7 +218,252 @@
     setPanel(firstStepId);
     updateProgress(0);
     steps[0].classList.add('active');
+    requestAnimationFrame(refreshActiveStep);
   }
+
+  window.initBenchmarkQueryExplorer = function () {
+    const rangeEl = document.getElementById('benchRange');
+    const labelEl = document.getElementById('benchLabel');
+    const detailEl = document.getElementById('benchDetail');
+    const prevEl = document.getElementById('benchPrev');
+    const nextEl = document.getElementById('benchNext');
+
+    if (!rangeEl || !labelEl || !detailEl || !prevEl || !nextEl) return;
+
+    const METHOD_ORDER = [
+      ['widetable', 'Wide-table DP-VAE'],
+      ['pertable', 'Per-table DP-SGD'],
+      ['mst', 'MST (Marginal)'],
+      ['pe', 'Private Evolution'],
+    ];
+
+    const fmt = (v) => (typeof v === 'number' && Number.isFinite(v) ? v.toFixed(3) : '—');
+
+    const summarizeQuestion = (text) => {
+      if (!text || typeof text !== 'string') return '';
+
+      const clean = text.replace(/\s+/g, ' ').trim();
+      if (!clean) return '';
+
+      let out = clean
+        .replace(/^\s*(provide me with|provide me|provide an|provide a|i want to|please)\s+/i, '')
+        .replace(/\b(do not|don't|ignore|throw out)\b[\s\S]*$/i, '')
+        .replace(/\b(the metrics to summarize|the metrics of interest|the metrics to be provided|the report should contain|round all|round averages|round the percentage|allow for ties|as measured by|also ignore)\b[\s\S]*$/i, '')
+        .replace(/\bbroke out by\b/gi, 'grouped by')
+        .replace(/\bby the different\b/gi, 'grouped by')
+        .replace(/\benumerate the based on\b/gi, 'grouped by')
+        .replace(/\bprovide (me )?a summary\b/gi, 'summary')
+        .replace(/\bprovide (me )?with a summary\b/gi, 'summary')
+        .replace(/\bprovide (me )?a statistical summary\b/gi, 'statistical summary')
+        .replace(/\bprovide (me )?ranked lists?\b/gi, 'ranked lists')
+        .replace(/\s+,/g, ',')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+      if (!out) out = clean;
+
+      out = out.replace(/[;,:\-\s]+$/, '');
+      if (!/[.!?]$/.test(out)) out += '.';
+      return out.charAt(0).toUpperCase() + out.slice(1);
+    };
+
+    fetch('data/benchmark_slider.json')
+      .then((r) => {
+        if (!r.ok) throw new Error('data/benchmark_slider.json');
+        return r.json();
+      })
+      .then((records) => {
+        if (!Array.isArray(records) || !records.length) {
+          detailEl.innerHTML = '<p class="small">No benchmark records found.</p>';
+          return;
+        }
+
+        rangeEl.min = '0';
+        rangeEl.max = String(records.length - 1);
+        rangeEl.value = '0';
+
+        const render = (idx) => {
+          const i = Math.max(0, Math.min(records.length - 1, idx));
+          const rec = records[i];
+          labelEl.textContent = `${i + 1} of ${records.length} (${rec.query})`;
+
+          const values = METHOD_ORDER.map(([key]) => rec.scores?.[key]).filter((v) => typeof v === 'number');
+          const max = values.length ? Math.max(...values, 1) : 1;
+
+          const best = METHOD_ORDER
+            .map(([key, label]) => ({ label, value: rec.scores?.[key] }))
+            .filter((x) => typeof x.value === 'number')
+            .sort((a, b) => b.value - a.value)[0];
+          const bestText = best ? `Best method: ${best.label} (${best.value.toFixed(3)})` : 'Best method: not available';
+
+          const passCount = METHOD_ORDER.filter(([key]) => rec.passed?.[key] === true).length;
+          const description = summarizeQuestion(rec.question);
+
+          const bars = METHOD_ORDER.map(([key, label]) => {
+            const v = rec.scores?.[key];
+            const width = typeof v === 'number' ? Math.max(2, (v / max) * 100) : 0;
+            const err = rec.errors?.[key] ? `<em class=\"bench-err\">${rec.errors[key]}</em>` : '';
+            return `<div class=\"bench-bar-row\"><span>${label}${err}</span><div class=\"bench-bar-track\"><div class=\"bench-bar\" style=\"width:${width}%\"></div></div><strong>${fmt(v)}</strong></div>`;
+          }).join('');
+
+          detailEl.innerHTML = `
+            <h4 style="margin:0 0 6px;">${rec.query}</h4>
+            <p class="small" style="margin:0 0 6px;"><strong>Type:</strong> ${rec.type || 'unknown'}</p>
+            <p class="small" style="margin:0 0 6px;">${bestText} · Pass across methods: ${passCount}/4</p>
+            ${description ? `<p class="small benchmark-desc"><strong>Summary:</strong> ${description}</p>` : ''}
+            <div class="bench-bars">${bars}</div>
+          `;
+        };
+
+        rangeEl.addEventListener('input', () => render(Number(rangeEl.value)));
+        prevEl.addEventListener('click', () => {
+          rangeEl.value = String(Math.max(0, Number(rangeEl.value) - 1));
+          render(Number(rangeEl.value));
+        });
+        nextEl.addEventListener('click', () => {
+          rangeEl.value = String(Math.min(records.length - 1, Number(rangeEl.value) + 1));
+          render(Number(rangeEl.value));
+        });
+
+        render(0);
+      })
+      .catch((e) => {
+        detailEl.innerHTML = `<p class="small">Could not load slider data: ${e.message}</p>`;
+      });
+  };
+
+  window.initComparePanel = function () {
+    const selectEl = document.getElementById('compareQuerySelect');
+    const metaEl = document.getElementById('compareQueryMeta');
+    const barsEl = document.getElementById('compareQueryBars');
+    if (!selectEl || !metaEl || !barsEl) return;
+
+    const METHODS = [
+      { key: 'widetable', label: 'Wide-table DP-VAE' },
+      { key: 'pertable', label: 'Per-table DP-SGD' },
+      { key: 'mst', label: 'MST (Marginal)' },
+      { key: 'pe', label: 'Private Evolution' },
+    ];
+    const FILES = {
+      widetable: 'evaluation_widetable.csv',
+      pertable: 'evaluation_pertable.csv',
+      mst: 'evaluation_mst.csv',
+      pe: 'evaluation_pe.csv',
+    };
+    const BASES = ['../data/results', 'data/results', './data/results', '/data/results'];
+
+    const parseCSV = (text) => {
+      const rows = [];
+      let row = [];
+      let cell = '';
+      let i = 0;
+      let inQuotes = false;
+      while (i < text.length) {
+        const ch = text[i];
+        const next = text[i + 1];
+        if (inQuotes) {
+          if (ch === '"' && next === '"') { cell += '"'; i += 2; continue; }
+          if (ch === '"') { inQuotes = false; i += 1; continue; }
+          cell += ch; i += 1; continue;
+        }
+        if (ch === '"') { inQuotes = true; i += 1; continue; }
+        if (ch === ',') { row.push(cell); cell = ''; i += 1; continue; }
+        if (ch === '\n') { row.push(cell); rows.push(row); row = []; cell = ''; i += 1; continue; }
+        if (ch !== '\r') { cell += ch; }
+        i += 1;
+      }
+      if (cell.length || row.length) { row.push(cell); rows.push(row); }
+      if (!rows.length) return [];
+      const headers = rows[0];
+      return rows.slice(1).filter((r) => r.some((c) => c !== '')).map((r) => {
+        const out = {};
+        headers.forEach((h, idx) => { out[h] = r[idx] ?? ''; });
+        return out;
+      });
+    };
+
+    const toNum = (v) => {
+      if (v === '' || v == null) return null;
+      const n = Number(v);
+      return Number.isFinite(n) ? n : null;
+    };
+
+    const fetchCsv = async (name) => {
+      let last = null;
+      for (const b of BASES) {
+        try {
+          const res = await fetch(`${b}/${name}`);
+          if (!res.ok) throw new Error(`${b}/${name}`);
+          return parseCSV(await res.text());
+        } catch (e) { last = e; }
+      }
+      throw last || new Error(name);
+    };
+
+    const fetchQuestion = async (queryId) => {
+      try {
+        const res = await fetch(`queries/${queryId}.json`);
+        if (!res.ok) return null;
+        const d = await res.json();
+        const row = Array.isArray(d) ? d[0] : d;
+        return row && row.question ? row.question : null;
+      } catch { return null; }
+    };
+
+    Promise.all(METHODS.map((m) => fetchCsv(FILES[m.key])))
+      .then(async (tables) => {
+        const methodRows = {};
+        METHODS.forEach((m, i) => { methodRows[m.key] = tables[i]; });
+        const sets = METHODS.map((m) => new Set((methodRows[m.key] || []).map((r) => r.query).filter(Boolean)));
+        let common = sets[0];
+        for (let i = 1; i < sets.length; i++) common = new Set([...common].filter((q) => sets[i].has(q)));
+
+        const records = [];
+        for (const query of [...common].sort()) {
+          const rec = { query, type: '', scores: {}, question: null };
+          METHODS.forEach((m) => {
+            const row = methodRows[m.key].find((r) => r.query === query) || {};
+            rec.type = rec.type || row.type || '';
+            rec.scores[m.key] = toNum(row.score);
+          });
+          rec.question = await fetchQuestion(query);
+          records.push(rec);
+        }
+
+        if (!records.length) {
+          metaEl.textContent = 'No overlapping query IDs available in all four method CSVs.';
+          return;
+        }
+
+        records.forEach((r, i) => {
+          const opt = document.createElement('option');
+          opt.value = String(i);
+          opt.textContent = r.query;
+          selectEl.appendChild(opt);
+        });
+
+        const fmt = (v) => (v == null ? '—' : v.toFixed(3));
+
+        const render = (i) => {
+          const r = records[i];
+          const desc = r.question ? ` — ${r.question}` : '';
+          metaEl.textContent = `Type: ${r.type || 'unknown'}${desc}`;
+          const vals = METHODS.map((m) => r.scores[m.key]).filter((v) => v != null);
+          const max = vals.length ? Math.max(...vals, 1) : 1;
+          barsEl.innerHTML = METHODS.map((m) => {
+            const v = r.scores[m.key];
+            const w = v == null ? 0 : Math.max(2, (v / max) * 100);
+            return `<div class="bench-bar-row"><span>${m.label}</span><div class="bench-bar-track"><div class="bench-bar" style="width:${w}%"></div></div><strong>${fmt(v)}</strong></div>`;
+          }).join('');
+        };
+
+        selectEl.addEventListener('change', () => render(Number(selectEl.value)));
+        render(0);
+      })
+      .catch((e) => {
+        metaEl.textContent = `Could not load comparison data: ${e.message}. Check data/results path availability for this server root.`;
+      });
+  };
 
   // Expose histogram initialization to window
   window.initHistogramPanel = function () {

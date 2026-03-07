@@ -23,9 +23,26 @@
     <div class="scrolly-container">
       <!-- LEFT: NARRATIVE STEPS -->
       <div class="scrolly-text">
-        <!-- STEP 1: HERO -->
+        <!-- STEP 1: QUERY SLIDER -->
+        <section class="step" data-step="step-queries">
+          <h2>Step 1: Benchmark Queries</h2>
+          <p>
+            We executed 21 SQL queries grouped into four categories: aggregate (GROUP BY with metrics),
+            distribution (histograms and percentages), ranking (top-K items), and row-level (summary statistics).
+          </p>
+          <p>
+            Use the query slider on the right to step through benchmark queries one at a time and inspect method performance. Each detail panel shows:
+          </p>
+          <ul>
+            <li>Query name and type (e.g., "aggregate", "distribution")</li>
+            <li>Performance scores (relative error, total variation, or Jaccard) for each method</li>
+            <li>A compact four-method comparison chart using benchmark scores</li>
+          </ul>
+        </section>
+
+        <!-- STEP 2: PROJECT OVERVIEW -->
         <section class="step" data-step="step-hero">
-          <h2>Step 1: Project Overview</h2>
+          <h2>Step 2: Project Overview</h2>
           <p>
             This project compares four approaches to differentially private synthetic data generation:
           </p>
@@ -38,27 +55,6 @@
           <p>
             All methods add differential privacy noise to protect individual privacy while maintaining data utility.
             We benchmark each approach on 21 production-style SQL queries.
-          </p>
-        </section>
-
-        <!-- STEP 2: QUERY EXPLORER -->
-        <section class="step" data-step="step-queries">
-          <h2>Step 2: Benchmark Queries</h2>
-          <p>
-            We executed 21 SQL queries grouped into four categories: aggregate (GROUP BY with metrics),
-            distribution (histograms and percentages), ranking (top-K items), and row-level (summary statistics).
-          </p>
-          <p>
-            Use the slider on the right to explore each query. Each card shows:
-          </p>
-          <ul>
-            <li>Query name and type (e.g., "aggregate", "distribution")</li>
-            <li>Description of what the query measures</li>
-            <li>Performance scores (relative error, total variation, or Jaccard) for each method</li>
-            <li>An example visualization (placeholder)</li>
-          </ul>
-          <p>
-            <strong>Green means passed</strong> (metric below threshold); <strong>red means failed</strong>.
           </p>
         </section>
 
@@ -146,10 +142,10 @@
           <span class="progress-text">Step 1 of 5</span>
         </div>
 
-        <!-- Panel content placeholder -->
+        <!-- Panel content -->
         <div class="panel-content" id="panelContent">
           <div class="figure-placeholder">
-            <p>Workflow diagram placeholder</p>
+            <p>Workflow diagram</p>
             <small>Project overview and evaluation workflow.</small>
           </div>
         </div>

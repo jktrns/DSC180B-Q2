@@ -588,3 +588,104 @@ table th {
 table tr:hover {
   background: var(--card);
 }
+/* Step 2 benchmark explorer inside Explore page */
+.benchmark-detail {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fff;
+  padding: 8px 10px;
+  min-height: 330px;
+}
+
+.benchmark-desc {
+  color: var(--muted);
+  margin: 0 0 8px;
+  font-size: 0.78rem;
+  line-height: 1.25;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow-wrap: anywhere;
+}
+
+.bench-score-list {
+  margin: 0 0 10px;
+  padding-left: 18px;
+}
+
+.bench-score-list li {
+  margin: 4px 0;
+}
+
+.bench-bars {
+  display: grid;
+  gap: 6px;
+}
+
+.bench-bar-row {
+  display: grid;
+  grid-template-columns: 170px 1fr auto;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+}
+
+.bench-err {
+  display: block;
+  color: #b45309;
+  font-style: normal;
+  font-size: 0.7rem;
+  line-height: 1.15;
+}
+
+.bench-bar-track {
+  background: #eef2ff;
+  border-radius: 999px;
+  height: 10px;
+  overflow: hidden;
+}
+
+.bench-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #2563eb, #7c3aed);
+}
+
+@media (max-width: 900px) {
+  .bench-bar-row {
+    grid-template-columns: 1fr;
+    gap: 3px;
+  }
+
+  .benchmark-detail {
+    min-height: 320px;
+  }
+
+  .benchmark-desc {
+    font-size: 0.76rem;
+  }
+}
+
+
+.benchmark-slider-panel {
+  display: grid;
+  gap: 10px;
+}
+
+.benchmark-slider-controls {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.benchmark-slider-controls input[type='range'] {
+  width: 100%;
+}
+
+.bench-nav-btn {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-weight: 700;
+}
