@@ -177,12 +177,12 @@ def main():
     results_dir = output_dir / "query_results"
     queries_dir = Path("docs/queries")
     real_results_dir = Path("data/results/real")
-    real_df = pd.read_parquet("data/reporting/wide_training_table.parquet")
-    print(f"Real data: {real_df.shape}")
     if args.skip_generation:
         synth_df = pd.read_parquet(output_dir / "synth_wide.parquet")
         print(f"Loaded existing: {synth_df.shape}")
     else:
+        real_df = pd.read_parquet("data/reporting/wide_training_table.parquet")
+        print(f"Real data: {real_df.shape}")
         synth_df = asyncio.run(run_generation(args, real_df, output_dir))
     # Sparsity check
     print("\n=== SPARSITY CHECK ===")
