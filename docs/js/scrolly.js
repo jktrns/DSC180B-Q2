@@ -103,14 +103,19 @@
       case 'step-compare':
         html = `
           <div class="compare-panel">
-            <h4 style="margin: 0 0 12px;">Per-query Method Comparison</h4>
-            <div style="margin-bottom: 10px;">
-              <label for="compareQuerySelect" class="small"><strong>Query:</strong></label>
-              <select id="compareQuerySelect" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 8px;"></select>
+            <h4 style="margin: 0 0 12px;">Browser Histogram: Real vs. Synthetic</h4>
+            <div class="img-compare" data-left-label="Real" data-right-label="Synthetic" style="height: 350px;">
+              <div style="width: 100%; height: 100%; background: var(--card); display: flex; align-items: center; justify-content: center; color: var(--muted);">
+                <p>Image: q_browserhist_real.png</p>
+              </div>
+              <div class="img-compare__overlay" style="width: 50%;">
+                <div style="width: 100%; height: 100%; background: var(--card); display: flex; align-items: center; justify-content: center; color: var(--muted);">
+                  <p>Image: q_browserhist_synth.png</p>
+                </div>
+              </div>
+              <div class="img-compare__handle" role="slider" aria-label="Image comparison handle"></div>
             </div>
-            <div id="compareQueryMeta" class="small" style="margin-bottom: 8px;"></div>
-            <div id="compareQueryBars" class="bench-bars"></div>
-            <p class="caption" style="margin-top: 8px;">Bars are generated from committed evaluation score artifacts (no placeholder images).</p>
+            <p class="caption" style="margin-top: 8px;">Drag to compare real (left) and synthetic (right) plots.</p>
           </div>
         `;
         break;
@@ -167,7 +172,7 @@
 
     if (stepId === 'step-compare') {
       setTimeout(() => {
-        window.initComparePanel && window.initComparePanel();
+        window.initImageCompare && window.initImageCompare();
       }, 100);
     }
   }
