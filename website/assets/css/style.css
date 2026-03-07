@@ -22,6 +22,13 @@
   --bg-alt: #1c1c1c;
   --rule: #2e2e2e;
   --max-width: 650px;
+
+  /* Method colors */
+  --c-wide: #8b6e5a;
+  --c-pertable: #5a7e8b;
+  --c-mst: #7e8b5a;
+  --c-pe-vanilla: #8b5a7e;
+  --c-pe-cond: #5a8b6e;
   --heading: 'Beaufort', Georgia, serif;
   --body: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --mono: 'Fira Code', Consolas, monospace;
@@ -120,6 +127,8 @@ main {
   line-height: 1.25;
   margin: 0 auto 1rem;
   color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .header .authors {
@@ -268,7 +277,7 @@ table {
 }
 
 thead {
-  border-top: 2px solid var(--text-muted);
+  border-top: 1px solid var(--text-muted);
   border-bottom: 1px solid var(--text-muted);
 }
 
@@ -285,7 +294,7 @@ td {
 }
 
 tbody tr:last-child {
-  border-bottom: 2px solid var(--text-muted);
+  border-bottom: 1px solid var(--text-muted);
 }
 
 /* Score cells (functional colors, dark-adapted) */
@@ -392,7 +401,13 @@ hr {
   padding: 1rem 0.8rem;
   border: 1px solid var(--rule);
   background: var(--bg-alt);
+  border-top: 3px solid var(--text-light);
 }
+
+.score-card[data-method="pertable"]  { border-top-color: var(--c-pertable); }
+.score-card[data-method="mst"]       { border-top-color: var(--c-mst); }
+.score-card[data-method="wide"]      { border-top-color: var(--c-wide); }
+.score-card[data-method="pe-cond"]   { border-top-color: var(--c-pe-cond); }
 
 .score-card h3 {
   font-size: 14px;

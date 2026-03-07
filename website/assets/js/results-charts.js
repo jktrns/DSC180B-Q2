@@ -6,7 +6,7 @@
   'use strict';
 
   var METHODS = ['Wide DP-SGD', 'Per-table DP-SGD', 'MST', 'PE Vanilla', 'PE Conditional'];
-  var COLORS  = ['#a8a49a', '#7a766e', '#e0ddd5', '#8c8880', '#5c5955'];
+  var COLORS  = ['#8b6e5a', '#5a7e8b', '#7e8b5a', '#8b5a7e', '#5a8b6e'];
 
   function buildQueryTable(data) {
     var container = document.getElementById('queryTable');

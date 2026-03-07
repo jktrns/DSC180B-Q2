@@ -269,22 +269,22 @@
          Per-table DP-SGD and MST were evaluated on all 21.</p>
 
       <div class="results-summary">
-        <div class="score-card">
+        <div class="score-card" data-method="pertable">
           <h3>Per-table DP-SGD</h3>
           <p class="score">6 / 21</p>
           <p class="small">Best on aggregates ($\text{RE} = 0.54$)</p>
         </div>
-        <div class="score-card">
+        <div class="score-card" data-method="mst">
           <h3>MST (Marginal)</h3>
           <p class="score">6 / 21</p>
           <p class="small">Best on distributions ($\text{TV} = 0.105$)</p>
         </div>
-        <div class="score-card">
+        <div class="score-card" data-method="wide">
           <h3>Wide-table DP-VAE</h3>
           <p class="score">1 / 10</p>
           <p class="small">Sparsity collapse</p>
         </div>
-        <div class="score-card">
+        <div class="score-card" data-method="pe-cond">
           <h3>PE (Conditional)</h3>
           <p class="score">3 / 10</p>
           <p class="small">Vanilla baseline: 1 / 10</p>
