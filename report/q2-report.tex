@@ -235,7 +235,7 @@ We instead normalize each query discrepancy by the \emph{natural sampling variat
     \label{eq:normalized-error}
     \hat{\Delta}_j(\tilde{D}) = \frac{\Delta_j(D, \tilde{D})}{|\Delta_j(D_1, D_2)|}, \quad |\Delta_j(D_1, D_2)| > 0,
 \end{equation}
-where the denominator $|\Delta_j(D_1, D_2)|$ is the natural sampling variation.\footnote{When $D_1$ and $D_2$ produce identical query results for a metric column ($|\Delta_j(D_1, D_2)| = 0$), the normalized error is undefined. We exclude such metrics (18 of 282, or 6.4\%, primarily Jaccard group-coverage scores) rather than using a stabilizer $\eta$, since an $\eta$-stabilized ratio would produce astronomically large values that dominate summary statistics.} A normalized error of $\hat{\Delta}_j = 1$ means the synthetic error equals the variation expected from halving the real dataset; $\hat{\Delta}_j < 1$ means the synthetic data is closer to the full real data than a random half-sample; $\hat{\Delta}_j \gg 1$ means the synthesis error far exceeds natural variation. The aggregate benchmark score is:
+where the denominator $|\Delta_j(D_1, D_2)|$ is the natural sampling variation.\footnote{When $D_1$ and $D_2$ produce identical query results for a metric column ($|\Delta_j(D_1, D_2)| = 0$), the normalized error is undefined. We exclude such metrics (22 of 284 method--metric pairs, or 7.7\%, primarily Jaccard group-coverage scores where the two random halves produce identical group-key sets) rather than using a stabilizer $\eta$, since an $\eta$-stabilized ratio would produce astronomically large values that dominate summary statistics.} A normalized error of $\hat{\Delta}_j = 1$ means the synthetic error equals the variation expected from halving the real dataset; $\hat{\Delta}_j < 1$ means the synthetic data is closer to the full real data than a random half-sample; $\hat{\Delta}_j \gg 1$ means the synthesis error far exceeds natural variation. The aggregate benchmark score is:
 \begin{equation}
     \text{Score}(\tilde{D}) = \frac{1}{|\mathcal{Q}|} \sum_{j=1}^{|\mathcal{Q}|} \hat{\Delta}_j(\tilde{D}).
 \end{equation}
@@ -1003,17 +1003,17 @@ Table~\ref{tab:normalized-error} reports the normalized error metric (Equation~\
 \toprule
 \textbf{Method} & \textbf{Mean $\hat{\Delta}$} & \textbf{Median $\hat{\Delta}$} & \textbf{Std} & \textbf{Metrics} \\
 \midrule
-Per-table DP-SGD & 15.45 & \textbf{2.72} & 39.70 & 82 \\
-Private Evolution & 31.76 & 6.92 & 81.98 & 48 \\
-MST baseline & 1{,}294.00 & 10.96 & 9{,}054.92 & 83 \\
-Wide-table DP-VAE & 133.38 & 12.88 & 371.57 & 51 \\
+Per-table DP-SGD & 12.59 & \textbf{2.81} & 28.44 & 82 \\
+Private Evolution & 34.07 & 8.28 & 92.50 & 47 \\
+MST baseline & 1{,}756.36 & 9.02 & 13{,}235.52 & 83 \\
+Wide-table DP-VAE & 280.54 & 16.61 & 1{,}116.38 & 50 \\
 \bottomrule
 \end{tabular*}
-\caption{Normalized error summary across synthesis methods ($\hat{\Delta} = \Delta_j(D, \tilde{D}) / |\Delta_j(D_1, D_2)|$, lower is better). Metrics with zero baseline variation are excluded (see text). Per-table DP-SGD achieves the best median normalized error (2.72), meaning its typical metric-level distortion is under 3$\times$ the natural half-sample variation. Bold indicates best.}
+\caption{Normalized error summary across synthesis methods ($\hat{\Delta} = \Delta_j(D, \tilde{D}) / |\Delta_j(D_1, D_2)|$, lower is better). Metrics with zero baseline variation are excluded (see text). Per-table DP-SGD achieves the best median normalized error (2.81), meaning its typical metric-level distortion is under 3$\times$ the natural half-sample variation. Bold indicates best.}
 \label{tab:normalized-error}
 \end{table}
 
-Per-table DP-SGD achieves the best median normalized error (2.72), followed by PE (6.92), MST (10.96), and wide-table DP-VAE (12.88). This ranking differs from the binary pass-rate ranking, where per-table and MST were tied at 28.6\%. The normalized metric reveals that per-table DP-SGD's errors are consistently smaller relative to natural variation, while MST's high mean (1{,}294) is driven by extreme outliers on aggregate queries that involve multi-table joins (e.g., \texttt{SleepPivot} at 8{,}655$\times$ and \texttt{DisplayAgg} at 3{,}850$\times$). Metrics where the baseline variation $|\Delta_j(D_1,D_2)|$ is below $10^{-8}$ (i.e., the two random halves produce identical values) are excluded, since they offer no natural variation to normalize against.
+Per-table DP-SGD achieves the best median normalized error (2.81), followed by PE (8.28), MST (9.02), and wide-table DP-VAE (16.61). This ranking differs from the binary pass-rate ranking, where per-table and MST were tied at 28.6\%. The normalized metric reveals that per-table DP-SGD's errors are consistently smaller relative to natural variation, while MST's high mean (1{,}756) is driven by extreme outliers on aggregate queries that involve multi-table joins (e.g., \texttt{SleepPivot} at 12{,}368$\times$ and \texttt{DisplayAgg} at 4{,}430$\times$). Metrics where the baseline variation $|\Delta_j(D_1,D_2)|$ is below $10^{-8}$ (i.e., the two random halves produce identical values) are excluded, since they offer no natural variation to normalize against.
 
 Table~\ref{tab:normalized-error-per-query} provides per-query normalized errors for the four base methods (conditional PE v2 is excluded because its evaluation detail data was not retained for normalized error computation).
 
@@ -1034,35 +1034,35 @@ Table~\ref{tab:normalized-error-per-query} provides per-query normalized errors 
 \endfoot
 \bottomrule
 \endlastfoot
-\texttt{BlockerAgg} & Agg+Join & \cellcolor{scorena}--- & \cellcolor{scorehi}16.1 & \cellcolor{scorelo}35.3 & \cellcolor{scorena}--- \\
-\texttt{BlockerDurAgg} & Agg+Join & \cellcolor{scorena}--- & \cellcolor{scorehi}2.4 & \cellcolor{scorelo}45.1 & \cellcolor{scorena}--- \\
-\texttt{ChassisAgg} & Agg+Join & \cellcolor{scorelo}309.3 & \cellcolor{scoremid}4.0 & \cellcolor{scoremid}4.0 & \cellcolor{scorehi}3.3 \\
-\texttt{DisplayAgg} & Agg+Join & \cellcolor{scorena}--- & \cellcolor{scorehi}13.7 & \cellcolor{scorelo}3{,}850.4 & \cellcolor{scorena}--- \\
-\texttt{NetAsymAgg} & Agg+Join & \cellcolor{scorena}--- & \cellcolor{scorehi}35.3 & \cellcolor{scorelo}46.9 & \cellcolor{scorena}--- \\
-\texttt{VendorAgg} & Agg+Join & \cellcolor{scorena}--- & \cellcolor{scorelo}44.6 & \cellcolor{scorehi}27.5 & \cellcolor{scorena}--- \\
+\texttt{BlockerAgg} & Agg+Join & \cellcolor{scorena}--- & \cellcolor{scorehi}22.6 & \cellcolor{scorelo}57.8 & \cellcolor{scorena}--- \\
+\texttt{BlockerDurAgg} & Agg+Join & \cellcolor{scorena}--- & \cellcolor{scorehi}2.4 & \cellcolor{scorelo}45.4 & \cellcolor{scorena}--- \\
+\texttt{ChassisAgg} & Agg+Join & \cellcolor{scorelo}1{,}481.5 & \cellcolor{scorena}--- & \cellcolor{scorena}--- & \cellcolor{scorehi}3.6 \\
+\texttt{DisplayAgg} & Agg+Join & \cellcolor{scorena}--- & \cellcolor{scorehi}12.7 & \cellcolor{scorelo}4{,}429.5 & \cellcolor{scorena}--- \\
+\texttt{NetAsymAgg} & Agg+Join & \cellcolor{scorena}--- & \cellcolor{scorehi}18.7 & \cellcolor{scorelo}24.0 & \cellcolor{scorena}--- \\
+\texttt{VendorAgg} & Agg+Join & \cellcolor{scorena}--- & \cellcolor{scorelo}34.1 & \cellcolor{scorehi}21.1 & \cellcolor{scorena}--- \\
 \midrule
-\texttt{BatteryDemo} & Geo/Demo & \cellcolor{scorena}--- & \cellcolor{scorehi}12.6 & \cellcolor{scorelo}248.1 & \cellcolor{scorena}--- \\
-\texttt{BatteryGeo} & Geo/Demo & \cellcolor{scorelo}139.1 & \cellcolor{scorehi}2.5 & \cellcolor{scorelo}320.5 & \cellcolor{scoremid}8.3 \\
-\texttt{PowerGeo} & Geo/Demo & \cellcolor{scorelo}616.6 & \cellcolor{scoremid}3.3 & \cellcolor{scorehi}1.0 & \cellcolor{scoremid}8.3 \\
-\texttt{XeonGeo} & Geo/Demo & \cellcolor{scorelo}96.5 & \cellcolor{scoremid}6.5 & \cellcolor{scorelo}593.4 & \cellcolor{scorehi}5.1 \\
+\texttt{BatteryDemo} & Geo/Demo & \cellcolor{scorena}--- & \cellcolor{scorehi}14.4 & \cellcolor{scorelo}369.4 & \cellcolor{scorena}--- \\
+\texttt{BatteryGeo} & Geo/Demo & \cellcolor{scoremid}294.7 & \cellcolor{scorehi}3.1 & \cellcolor{scorelo}356.7 & \cellcolor{scoremid}6.5 \\
+\texttt{PowerGeo} & Geo/Demo & \cellcolor{scorelo}920.5 & \cellcolor{scoremid}3.7 & \cellcolor{scorehi}1.2 & \cellcolor{scoremid}9.4 \\
+\texttt{XeonGeo} & Geo/Demo & \cellcolor{scoremid}60.4 & \cellcolor{scoremid}3.8 & \cellcolor{scorelo}211.8 & \cellcolor{scorehi}2.9 \\
 \midrule
-\texttt{BrowserHist} & Histogram & \cellcolor{scoremid}95.5 & \cellcolor{scorelo}118.0 & \cellcolor{scorehi}25.5 & \cellcolor{scoremid}65.1 \\
-\texttt{RamHist} & Histogram & \cellcolor{scoremid}29.8 & \cellcolor{scoremid}38.3 & \cellcolor{scorelo}110.9 & \cellcolor{scorehi}14.5 \\
+\texttt{BrowserHist} & Histogram & \cellcolor{scorelo}58.7 & \cellcolor{scoremid}46.0 & \cellcolor{scorehi}26.3 & \cellcolor{scoremid}49.5 \\
+\texttt{RamHist} & Histogram & \cellcolor{scoremid}31.6 & \cellcolor{scoremid}37.8 & \cellcolor{scorelo}107.9 & \cellcolor{scorehi}14.7 \\
 \midrule
-\texttt{PersonaPivot} & Pivot & \cellcolor{scorelo}65.4 & \cellcolor{scorehi}3.4 & \cellcolor{scoremid}35.3 & \cellcolor{scorelo}41.2 \\
-\texttt{SleepPivot} & Pivot & \cellcolor{scorena}--- & \cellcolor{scorehi}19.7 & \cellcolor{scorelo}8{,}655.3 & \cellcolor{scorena}--- \\
+\texttt{PersonaPivot} & Pivot & \cellcolor{scorelo}77.6 & \cellcolor{scorehi}4.6 & \cellcolor{scoremid}28.4 & \cellcolor{scoremid}45.7 \\
+\texttt{SleepPivot} & Pivot & \cellcolor{scorena}--- & \cellcolor{scorehi}23.8 & \cellcolor{scorelo}12{,}367.9 & \cellcolor{scorena}--- \\
 \midrule
 \texttt{BrowserRank} & Top-$k$ & \cellcolor{scoremid}9.0 & \cellcolor{scoremid}4.0 & \cellcolor{scorehi}3.0 & \cellcolor{scorelo}38.0 \\
-\texttt{DetectionRank} & Top-$k$ & \cellcolor{scorena}--- & \cellcolor{scorelo}4.7 & \cellcolor{scorehi}2.0 & \cellcolor{scorena}--- \\
-\texttt{FocalRank} & Top-$k$ & \cellcolor{scorena}--- & \cellcolor{scorehi}1.0 & \cellcolor{scorelo}1.1 & \cellcolor{scorena}--- \\
-\texttt{SystemRank} & Top-$k$ & \cellcolor{scorena}--- & \cellcolor{scorelo}45.9 & \cellcolor{scorehi}9.7 & \cellcolor{scorena}--- \\
+\texttt{DetectionRank} & Top-$k$ & \cellcolor{scorena}--- & \cellcolor{scorelo}7.3 & \cellcolor{scorehi}2.8 & \cellcolor{scorena}--- \\
+\texttt{FocalRank} & Top-$k$ & \cellcolor{scorena}--- & \cellcolor{scorehi}0.8 & \cellcolor{scorelo}1.1 & \cellcolor{scorena}--- \\
+\texttt{SystemRank} & Top-$k$ & \cellcolor{scorena}--- & \cellcolor{scorelo}53.2 & \cellcolor{scorehi}5.0 & \cellcolor{scorena}--- \\
 \texttt{WaitModeRank} & Top-$k$ & \cellcolor{scorena}--- & \cellcolor{scorehi}0.9 & \cellcolor{scorehi}0.9 & \cellcolor{scorena}--- \\
 \texttt{WaitRank} & Top-$k$ & \cellcolor{scorena}--- & \cellcolor{scorehi}1.0 & \cellcolor{scorehi}1.0 & \cellcolor{scorena}--- \\
-\texttt{WaitStateRank} & Top-$k$ & \cellcolor{scorena}--- & \cellcolor{scorena}--- & \cellcolor{scorena}--- & \cellcolor{scorena}--- \\
+\texttt{WaitStateRank} & Top-$k$ & \cellcolor{scorena}--- & \cellcolor{scorehi}1.0 & \cellcolor{scorehi}1.0 & \cellcolor{scorena}--- \\
 \end{longtable}
 \end{footnotesize}
 
-The per-query breakdown reveals several patterns. First, per-table DP-SGD achieves normalized errors below 5$\times$ on 10 of 20 queries, indicating that for half of the benchmark its synthesis error is within a small multiple of natural sampling variation. Second, MST excels on ranking queries (\texttt{WaitRank}, \texttt{DetectionRank}) where it achieves near-unity normalized errors, confirming its strength in preserving marginal orderings. Third, the wide-table methods show extreme normalized errors on aggregate queries (e.g., \texttt{PowerGeo} at 617$\times$, \texttt{ChassisAgg} at 309$\times$), driven by the zero-inflation problem discussed in Section~\ref{sec:methods-wide-dpsgd}. Fourth, PE achieves competitive normalized errors on the queries it can evaluate (e.g., \texttt{ChassisAgg} at 3.3, \texttt{XeonGeo} at 5.1) but covers only 8 of 20 queries.
+The per-query breakdown reveals several patterns. First, per-table DP-SGD achieves normalized errors below 5$\times$ on 10 of 20 queries, indicating that for half of the benchmark its synthesis error is within a small multiple of natural sampling variation. Second, MST excels on ranking queries (\texttt{WaitRank}, \texttt{DetectionRank}) where it achieves near-unity normalized errors, confirming its strength in preserving marginal orderings. Third, the wide-table methods show extreme normalized errors on aggregate queries (e.g., \texttt{PowerGeo} at 921$\times$, \texttt{ChassisAgg} at 1{,}482$\times$), driven by the zero-inflation problem discussed in Section~\ref{sec:methods-wide-dpsgd}. Fourth, PE achieves competitive normalized errors on the queries it can evaluate (e.g., \texttt{ChassisAgg} at 3.6, \texttt{XeonGeo} at 2.9) but covers only 8 of 21 queries.
 
 Figure~\ref{fig:method-comparison} complements these tables with pass-count and average-score bars, and Figure~\ref{fig:method-by-type} breaks average score down by query type.
 
@@ -1460,7 +1460,7 @@ Total variation and Spearman $\rho$ thresholds have minimal effect on pass rates
 
 We presented an evaluation framework for differentially private synthetic data generation on Intel's DCA telemetry corpus, implementing four base synthesis approaches---a wide-table DP-VAE trained with DP-SGD, per-table DP histogram synthesis, MST marginal-based synthesis, and Private Evolution (PE) via foundation model APIs---plus a conditional PE variant that conditions generation on DP-noised aggregate targets.
 
-All methods have completed evaluation against the benchmark. Under binary pass-rate scoring, per-table DP-SGD and MST each pass 6 of 21 queries (28.6\%), while the wide-table DP-VAE passes 1 of 8 (12.5\%), PE passes 2 of 8 (25.0\%), and conditional PE v2 passes 3 of 10 (30.0\%). The conditional PE v2 result demonstrates that conditioning on DP-noised aggregates with zCDP composition and per-group budget splitting can nearly triple the baseline PE's average score (0.104 $\to$ 0.296) while maintaining the same total privacy budget ($\varepsilon = 4.0$). However, the normalized error metric (Section~\ref{sec:normalized-error}), which calibrates each query's synthesis error against the natural variation from a 50/50 data split, reveals a clearer ranking among the base methods: per-table DP-SGD achieves a median normalized error of 2.72$\times$, meaning its typical distortion is under 3 times the variation expected from halving the real dataset. PE follows at 6.92$\times$, MST at 10.96$\times$, and wide-table DP-VAE at 12.88$\times$. This continuous metric breaks the binary tie between per-table and MST, showing per-table's errors are consistently smaller relative to natural variation. Per-table DP-SGD achieves normalized errors below 5$\times$ on 10 of 20 queries, while MST excels specifically on ranking queries (achieving near-unity normalized errors on \texttt{WaitRank} and \texttt{WaitModeRank}) but suffers extreme errors on multi-table aggregate joins.
+All methods have completed evaluation against the benchmark. Under binary pass-rate scoring, per-table DP-SGD and MST each pass 6 of 21 queries (28.6\%), while the wide-table DP-VAE passes 1 of 8 (12.5\%), PE passes 2 of 8 (25.0\%), and conditional PE v2 passes 3 of 10 (30.0\%). The conditional PE v2 result demonstrates that conditioning on DP-noised aggregates with zCDP composition and per-group budget splitting can nearly triple the baseline PE's average score (0.104 $\to$ 0.296) while maintaining the same total privacy budget ($\varepsilon = 4.0$). However, the normalized error metric (Section~\ref{sec:normalized-error}), which calibrates each query's synthesis error against the natural variation from a 50/50 data split, reveals a clearer ranking among the base methods: per-table DP-SGD achieves a median normalized error of 2.81$\times$, meaning its typical distortion is under 3 times the variation expected from halving the real dataset. PE follows at 8.28$\times$, MST at 9.02$\times$, and wide-table DP-VAE at 16.61$\times$. This continuous metric breaks the binary tie between per-table and MST, showing per-table's errors are consistently smaller relative to natural variation. Per-table DP-SGD achieves normalized errors below 5$\times$ on 10 of 20 queries, while MST excels specifically on ranking queries (achieving near-unity normalized errors on \texttt{WaitRank} and \texttt{WaitModeRank}) but suffers extreme errors on multi-table aggregate joins.
 
 Two structural findings emerge. First, wide-table sparsity, not the choice of synthesis algorithm, is the dominant failure mode. The wide table has 93--99.9\% zero values in metric columns, and both the VAE and the foundation model collapse these to their mode. Second, per-table independence destroys cross-table correlations. The 5-way chassis join produces empty or random results under both per-table methods, while the wide-table approaches (DP-VAE and PE) at least preserve some cross-table structure.
 
