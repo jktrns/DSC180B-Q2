@@ -593,13 +593,18 @@ table tr:hover {
   border: 1px solid var(--border);
   border-radius: 10px;
   background: #fff;
-  padding: 10px;
-  min-height: 360px;
+  padding: 8px 10px;
+  min-height: 330px;
 }
 
 .benchmark-desc {
   color: var(--muted);
-  margin: 0 0 10px;
+  margin: 0 0 8px;
+  font-size: 0.78rem;
+  line-height: 1.25;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow-wrap: anywhere;
 }
 
 .bench-score-list {
@@ -613,22 +618,23 @@ table tr:hover {
 
 .bench-bars {
   display: grid;
-  gap: 8px;
+  gap: 6px;
 }
 
 .bench-bar-row {
   display: grid;
-  grid-template-columns: 180px 1fr auto;
+  grid-template-columns: 170px 1fr auto;
   align-items: center;
-  gap: 8px;
-  font-size: 0.86rem;
+  gap: 6px;
+  font-size: 0.82rem;
 }
 
 .bench-err {
   display: block;
   color: #b45309;
   font-style: normal;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
+  line-height: 1.15;
 }
 
 .bench-bar-track {
@@ -651,6 +657,10 @@ table tr:hover {
 
   .benchmark-detail {
     min-height: 320px;
+  }
+
+  .benchmark-desc {
+    font-size: 0.76rem;
   }
 }
 
