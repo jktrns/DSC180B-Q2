@@ -264,8 +264,6 @@
           const bestText = best ? `Best method: ${best.label} (${best.value.toFixed(3)})` : 'Best method: not available';
 
           const passCount = METHOD_ORDER.filter(([key]) => rec.passed?.[key] === true).length;
-          const desc = rec.question ? `<p class="small"><strong>Description:</strong> ${rec.question}</p>` : '';
-
           const scoreList = METHOD_ORDER.map(([key, label]) => {
             const err = rec.errors?.[key] ? ` · ${rec.errors[key]}` : '';
             return `<li><strong>${label}:</strong> ${fmt(rec.scores?.[key])}${err}</li>`;
@@ -280,7 +278,6 @@
           detailEl.innerHTML = `
             <h4 style="margin:0 0 6px;">${rec.query}</h4>
             <p class="small" style="margin:0 0 6px;"><strong>Type:</strong> ${rec.type || 'unknown'}</p>
-            ${desc}
             <p class="small" style="margin:0 0 10px;">${bestText} · Pass across methods: ${passCount}/4</p>
             <ul class="bench-score-list">${scoreList}</ul>
             <div class="bench-bars">${bars}</div>
