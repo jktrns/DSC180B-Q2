@@ -91,7 +91,7 @@
           var s = (q.scores || []).find(function(s) { return s.method === m; });
           return s && s.value !== null ? s.value : null;
         }).filter(function(v) { return v !== null; });
-        return scores.length ? scores.reduce(function(a, b) { return a + b; }, 0) / scores.length : 0;
+        return scores.length ? scores.reduce(function(a, b) { return a + b; }, 0) / scores.length : null;
       });
       return {
         x: types, y: yVals, name: m.replace('Wide DP-SGD', 'Wide DP-VAE').replace('PE Vanilla', 'PE (Vanilla)').replace('PE Conditional', 'PE (Cond.)'),
