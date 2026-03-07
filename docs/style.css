@@ -588,3 +588,77 @@ table th {
 table tr:hover {
   background: var(--card);
 }
+/* Step 2 benchmark explorer inside Explore page */
+.benchmark-detail {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fff;
+  padding: 10px;
+}
+
+.bench-score-list {
+  margin: 0 0 10px;
+  padding-left: 18px;
+}
+
+.bench-score-list li {
+  margin: 4px 0;
+}
+
+.bench-bars {
+  display: grid;
+  gap: 8px;
+}
+
+.bench-bar-row {
+  display: grid;
+  grid-template-columns: 150px 1fr auto;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+}
+
+.bench-bar-track {
+  background: #eef2ff;
+  border-radius: 999px;
+  height: 10px;
+  overflow: hidden;
+}
+
+.bench-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #2563eb, #7c3aed);
+}
+
+@media (max-width: 900px) {
+  .bench-bar-row {
+    grid-template-columns: 1fr;
+    gap: 3px;
+  }
+}
+
+
+.benchmark-slider-panel {
+  display: grid;
+  gap: 10px;
+}
+
+.benchmark-slider-controls {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.benchmark-slider-controls input[type='range'] {
+  width: 100%;
+}
+
+.bench-nav-btn {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-weight: 700;
+}

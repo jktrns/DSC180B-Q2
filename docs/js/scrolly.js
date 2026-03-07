@@ -44,30 +44,26 @@
     switch (stepId) {
       case 'step-hero':
         html = `
-          <div class="figure-placeholder">
-            <p>Project Overview Diagram</p>
-            <small>Workflow comparing training-based (DP-SGD) and training-free (Private Evolution) synthesis.</small>
+          <div class="compare-panel">
+            <img src="assets/hero.jpeg" alt="Project overview workflow" style="width: 100%; border: 1px solid var(--border); border-radius: 10px;" />
+            <p class="caption" style="margin-top: 8px;">Workflow comparing training-based (DP-SGD) and training-free (Private Evolution) synthesis.</p>
           </div>
         `;
         break;
 
       case 'step-queries':
         html = `
-          <div class="query-explorer-panel">
-            <div style="margin-bottom: 12px;">
-              <label for="queryRange" style="display: block; margin-bottom: 8px;"><strong>Query:</strong> <span id="queryLabel">Loading...</span></label>
-              <input id="queryRange" type="range" min="0" max="0" value="0" step="1" style="width: 100%;" />
+          <div class="benchmark-slider-panel">
+            <div class="benchmark-slider-controls">
+              <button type="button" id="benchPrev" class="bench-nav-btn">←</button>
+              <div style="width: 100%;">
+                <label for="benchRange" class="small"><strong>Query:</strong> <span id="benchLabel">Loading…</span></label>
+                <input id="benchRange" type="range" min="0" max="0" value="0" step="1" />
+              </div>
+              <button type="button" id="benchNext" class="bench-nav-btn">→</button>
             </div>
-            <div class="query-card" id="queryCard">
-              <div>
-                <p class="meta"><span id="queryType"></span></p>
-                <p id="queryDesc"></p>
-                <div class="scores" id="queryScores"></div>
-              </div>
-              <div class="query-figure">
-                <img id="queryImg" src="" alt="Query figure" style="width: 100%; border-radius: 8px; background: var(--card);" />
-                <p class="caption" id="queryCaption"></p>
-              </div>
+            <div class="benchmark-detail" id="benchDetail">
+              <p class="small">Loading benchmark results…</p>
             </div>
           </div>
         `;
@@ -108,19 +104,14 @@
       case 'step-compare':
         html = `
           <div class="compare-panel">
-            <h4 style="margin: 0 0 12px;">Browser Histogram: Real vs. Synthetic</h4>
-            <div class="img-compare" data-left-label="Real" data-right-label="Synthetic" style="height: 350px;">
-              <div style="width: 100%; height: 100%; background: var(--card); display: flex; align-items: center; justify-content: center; color: var(--muted);">
-                <p>Image: q_browserhist_real.png</p>
-              </div>
-              <div class="img-compare__overlay" style="width: 50%;">
-                <div style="width: 100%; height: 100%; background: var(--card); display: flex; align-items: center; justify-content: center; color: var(--muted);">
-                  <p>Image: q_browserhist_synth.png</p>
-                </div>
-              </div>
-              <div class="img-compare__handle" role="slider" aria-label="Image comparison handle"></div>
+            <h4 style="margin: 0 0 12px;">Per-query Method Comparison</h4>
+            <div style="margin-bottom: 10px;">
+              <label for="compareQuerySelect" class="small"><strong>Query:</strong></label>
+              <select id="compareQuerySelect" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 8px;"></select>
             </div>
-            <p class="caption" style="margin-top: 8px;">Drag to compare real (left) and synthetic (right) plots.</p>
+            <div id="compareQueryMeta" class="small" style="margin-bottom: 8px;"></div>
+            <div id="compareQueryBars" class="bench-bars"></div>
+            <p class="caption" style="margin-top: 8px;">Bars are generated from committed evaluation score artifacts (no placeholder images).</p>
           </div>
         `;
         break;
@@ -165,7 +156,7 @@
     if (stepId === 'step-queries' && !queryExplorerInitialized) {
       queryExplorerInitialized = true;
       setTimeout(() => {
-        window.initQueryExplorer && window.initQueryExplorer();
+        window.initBenchmarkQueryExplorer && window.initBenchmarkQueryExplorer();
       }, 100);
     }
 
@@ -178,39 +169,45 @@
 
     if (stepId === 'step-compare') {
       setTimeout(() => {
-        window.initImageCompare && window.initImageCompare();
+        window.initComparePanel && window.initComparePanel();
       }, 100);
     }
   }
 
   /**
-   * IntersectionObserver callback
+   * Determine active step by largest visible ratio in viewport.
    */
-  const observerCallback = (entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting && entry.intersectionRatio > 0.4) {
-        const stepId = entry.target.dataset.step;
-        if (stepId !== currentStep) {
-          currentStep = stepId;
-          const stepIndex = Array.from(steps).indexOf(entry.target);
-          setPanel(stepId);
-          updateProgress(stepIndex);
-          entry.target.classList.add('active');
-        }
-      } else {
-        entry.target.classList.remove('active');
+  function refreshActiveStep() {
+    let bestStep = null;
+    let bestRatio = -1;
+
+    steps.forEach((step) => {
+      const rect = step.getBoundingClientRect();
+      const visible = Math.max(0, Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, 0));
+      const ratio = rect.height > 0 ? visible / rect.height : 0;
+      if (ratio > bestRatio) {
+        bestRatio = ratio;
+        bestStep = step;
       }
     });
-  };
 
-  // Set up IntersectionObserver
-  const observer = new IntersectionObserver(observerCallback, {
-    threshold: [0.4, 0.6],
-  });
+    if (!bestStep || bestRatio < 0.15) return;
 
-  steps.forEach((step) => {
-    observer.observe(step);
-  });
+    const stepId = bestStep.dataset.step;
+    if (stepId !== currentStep) {
+      currentStep = stepId;
+      const stepIndex = Array.from(steps).indexOf(bestStep);
+      setPanel(stepId);
+      updateProgress(stepIndex);
+    }
+
+    steps.forEach((step) => {
+      step.classList.toggle('active', step === bestStep);
+    });
+  }
+
+  window.addEventListener('scroll', refreshActiveStep, { passive: true });
+  window.addEventListener('resize', refreshActiveStep);
 
   // Initialize first step manually
   if (steps.length > 0) {
@@ -218,7 +215,373 @@
     setPanel(firstStepId);
     updateProgress(0);
     steps[0].classList.add('active');
+    requestAnimationFrame(refreshActiveStep);
   }
+
+  window.initBenchmarkQueryExplorer = function () {
+    const rangeEl = document.getElementById('benchRange');
+    const labelEl = document.getElementById('benchLabel');
+    const detailEl = document.getElementById('benchDetail');
+    const prevEl = document.getElementById('benchPrev');
+    const nextEl = document.getElementById('benchNext');
+
+    if (!rangeEl || !labelEl || !detailEl || !prevEl || !nextEl) return;
+
+    const METHODS = [
+      { key: 'widetable', label: 'Wide-table DP-VAE' },
+      { key: 'pertable', label: 'Per-table DP-SGD' },
+      { key: 'mst', label: 'MST (Marginal)' },
+      { key: 'pe', label: 'Private Evolution' },
+    ];
+
+    const FILES = {
+      widetable: 'evaluation_widetable.csv',
+      pertable: 'evaluation_pertable.csv',
+      mst: 'evaluation_mst.csv',
+      pe: 'evaluation_pe.csv',
+    };
+
+    const BASES = ['../data/results', 'data/results', './data/results', '/data/results'];
+
+    const parseCSV = (text) => {
+      const rows = [];
+      let row = [];
+      let cell = '';
+      let i = 0;
+      let inQuotes = false;
+      while (i < text.length) {
+        const ch = text[i];
+        const next = text[i + 1];
+        if (inQuotes) {
+          if (ch === '"' && next === '"') {
+            cell += '"';
+            i += 2;
+            continue;
+          }
+          if (ch === '"') {
+            inQuotes = false;
+            i += 1;
+            continue;
+          }
+          cell += ch;
+          i += 1;
+          continue;
+        }
+        if (ch === '"') {
+          inQuotes = true;
+          i += 1;
+          continue;
+        }
+        if (ch === ',') {
+          row.push(cell);
+          cell = '';
+          i += 1;
+          continue;
+        }
+        if (ch === '\n') {
+          row.push(cell);
+          rows.push(row);
+          row = [];
+          cell = '';
+          i += 1;
+          continue;
+        }
+        if (ch !== '\r') {
+          cell += ch;
+        }
+        i += 1;
+      }
+      if (cell.length || row.length) {
+        row.push(cell);
+        rows.push(row);
+      }
+      if (!rows.length) return [];
+      const headers = rows[0];
+      return rows.slice(1).filter((r) => r.some((c) => c !== '')).map((r) => {
+        const out = {};
+        headers.forEach((h, idx) => {
+          out[h] = r[idx] ?? '';
+        });
+        return out;
+      });
+    };
+
+    const toNum = (v) => {
+      if (v === '' || v == null) return null;
+      const n = Number(v);
+      return Number.isFinite(n) ? n : null;
+    };
+
+    const fmt = (v) => (v == null ? '—' : v.toFixed(3));
+
+    const fetchCsv = async (fileName) => {
+      let lastErr = null;
+      for (const base of BASES) {
+        const path = `${base}/${fileName}`;
+        try {
+          const res = await fetch(path);
+          if (!res.ok) throw new Error(path);
+          return parseCSV(await res.text());
+        } catch (err) {
+          lastErr = err;
+        }
+      }
+      throw lastErr || new Error(`Unable to fetch ${fileName}`);
+    };
+
+    const fetchQuestion = async (queryId) => {
+      try {
+        const res = await fetch(`queries/${queryId}.json`);
+        if (!res.ok) return null;
+        const data = await res.json();
+        const row = Array.isArray(data) ? data[0] : data;
+        return row && row.question ? row.question : null;
+      } catch {
+        return null;
+      }
+    };
+
+    Promise.all(METHODS.map((m) => fetchCsv(FILES[m.key])))
+      .then(async (tables) => {
+        const methodRows = {};
+        METHODS.forEach((m, idx) => {
+          methodRows[m.key] = tables[idx];
+        });
+
+        const querySets = METHODS.map((m) => new Set((methodRows[m.key] || []).map((r) => r.query).filter(Boolean)));
+        let common = querySets[0];
+        for (let i = 1; i < querySets.length; i++) {
+          common = new Set([...common].filter((q) => querySets[i].has(q)));
+        }
+
+        const records = [];
+        for (const query of [...common].sort()) {
+          const rec = {
+            query,
+            type: '',
+            scores: {},
+            passed: {},
+            errors: {},
+            question: null,
+          };
+          METHODS.forEach((m) => {
+            const row = methodRows[m.key].find((r) => r.query === query) || {};
+            rec.type = rec.type || row.type || '';
+            rec.scores[m.key] = toNum(row.score);
+            rec.passed[m.key] = row.passed === 'True';
+            rec.errors[m.key] = row.error || '';
+          });
+          rec.question = await fetchQuestion(query);
+          records.push(rec);
+        }
+
+        if (!records.length) {
+          detailEl.innerHTML = '<p class="small">No overlapping query IDs across the four method CSVs.</p>';
+          return;
+        }
+
+        rangeEl.min = 0;
+        rangeEl.max = String(records.length - 1);
+        rangeEl.value = '0';
+
+        const render = (idx) => {
+          const i = Math.max(0, Math.min(records.length - 1, idx));
+          const selected = records[i];
+          labelEl.textContent = `${i + 1} of ${records.length} (${selected.query})`;
+
+          const vals = METHODS.map((m) => selected.scores[m.key]).filter((v) => v != null);
+          const max = vals.length ? Math.max(...vals, 1) : 1;
+          let bestText = 'Best method: not available';
+          if (vals.length) {
+            const best = METHODS
+              .map((m) => ({ label: m.label, value: selected.scores[m.key] }))
+              .filter((x) => x.value != null)
+              .sort((a, b) => b.value - a.value)[0];
+            bestText = `Best method: ${best.label} (${best.value.toFixed(3)})`;
+          }
+          const passCount = METHODS.filter((m) => selected.passed[m.key]).length;
+
+          const bars = METHODS.map((m) => {
+            const v = selected.scores[m.key];
+            const width = v == null ? 0 : Math.max(2, (v / max) * 100);
+            return `
+              <div class="bench-bar-row">
+                <span>${m.label}</span>
+                <div class="bench-bar-track"><div class="bench-bar" style="width:${width}%"></div></div>
+                <strong>${fmt(v)}</strong>
+              </div>
+            `;
+          }).join('');
+
+          const desc = selected.question
+            ? `<p class="small"><strong>Description:</strong> ${selected.question}</p>`
+            : '';
+
+          const scoreList = METHODS.map((m) => {
+            const err = selected.errors[m.key] ? ` · ${selected.errors[m.key]}` : '';
+            return `<li><strong>${m.label}:</strong> ${fmt(selected.scores[m.key])}${err}</li>`;
+          }).join('');
+
+          detailEl.innerHTML = `
+            <h4 style="margin:0 0 6px;">${selected.query}</h4>
+            <p class="small" style="margin:0 0 6px;"><strong>Type:</strong> ${selected.type || 'unknown'}</p>
+            ${desc}
+            <p class="small" style="margin:0 0 10px;">${bestText} · Pass across methods: ${passCount}/4</p>
+            <ul class="bench-score-list">${scoreList}</ul>
+            <div class="bench-bars">${bars}</div>
+          `;
+        };
+
+        rangeEl.addEventListener('input', () => render(Number(rangeEl.value)));
+        prevEl.addEventListener('click', () => {
+          rangeEl.value = String(Math.max(0, Number(rangeEl.value) - 1));
+          render(Number(rangeEl.value));
+        });
+        nextEl.addEventListener('click', () => {
+          rangeEl.value = String(Math.min(records.length - 1, Number(rangeEl.value) + 1));
+          render(Number(rangeEl.value));
+        });
+
+        render(0);
+      })
+      .catch((e) => {
+        detailEl.innerHTML = `<p class="small">Could not load benchmark CSV artifacts: ${e.message}. Serve repo root (python3 -m http.server) and open /docs/explore.html, or serve docs/ with docs/data/results available.</p>`;
+      });
+  };
+
+
+  window.initComparePanel = function () {
+    const selectEl = document.getElementById('compareQuerySelect');
+    const metaEl = document.getElementById('compareQueryMeta');
+    const barsEl = document.getElementById('compareQueryBars');
+    if (!selectEl || !metaEl || !barsEl) return;
+
+    const METHODS = [
+      { key: 'widetable', label: 'Wide-table DP-VAE' },
+      { key: 'pertable', label: 'Per-table DP-SGD' },
+      { key: 'mst', label: 'MST (Marginal)' },
+      { key: 'pe', label: 'Private Evolution' },
+    ];
+    const FILES = {
+      widetable: 'evaluation_widetable.csv',
+      pertable: 'evaluation_pertable.csv',
+      mst: 'evaluation_mst.csv',
+      pe: 'evaluation_pe.csv',
+    };
+    const BASES = ['../data/results', 'data/results', './data/results', '/data/results'];
+
+    const parseCSV = (text) => {
+      const rows = [];
+      let row = [];
+      let cell = '';
+      let i = 0;
+      let inQuotes = false;
+      while (i < text.length) {
+        const ch = text[i];
+        const next = text[i + 1];
+        if (inQuotes) {
+          if (ch === '"' && next === '"') { cell += '"'; i += 2; continue; }
+          if (ch === '"') { inQuotes = false; i += 1; continue; }
+          cell += ch; i += 1; continue;
+        }
+        if (ch === '"') { inQuotes = true; i += 1; continue; }
+        if (ch === ',') { row.push(cell); cell = ''; i += 1; continue; }
+        if (ch === '\n') { row.push(cell); rows.push(row); row = []; cell = ''; i += 1; continue; }
+        if (ch !== '\r') { cell += ch; }
+        i += 1;
+      }
+      if (cell.length || row.length) { row.push(cell); rows.push(row); }
+      if (!rows.length) return [];
+      const headers = rows[0];
+      return rows.slice(1).filter((r) => r.some((c) => c !== '')).map((r) => {
+        const out = {};
+        headers.forEach((h, idx) => { out[h] = r[idx] ?? ''; });
+        return out;
+      });
+    };
+
+    const toNum = (v) => {
+      if (v === '' || v == null) return null;
+      const n = Number(v);
+      return Number.isFinite(n) ? n : null;
+    };
+
+    const fetchCsv = async (name) => {
+      let last = null;
+      for (const b of BASES) {
+        try {
+          const res = await fetch(`${b}/${name}`);
+          if (!res.ok) throw new Error(`${b}/${name}`);
+          return parseCSV(await res.text());
+        } catch (e) { last = e; }
+      }
+      throw last || new Error(name);
+    };
+
+    const fetchQuestion = async (queryId) => {
+      try {
+        const res = await fetch(`queries/${queryId}.json`);
+        if (!res.ok) return null;
+        const d = await res.json();
+        const row = Array.isArray(d) ? d[0] : d;
+        return row && row.question ? row.question : null;
+      } catch { return null; }
+    };
+
+    Promise.all(METHODS.map((m) => fetchCsv(FILES[m.key])))
+      .then(async (tables) => {
+        const methodRows = {};
+        METHODS.forEach((m, i) => { methodRows[m.key] = tables[i]; });
+        const sets = METHODS.map((m) => new Set((methodRows[m.key] || []).map((r) => r.query).filter(Boolean)));
+        let common = sets[0];
+        for (let i = 1; i < sets.length; i++) common = new Set([...common].filter((q) => sets[i].has(q)));
+
+        const records = [];
+        for (const query of [...common].sort()) {
+          const rec = { query, type: '', scores: {}, question: null };
+          METHODS.forEach((m) => {
+            const row = methodRows[m.key].find((r) => r.query === query) || {};
+            rec.type = rec.type || row.type || '';
+            rec.scores[m.key] = toNum(row.score);
+          });
+          rec.question = await fetchQuestion(query);
+          records.push(rec);
+        }
+
+        if (!records.length) {
+          metaEl.textContent = 'No overlapping query IDs available in all four method CSVs.';
+          return;
+        }
+
+        records.forEach((r, i) => {
+          const opt = document.createElement('option');
+          opt.value = String(i);
+          opt.textContent = r.query;
+          selectEl.appendChild(opt);
+        });
+
+        const fmt = (v) => (v == null ? '—' : v.toFixed(3));
+
+        const render = (i) => {
+          const r = records[i];
+          const desc = r.question ? ` — ${r.question}` : '';
+          metaEl.textContent = `Type: ${r.type || 'unknown'}${desc}`;
+          const vals = METHODS.map((m) => r.scores[m.key]).filter((v) => v != null);
+          const max = vals.length ? Math.max(...vals, 1) : 1;
+          barsEl.innerHTML = METHODS.map((m) => {
+            const v = r.scores[m.key];
+            const w = v == null ? 0 : Math.max(2, (v / max) * 100);
+            return `<div class="bench-bar-row"><span>${m.label}</span><div class="bench-bar-track"><div class="bench-bar" style="width:${w}%"></div></div><strong>${fmt(v)}</strong></div>`;
+          }).join('');
+        };
+
+        selectEl.addEventListener('change', () => render(Number(selectEl.value)));
+        render(0);
+      })
+      .catch((e) => {
+        metaEl.textContent = `Could not load comparison data: ${e.message}. Check data/results path availability for this server root.`;
+      });
+  };
 
   // Expose histogram initialization to window
   window.initHistogramPanel = function () {
