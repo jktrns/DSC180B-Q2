@@ -945,7 +945,7 @@ MST baseline & 1{,}769.84 & 10.76 & 13{,}503.57 & 85 \\
 \label{tab:normalized-error}
 \end{table}
 
-Per-table DP-SGD achieves the best median normalized error (2.93), followed by conditional PE (3.79), MST (10.76), and wide-table DP-VAE (16.42). This ranking differs from the binary pass-rate ranking, where per-table and MST were tied at 28.6\%. The normalized metric reveals that per-table DP-SGD's errors are consistently smaller relative to natural variation, and that conditional PE achieves comparable per-metric fidelity despite evaluating fewer queries. MST's high mean (1{,}770) is driven by extreme outliers on aggregate queries that involve multi-table joins (e.g., \texttt{SleepPivot} at 8{,}655$\times$ and \texttt{DisplayAgg} at 3{,}927$\times$). Metrics where the baseline variation $|\Delta_j(D_1,D_2)|$ is below $10^{-8}$ (i.e., the two random halves produce identical values) are excluded, since they offer no natural variation to normalize against.
+Per-table DP-SGD achieves the best median normalized error (2.93), followed by conditional PE (3.79), MST (10.76), and wide-table DP-VAE (16.42). This ranking differs from the binary pass-rate ranking, where per-table and MST were tied at 28.6\%. The normalized metric reveals that per-table DP-SGD's errors are consistently smaller relative to natural variation, and that conditional PE achieves comparable per-metric fidelity despite evaluating fewer queries. MST's high mean (1{,}770) is driven by extreme outliers on aggregate queries that involve multi-table joins (e.g., \texttt{SleepPivot} at 11{,}711$\times$ and \texttt{DisplayAgg} at 3{,}927$\times$). Metrics where the baseline variation $|\Delta_j(D_1,D_2)|$ is below $10^{-8}$ (i.e., the two random halves produce identical values) are excluded, since they offer no natural variation to normalize against.
 
 Table~\ref{tab:normalized-error-per-query} provides per-query normalized errors for all four methods.
 
@@ -966,28 +966,28 @@ Table~\ref{tab:normalized-error-per-query} provides per-query normalized errors 
 \endfoot
 \bottomrule
 \endlastfoot
-\texttt{BlockerAgg} & Agg & --- & \textbf{16.1} & 35.3 & --- \\
-\texttt{BlockerDurAgg} & Agg & --- & \textbf{2.4} & 45.1 & --- \\
-\texttt{ChassisAgg} & Agg & 309.3 & \textbf{4.0} & \textbf{4.0} & --- \\
-\texttt{DisplayAgg} & Agg & --- & \textbf{13.7} & 3{,}850.4 & --- \\
-\texttt{NetAsymAgg} & Agg & --- & \textbf{35.3} & 46.9 & --- \\
-\texttt{VendorAgg} & Agg & --- & 44.6 & \textbf{27.5} & --- \\
+\texttt{BlockerAgg} & Agg & --- & \textbf{22.7} & 60.7 & --- \\
+\texttt{BlockerDurAgg} & Agg & --- & \textbf{2.4} & 44.9 & --- \\
+\texttt{ChassisAgg} & Agg & 4{,}650.3 & --- & --- & --- \\
+\texttt{DisplayAgg} & Agg & --- & \textbf{15.7} & 3{,}927.2 & --- \\
+\texttt{NetAsymAgg} & Agg & --- & \textbf{28.3} & 34.2 & --- \\
+\texttt{VendorAgg} & Agg & --- & 42.3 & \textbf{26.1} & --- \\
 \midrule
-\texttt{BatteryDemo} & Geo & --- & \textbf{12.6} & 248.1 & 10.9 \\
-\texttt{BatteryGeo} & Geo & 139.1 & \textbf{2.5} & 320.5 & 14.5 \\
-\texttt{PowerGeo} & Geo & 616.6 & 3.3 & \textbf{1.0} & 3.6 \\
-\texttt{XeonGeo} & Geo & 96.5 & 6.5 & 593.4 & \textbf{3.5} \\
+\texttt{BatteryDemo} & Geo & --- & 17.5 & 477.6 & \textbf{10.9} \\
+\texttt{BatteryGeo} & Geo & 282.4 & \textbf{4.1} & 344.2 & 14.5 \\
+\texttt{PowerGeo} & Geo & 634.1 & 2.8 & \textbf{0.9} & 3.6 \\
+\texttt{XeonGeo} & Geo & 50.2 & 4.3 & 439.4 & \textbf{3.5} \\
 \midrule
-\texttt{BrowserHist} & Hist & 95.5 & 118.0 & \textbf{25.5} & 112.8 \\
-\texttt{RamHist} & Hist & 29.8 & 38.3 & 110.9 & \textbf{1.5} \\
+\texttt{BrowserHist} & Hist & 115.3 & 91.6 & \textbf{50.1} & 112.8 \\
+\texttt{RamHist} & Hist & 30.2 & 32.8 & 91.7 & \textbf{1.5} \\
 \midrule
-\texttt{PersonaPivot} & Pivot & 65.4 & \textbf{3.4} & 35.3 & 9.2 \\
-\texttt{SleepPivot} & Pivot & --- & \textbf{19.7} & 8{,}655.3 & 9.5 \\
+\texttt{PersonaPivot} & Pivot & 54.9 & \textbf{3.3} & 32.0 & 9.2 \\
+\texttt{SleepPivot} & Pivot & --- & \textbf{24.3} & 11{,}710.6 & 9.5 \\
 \midrule
 \texttt{BrowserRank} & Top-$k$ & 9.0 & 4.0 & \textbf{3.0} & 43.0 \\
-\texttt{DetectionRank} & Top-$k$ & --- & 4.7 & \textbf{2.0} & --- \\
+\texttt{DetectionRank} & Top-$k$ & --- & 5.4 & \textbf{2.3} & --- \\
 \texttt{FocalRank} & Top-$k$ & --- & \textbf{1.0} & 1.1 & --- \\
-\texttt{SystemRank} & Top-$k$ & --- & 45.9 & \textbf{9.7} & --- \\
+\texttt{SystemRank} & Top-$k$ & --- & 43.5 & \textbf{5.0} & --- \\
 \texttt{WaitModeRank} & Top-$k$ & --- & \textbf{0.9} & \textbf{0.9} & --- \\
 \texttt{WaitRank} & Top-$k$ & --- & \textbf{1.0} & \textbf{1.0} & --- \\
 \end{longtable}
