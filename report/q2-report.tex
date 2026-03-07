@@ -650,14 +650,18 @@ To foreground per-query fidelity, Table~\ref{tab:wide-dpsgd-scores} reports the 
 \toprule
 \textbf{Query codename} & \textbf{Type} & \textbf{Wide DP-VAE score} \\
 \midrule
-\texttt{BrowserRank} & Top-$k$ & \cellcolor{scorehi}1.000 \\
+\texttt{ChassisAgg} & Agg+Join & \cellcolor{scorelo}0.167 \\
+\midrule
+\texttt{BatteryGeo} & Geo/Demo & \cellcolor{scoremid}0.250 \\
 \texttt{PowerGeo} & Geo/Demo & \cellcolor{scoremid}0.333 \\
 \texttt{XeonGeo} & Geo/Demo & \cellcolor{scoremid}0.250 \\
-\texttt{BatteryGeo} & Geo/Demo & \cellcolor{scoremid}0.250 \\
-\texttt{ChassisAgg} & Agg+Join & \cellcolor{scorelo}0.167 \\
-\texttt{PersonaPivot} & Pivot & \cellcolor{scorelo}0.065 \\
+\midrule
 \texttt{BrowserHist} & Histogram & \cellcolor{scorelo}0.000 \\
 \texttt{RamHist} & Histogram & \cellcolor{scorelo}0.000 \\
+\midrule
+\texttt{PersonaPivot} & Pivot & \cellcolor{scorelo}0.065 \\
+\midrule
+\texttt{BrowserRank} & Top-$k$ & \cellcolor{scorehi}1.000 \\
 \bottomrule
 \end{tabular*}
 \caption{Wide-table DP-VAE query scores on a 0--1 fidelity scale, color-coded as in Table~\ref{tab:per-query-scores}: \tightlegendbox{scorehi}{$\geq 0.5$}, \tightlegendbox{scoremid}{$0.25$--$0.49$}, \tightlegendbox{scorelo}{$< 0.25$}.}
@@ -739,22 +743,26 @@ Per-table DP-SGD passes 6 of 21 queries, with average score 0.303 and median sco
 \endfoot
 \bottomrule
 \endlastfoot
-\texttt{VendorAgg} & Agg+Join & \cellcolor{scorehi}1.000 \\
-\texttt{BatteryGeo} & Geo/Demo & \cellcolor{scorehi}1.000 \\
-\texttt{BrowserRank} & Top-$k$ & \cellcolor{scorehi}1.000 \\
-\texttt{SleepPivot} & Pivot & \cellcolor{scorehi}0.636 \\
-\texttt{RamHist} & Histogram & \cellcolor{scorehi}0.500 \\
-\texttt{DetectionRank} & Top-$k$ & \cellcolor{scorehi}0.500 \\
-\texttt{PersonaPivot} & Pivot & \cellcolor{scoremid}0.419 \\
-\texttt{PowerGeo} & Geo/Demo & \cellcolor{scoremid}0.333 \\
-\texttt{BrowserHist} & Histogram & \cellcolor{scoremid}0.333 \\
 \texttt{BlockerAgg} & Agg+Join & \cellcolor{scoremid}0.250 \\
-\texttt{XeonGeo} & Geo/Demo & \cellcolor{scoremid}0.250 \\
-\texttt{NetAsymAgg} & Agg+Join & \cellcolor{scorelo}0.143 \\
 \texttt{BlockerDurAgg} & Agg+Join & \cellcolor{scorelo}0.000 \\
 \texttt{ChassisAgg} & Agg+Join & \cellcolor{scorelo}0.000 \\
 \texttt{DisplayAgg} & Agg+Join & \cellcolor{scorelo}0.000 \\
+\texttt{NetAsymAgg} & Agg+Join & \cellcolor{scorelo}0.143 \\
+\texttt{VendorAgg} & Agg+Join & \cellcolor{scorehi}1.000 \\
+\midrule
 \texttt{BatteryDemo} & Geo/Demo & \cellcolor{scorelo}0.000 \\
+\texttt{BatteryGeo} & Geo/Demo & \cellcolor{scorehi}1.000 \\
+\texttt{PowerGeo} & Geo/Demo & \cellcolor{scoremid}0.333 \\
+\texttt{XeonGeo} & Geo/Demo & \cellcolor{scoremid}0.250 \\
+\midrule
+\texttt{BrowserHist} & Histogram & \cellcolor{scoremid}0.333 \\
+\texttt{RamHist} & Histogram & \cellcolor{scorehi}0.500 \\
+\midrule
+\texttt{PersonaPivot} & Pivot & \cellcolor{scoremid}0.419 \\
+\texttt{SleepPivot} & Pivot & \cellcolor{scorehi}0.636 \\
+\midrule
+\texttt{BrowserRank} & Top-$k$ & \cellcolor{scorehi}1.000 \\
+\texttt{DetectionRank} & Top-$k$ & \cellcolor{scorehi}0.500 \\
 \texttt{FocalRank} & Top-$k$ & \cellcolor{scorelo}0.000 \\
 \texttt{SystemRank} & Top-$k$ & \cellcolor{scorelo}0.000 \\
 \texttt{WaitModeRank} & Top-$k$ & \cellcolor{scorelo}0.000 \\
@@ -786,24 +794,28 @@ MST passes 6 of 21 queries, with average score 0.328 and median score 0.250. Lik
 \endfoot
 \bottomrule
 \endlastfoot
-\texttt{VendorAgg} & Agg+Join & \cellcolor{scorehi}1.000 \\
-\texttt{BrowserRank} & Top-$k$ & \cellcolor{scorehi}1.000 \\
-\texttt{DetectionRank} & Top-$k$ & \cellcolor{scorehi}1.000 \\
-\texttt{SystemRank} & Top-$k$ & \cellcolor{scorehi}1.000 \\
-\texttt{BrowserHist} & Histogram & \cellcolor{scorehi}0.667 \\
-\texttt{BatteryGeo} & Geo/Demo & \cellcolor{scorehi}0.500 \\
-\texttt{NetAsymAgg} & Agg+Join & \cellcolor{scoremid}0.429 \\
-\texttt{PowerGeo} & Geo/Demo & \cellcolor{scoremid}0.333 \\
-\texttt{SleepPivot} & Pivot & \cellcolor{scoremid}0.273 \\
 \texttt{BlockerAgg} & Agg+Join & \cellcolor{scoremid}0.250 \\
-\texttt{XeonGeo} & Geo/Demo & \cellcolor{scoremid}0.250 \\
-\texttt{PersonaPivot} & Pivot & \cellcolor{scorelo}0.194 \\
 \texttt{BlockerDurAgg} & Agg+Join & \cellcolor{scorelo}0.000 \\
 \texttt{ChassisAgg} & Agg+Join & \cellcolor{scorelo}0.000 \\
 \texttt{DisplayAgg} & Agg+Join & \cellcolor{scorelo}0.000 \\
+\texttt{NetAsymAgg} & Agg+Join & \cellcolor{scoremid}0.429 \\
+\texttt{VendorAgg} & Agg+Join & \cellcolor{scorehi}1.000 \\
+\midrule
 \texttt{BatteryDemo} & Geo/Demo & \cellcolor{scorelo}0.000 \\
+\texttt{BatteryGeo} & Geo/Demo & \cellcolor{scorehi}0.500 \\
+\texttt{PowerGeo} & Geo/Demo & \cellcolor{scoremid}0.333 \\
+\texttt{XeonGeo} & Geo/Demo & \cellcolor{scoremid}0.250 \\
+\midrule
+\texttt{BrowserHist} & Histogram & \cellcolor{scorehi}0.667 \\
 \texttt{RamHist} & Histogram & \cellcolor{scorelo}0.000 \\
+\midrule
+\texttt{PersonaPivot} & Pivot & \cellcolor{scorelo}0.194 \\
+\texttt{SleepPivot} & Pivot & \cellcolor{scoremid}0.273 \\
+\midrule
+\texttt{BrowserRank} & Top-$k$ & \cellcolor{scorehi}1.000 \\
+\texttt{DetectionRank} & Top-$k$ & \cellcolor{scorehi}1.000 \\
 \texttt{FocalRank} & Top-$k$ & \cellcolor{scorelo}0.000 \\
+\texttt{SystemRank} & Top-$k$ & \cellcolor{scorehi}1.000 \\
 \texttt{WaitModeRank} & Top-$k$ & \cellcolor{scorelo}0.000 \\
 \texttt{WaitRank} & Top-$k$ & \cellcolor{scorelo}0.000 \\
 \texttt{WaitStateRank} & Top-$k$ & \cellcolor{scorelo}0.000 \\
@@ -825,13 +837,17 @@ PE passes 2 of 8 evaluated queries, with average score 0.150 and median score 0.
 \toprule
 \textbf{Query} & \textbf{Type} & \textbf{PE score} \\
 \midrule
+\texttt{ChassisAgg} & Agg+Join & \cellcolor{scorelo}0.000 \\
+\midrule
+\texttt{BatteryGeo} & Geo/Demo & \cellcolor{scorelo}0.000 \\
+\texttt{PowerGeo} & Geo/Demo & \cellcolor{scorelo}0.000 \\
+\texttt{XeonGeo} & Geo/Demo & \cellcolor{scorelo}0.000 \\
+\midrule
 \texttt{BrowserHist} & Histogram & \cellcolor{scorehi}0.667 \\
 \texttt{RamHist} & Histogram & \cellcolor{scorehi}0.500 \\
+\midrule
 \texttt{PersonaPivot} & Pivot & \cellcolor{scorelo}0.032 \\
-\texttt{ChassisAgg} & Agg+Join & \cellcolor{scorelo}0.000 \\
-\texttt{BatteryGeo} & Geo/Demo & \cellcolor{scorelo}0.000 \\
-\texttt{XeonGeo} & Geo/Demo & \cellcolor{scorelo}0.000 \\
-\texttt{PowerGeo} & Geo/Demo & \cellcolor{scorelo}0.000 \\
+\midrule
 \texttt{BrowserRank} & Top-$k$ & \cellcolor{scorelo}0.000 \\
 \bottomrule
 \end{tabular*}
@@ -885,7 +901,7 @@ The total privacy cost is $\varepsilon_{\text{agg}} + \varepsilon_{\text{hist}} 
 \bottomrule
 \end{tabularx}
 \caption{Conditional PE v1 with DP-noised aggregates ($\varepsilon_{\text{agg}}=1.0 + \varepsilon_{\text{hist}}=3.0 = 4.0$ total). The ``PE base'' column reports the midscale PE run (5{,}000 records, independent generation, same $\varepsilon=4.0$). Conditional generation improves on \texttt{RamHist} and \texttt{SleepPivot} where per-stratum conditioning aligns with query structure, but regresses on \texttt{BrowserHist} ($0.667 \to 0.000$) and \texttt{XeonGeo} ($0.250 \to 0.000$) because the high per-query noise ($\sigma \approx 150$) in v1 destroys the aggregate targets for those groups.}
-\label{tab:stratified-pe}
+\label{tab:conditional-pe}
 \end{table}
 
 Conditional v1 passes 2/10 queries (avg 0.207) versus the baseline's 1/10 (avg 0.104). Gains concentrate where query structure matches the conditioning: \texttt{RamHist} achieves a perfect 1.0 and \texttt{SleepPivot} passes at 0.636. However, v1 regresses on \texttt{BrowserHist} ($0.667 \to 0.000$) and \texttt{XeonGeo} ($0.250 \to 0.000$) because the high $\sigma \approx 150$ destroys the aggregate targets. Country-conditioned queries remain at 0 because per-country populations (1--128 systems) fall below the noise floor.
@@ -929,7 +945,7 @@ The combined effect reduces per-query $\sigma$ from ${\sim}150$ to ${\sim}25\tex
 \bottomrule
 \end{tabularx}
 \caption{Conditional PE improvement: ``PE base'' is the midscale PE run (5{,}000 records, independent generation, $\varepsilon=4.0$); ``Cond v1'' uses basic advanced composition ($\varepsilon_{\text{agg}}=1.0$, $\sigma \approx 150$); ``Cond v2'' uses zCDP with per-group budget splitting ($\varepsilon_{\text{agg}}=3.5$, $\sigma \approx 25\text{--}68$). The $\Delta$ column shows v2 minus v1. All runs maintain $\varepsilon_{\text{total}}=4.0$.}
-\label{tab:stratified-pe-v2}
+\label{tab:conditional-pe-v2}
 \end{table}
 
 The improved calibration lifts performance from 2/10 (v1) to 3/10 (v2) passed queries (avg 0.207 $\to$ 0.296). \texttt{XeonGeo} newly passes at 0.500 thanks to the reduced $\sigma_{\text{net}}=24.6$, and \texttt{BrowserHist} recovers to 0.333. Country-conditioned queries remain at 0 as per-country populations (1--128 systems) are still below the noise floor. Overall, conditional PE v2 nearly triples the baseline's average score (0.104 $\to$ 0.296), confirming that noise calibration is the binding constraint on utility.
@@ -964,7 +980,7 @@ Table~\ref{tab:continuous-metrics} reports the mean raw metric values per query 
 \textbf{Query type} & \textbf{Metric} & \textbf{Wide DP-VAE} & \textbf{Per-table} & \textbf{MST} & \textbf{PE} \\
 \midrule
 Aggregate & Mean RE $\downarrow$ & 55.43 & \cellcolor{scorehi}0.54 & \cellcolor{scorelo}169.29 & \cellcolor{scoremid}11.84 \\
-Distribution & Mean TV $\downarrow$ & \cellcolor{scorelo}0.279 & \cellcolor{scoremid}0.241 & \cellcolor{scorehi}0.105 & 0.184 \\
+Distribution & Mean TV $\downarrow$ & \cellcolor{scorelo}0.279 & 0.241 & \cellcolor{scorehi}0.105 & \cellcolor{scoremid}0.184 \\
 Histogram & Mean TV/RE $\downarrow$ & 0.744 & \cellcolor{scoremid}0.444 & \cellcolor{scorelo}1.000 & \cellcolor{scorehi}0.241 \\
 Categorical ranking & Accuracy $\uparrow$ & 0.824 & \cellcolor{scoremid}0.922 & \cellcolor{scorehi}0.941 & \cellcolor{scorelo}0.255 \\
 Numeric ranking & Spearman $\rho$ $\uparrow$ & \cellcolor{scorena}--- & \cellcolor{scorelo}0.172 & \cellcolor{scorehi}0.463 & \cellcolor{scorena}--- \\
@@ -1179,10 +1195,10 @@ Figure~\ref{fig:method-by-type} breaks down average scores by query type. The pe
     (Agg+Join,0.232) (Top-$k$,0.214) (Geo/Demo,0.396) (Histogram,0.417) (Pivot,0.528)
 };
 \addplot[fill=ForestGreen!40, draw=ForestGreen] coordinates {
-    (Agg+Join,0.280) (Top-$k$,0.429) (Geo/Demo,0.271) (Histogram,0.334) (Pivot,0.234)
+    (Agg+Join,0.280) (Top-$k$,0.429) (Geo/Demo,0.271) (Histogram,0.333) (Pivot,0.233)
 };
 \addplot[fill=Goldenrod!60, draw=Goldenrod] coordinates {
-    (Agg+Join,0.000) (Top-$k$,0.000) (Geo/Demo,0.000) (Histogram,0.584) (Pivot,0.032)
+    (Agg+Join,0.000) (Top-$k$,0.000) (Geo/Demo,0.000) (Histogram,0.583) (Pivot,0.032)
 };
 \addplot[fill=violet!40, draw=violet] coordinates {
     (Agg+Join,0.000) (Top-$k$,0.000) (Geo/Demo,0.208) (Histogram,0.666) (Pivot,0.399)
