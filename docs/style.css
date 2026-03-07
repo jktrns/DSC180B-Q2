@@ -595,8 +595,6 @@ table tr:hover {
   background: #fff;
   padding: 10px;
   min-height: 360px;
-  max-height: 360px;
-  overflow-y: auto;
 }
 
 .benchmark-desc {
@@ -620,10 +618,17 @@ table tr:hover {
 
 .bench-bar-row {
   display: grid;
-  grid-template-columns: 150px 1fr auto;
+  grid-template-columns: 180px 1fr auto;
   align-items: center;
   gap: 8px;
-  font-size: 0.9rem;
+  font-size: 0.86rem;
+}
+
+.bench-err {
+  display: block;
+  color: #b45309;
+  font-style: normal;
+  font-size: 0.75rem;
 }
 
 .bench-bar-track {
@@ -646,7 +651,6 @@ table tr:hover {
 
   .benchmark-detail {
     min-height: 320px;
-    max-height: 320px;
   }
 }
 

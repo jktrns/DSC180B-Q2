@@ -239,8 +239,8 @@
       const clean = text.replace(/\s+/g, ' ').trim();
       if (!clean) return '';
       const words = clean.split(' ');
-      if (words.length <= 26) return clean;
-      return `${words.slice(0, 26).join(' ')}…`;
+      if (words.length <= 16) return clean;
+      return `${words.slice(0, 16).join(' ')}…`;
     };
 
     fetch('data/benchmark_slider.json')
@@ -274,15 +274,12 @@
 
           const passCount = METHOD_ORDER.filter(([key]) => rec.passed?.[key] === true).length;
           const description = summarizeQuestion(rec.question);
-          const scoreList = METHOD_ORDER.map(([key, label]) => {
-            const err = rec.errors?.[key] ? ` · ${rec.errors[key]}` : '';
-            return `<li><strong>${label}:</strong> ${fmt(rec.scores?.[key])}${err}</li>`;
-          }).join('');
 
           const bars = METHOD_ORDER.map(([key, label]) => {
             const v = rec.scores?.[key];
             const width = typeof v === 'number' ? Math.max(2, (v / max) * 100) : 0;
-            return `<div class="bench-bar-row"><span>${label}</span><div class="bench-bar-track"><div class="bench-bar" style="width:${width}%"></div></div><strong>${fmt(v)}</strong></div>`;
+            const err = rec.errors?.[key] ? `<em class=\"bench-err\">${rec.errors[key]}</em>` : '';
+            return `<div class=\"bench-bar-row\"><span>${label}${err}</span><div class=\"bench-bar-track\"><div class=\"bench-bar\" style=\"width:${width}%\"></div></div><strong>${fmt(v)}</strong></div>`;
           }).join('');
 
           detailEl.innerHTML = `
@@ -290,7 +287,6 @@
             <p class="small" style="margin:0 0 6px;"><strong>Type:</strong> ${rec.type || 'unknown'}</p>
             <p class="small" style="margin:0 0 6px;">${bestText} · Pass across methods: ${passCount}/4</p>
             ${description ? `<p class="small benchmark-desc">${description}</p>` : ''}
-            <ul class="bench-score-list">${scoreList}</ul>
             <div class="bench-bars">${bars}</div>
           `;
         };
