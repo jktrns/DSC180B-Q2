@@ -411,8 +411,10 @@
 
       <h3>Per-query breakdown</h3>
       <p>Full scores for all 21 queries are shown below, now including both PE variants (vanilla baseline and conditional). Green indicates a pass, red indicates a fail, amber indicates a partial result, and gray means the query was not evaluated.</p>
-      <div class="table-wrapper" id="queryTable">
-        <p class="small">Loading query scores&hellip;</p>
+      <div class="table-wide">
+        <div class="table-wrapper" id="queryTable">
+          <p class="small">Loading query scores&hellip;</p>
+        </div>
       </div>
 
       <div class="scroll-break">
@@ -533,20 +535,22 @@
       </p>
 
       <h3>Method comparison</h3>
-      <div class="table-wrapper">
-        <table>
-          <thead>
-            <tr><th>Aspect</th><th>Per-table DP-SGD</th><th>Wide-table DP-VAE</th><th>MST</th><th>PE (Conditional)</th></tr>
-          </thead>
-          <tbody>
-            <tr><td>Within-table quality</td><td class="cell-pass">High</td><td class="cell-fail">Low</td><td class="cell-pass">High</td><td class="cell-partial">Medium</td></tr>
-            <tr><td>Cross-table fidelity</td><td class="cell-fail">Poor</td><td class="cell-partial">Medium</td><td class="cell-fail">Poor</td><td class="cell-na">N/A</td></tr>
-            <tr><td>Training required</td><td>Yes (per table)</td><td>Yes (large model)</td><td>No</td><td>No</td></tr>
-            <tr><td>Speed</td><td>Medium</td><td>Slow</td><td>Fast</td><td>Fast (if LLM cached)</td></tr>
-            <tr><td>Interpretability</td><td>Low</td><td>Low</td><td class="cell-pass">High</td><td>Low</td></tr>
-            <tr><td>Workload awareness</td><td>No</td><td>No</td><td>No</td><td class="cell-pass">Yes (zCDP split)</td></tr>
-          </tbody>
-        </table>
+      <div class="table-wide">
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr><th>Aspect</th><th>Per-table DP-SGD</th><th>Wide-table DP-VAE</th><th>MST</th><th>PE (Conditional)</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Within-table quality</td><td class="cell-pass">High</td><td class="cell-fail">Low</td><td class="cell-pass">High</td><td class="cell-partial">Medium</td></tr>
+              <tr><td>Cross-table fidelity</td><td class="cell-fail">Poor</td><td class="cell-partial">Medium</td><td class="cell-fail">Poor</td><td class="cell-na">N/A</td></tr>
+              <tr><td>Training required</td><td>Yes (per table)</td><td>Yes (large model)</td><td>No</td><td>No</td></tr>
+              <tr><td>Speed</td><td>Medium</td><td>Slow</td><td>Fast</td><td>Fast (if LLM cached)</td></tr>
+              <tr><td>Interpretability</td><td>Low</td><td>Low</td><td class="cell-pass">High</td><td>Low</td></tr>
+              <tr><td>Workload awareness</td><td>No</td><td>No</td><td>No</td><td class="cell-pass">Yes (zCDP split)</td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <h3>Recommendations for practitioners</h3>
