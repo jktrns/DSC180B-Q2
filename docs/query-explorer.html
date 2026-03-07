@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Query Results Explorer | Training-based vs Training-free Differential Privacy</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body data-page="query-explorer">
+  <div id="siteHeader"></div>
+
+  <main>
+    <section class="section">
+      <h1>Query Results Explorer</h1>
+      <p class="lead">
+        Interactive view of benchmark evaluation artifacts loaded from committed CSV files in <code>data/results/</code>.
+        Browse queries, compare all four methods, and expand rows for metric-level details.
+      </p>
+    </section>
+
+    <section class="section">
+      <div class="explorer-controls">
+        <label>
+          <span class="small">Search query</span>
+          <input id="qeSearch" type="search" placeholder="e.g., ram_utilization_histogram" />
+        </label>
+        <label>
+          <span class="small">Filter type</span>
+          <select id="qeTypeFilter">
+            <option value="all">All types</option>
+          </select>
+        </label>
+        <label>
+          <span class="small">Sort by</span>
+          <select id="qeSort">
+            <option value="query_asc">Query name (A → Z)</option>
+            <option value="query_desc">Query name (Z → A)</option>
+            <option value="avg_desc">Average score (high → low)</option>
+            <option value="avg_asc">Average score (low → high)</option>
+            <option value="mst_desc">MST score (high → low)</option>
+            <option value="pertable_desc">Per-table score (high → low)</option>
+            <option value="widetable_desc">Wide-table score (high → low)</option>
+            <option value="pe_desc">Private Evolution score (high → low)</option>
+          </select>
+        </label>
+      </div>
+
+      <p class="small" id="qeSummary">Loading benchmark artifacts…</p>
+
+      <div class="table-wrap">
+        <table class="qe-table" id="qeTable">
+          <thead>
+            <tr>
+              <th>Query</th>
+              <th>Type</th>
+              <th>Wide-table DP-VAE</th>
+              <th>Per-table DP-SGD</th>
+              <th>MST</th>
+              <th>Private Evolution</th>
+              <th>Avg</th>
+            </tr>
+          </thead>
+          <tbody id="qeBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <div id="siteFooter"></div>
+
+  <script src="app.js"></script>
+  <script src="js/query-explorer.js"></script>
+</body>
+</html>
