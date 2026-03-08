@@ -1,0 +1,695 @@
+[
+  {
+    "name": "BlockerAgg",
+    "codename": "BlockerAgg",
+    "type": "Agg+Join",
+    "desc": "Count distribution of modern sleep study blockers by Windows OS name and codename.",
+    "scores": [
+      {
+        "method": "Wide DP-SGD",
+        "value": null,
+        "note": "N/A"
+      },
+      {
+        "method": "Per-table DP-SGD",
+        "value": 0.25,
+        "note": "partial"
+      },
+      {
+        "method": "MST",
+        "value": 0.25,
+        "note": "partial"
+      },
+      {
+        "method": "PE Vanilla",
+        "value": null,
+        "note": "N/A"
+      },
+      {
+        "method": "PE Conditional",
+        "value": null,
+        "note": "N/A"
+      }
+    ]
+  },
+  {
+    "name": "BlockerDurAgg",
+    "codename": "BlockerDurAgg",
+    "type": "Agg+Join",
+    "desc": "Blocker entry counts and average durations by OS name, codename, blocker type, and activity level.",
+    "scores": [
+      {
+        "method": "Wide DP-SGD",
+        "value": null,
+        "note": "N/A"
+      },
+      {
+        "method": "Per-table DP-SGD",
+        "value": 0.0,
+        "note": "fail"
+      },
+      {
+        "method": "MST",
+        "value": 0.0,
+        "note": "fail"
+      },
+      {
+        "method": "PE Vanilla",
+        "value": null,
+        "note": "N/A"
+      },
+      {
+        "method": "PE Conditional",
+        "value": null,
+        "note": "N/A"
+      }
+    ]
+  },
+  {
+    "name": "ChassisAgg",
+    "codename": "ChassisAgg",
+    "type": "Agg+Join",
+    "desc": "Average power, C0 residency, frequency, and temperature by chassis type (5-way join).",
+    "scores": [
+      {
+        "method": "Wide DP-SGD",
+        "value": 0.167,
+        "note": "partial"
+      },
+      {
+        "method": "Per-table DP-SGD",
+        "value": 0.0,
+        "note": "fail"
+      },
+      {
+        "method": "MST",
+        "value": 0.0,
+        "note": "fail"
+      },
+      {
+        "method": "PE Vanilla",
+        "value": 0.167,
+        "note": "partial"
+      },
+      {
+        "method": "PE Conditional",
+        "value": 0.0,
+        "note": "fail"
+      }
+    ]
+  },
+  {
+    "name": "DisplayAgg",
+    "codename": "DisplayAgg",
+    "type": "Agg+Join",
+    "desc": "Display connection types with resolution and average AC/DC durations.",
+    "scores": [
+      {
+        "method": "Wide DP-SGD",
+        "value": null,
+        "note": "N/A"
+      },
+      {
+        "method": "Per-table DP-SGD",
+        "value": 0.0,
+        "note": "fail"
+      },
+      {
+        "method": "MST",
+        "value": 0.0,
+        "note": "fail"
+      },
+      {
+        "method": "PE Vanilla",
+        "value": null,
+        "note": "N/A"
+      },
+      {
+        "method": "PE Conditional",
+        "value": null,
+        "note": "N/A"
+      }
+    ]
+  },
+  {
+    "name": "NetAsymAgg",
+    "codename": "NetAsymAgg",
+    "type": "Agg+Join",
+    "desc": "Identify client machines sending more data than they receive, joined with sysinfo for OS and chassis.",
+    "scores": [
+      {
+        "method": "Wide DP-SGD",
+        "value": null,
+        "note": "N/A"
+      },
+      {
+        "method": "Per-table DP-SGD",
+        "value": 0.143,
+        "note": "partial"
+      },
+      {
+        "method": "MST",
+        "value": 0.429,
+        "note": "partial"
+      },
+      {
+        "method": "PE Vanilla",
+        "value": null,
+        "note": "N/A"
+      },
+      {
+        "method": "PE Conditional",
+        "value": null,
+        "note": "N/A"
+      }
+    ]
+  },
+  {
+    "name": "VendorAgg",
+    "codename": "VendorAgg",
+    "type": "Agg+Join",
+    "desc": "Percentage of systems by display vendor.",
+    "scores": [
+      {
+        "method": "Wide DP-SGD",
+        "value": null,
+        "note": "N/A"
+      },
+      {
+        "method": "Per-table DP-SGD",
+        "value": 1.0,
+        "note": "pass"
+      },
+      {
+        "method": "MST",
+        "value": 1.0,
+        "note": "pass"
+      },
+      {
+        "method": "PE Vanilla",
+        "value": null,
+        "note": "N/A"
+      },
+      {
+        "method": "PE Conditional",
+        "value": null,
+        "note": "N/A"
+      }
+    ]
+  },
+  {
+    "name": "BatteryDemo",
+    "codename": "BatteryDemo",
+    "type": "Geo/Demo",
+    "desc": "Battery duration by CPU family and generation (min. 100 clients).",
+    "scores": [
+      {
+        "method": "Wide DP-SGD",
+        "value": 0.0,
+        "note": "fail"
+      },
+      {
+        "method": "Per-table DP-SGD",
+        "value": 0.0,
+        "note": "fail"
+      },
+      {
+        "method": "MST",
+        "value": 0.0,
+        "note": "fail"
+      },
+      {
+        "method": "PE Vanilla",
+        "value": 0.0,
+        "note": "fail"
+      },
+      {
+        "method": "PE Conditional",
+        "value": 0.333,
+        "note": "partial"
+      }
+    ]
+  },
+  {
+    "name": "BatteryGeo",
+    "codename": "BatteryGeo",
+    "type": "Geo/Demo",
+    "desc": "Battery power-on count and duration by country (min. 100 clients).",
+    "scores": [
+      {
+        "method": "Wide DP-SGD",
+        "value": 0.25,
+        "note": "partial"
+      },
+      {
+        "method": "Per-table DP-SGD",
+        "value": 1.0,
+        "note": "pass"
+      },
+      {
+        "method": "MST",
+        "value": 0.5,
+        "note": "pass"
+      },
+      {
+        "method": "PE Vanilla",
+        "value": 0.0,
+        "note": "fail"
+      },
+      {
+        "method": "PE Conditional",
+        "value": 0.25,
+        "note": "partial"
+      }
+    ]
+  },
+  {
+    "name": "PowerGeo",
+    "codename": "PowerGeo",
+    "type": "Geo/Demo",
+    "desc": "Average CPU package power by country.",
+    "scores": [
+      {
+        "method": "Wide DP-SGD",
+        "value": 0.333,
+        "note": "partial"
+      },
+      {
+        "method": "Per-table DP-SGD",
+        "value": 0.333,
+        "note": "partial"
+      },
+      {
+        "method": "MST",
+        "value": 0.333,
+        "note": "partial"
+      },
+      {
+        "method": "PE Vanilla",
+        "value": 0.0,
+        "note": "fail"
+      },
+      {
+        "method": "PE Conditional",
+        "value": 0.0,
+        "note": "fail"
+      }
+    ]
+  },
+  {
+    "name": "XeonGeo",
+    "codename": "XeonGeo",
+    "type": "Geo/Demo",
+    "desc": "Network consumption summary for Xeon vs. non-Xeon systems, by OS.",
+    "scores": [
+      {
+        "method": "Wide DP-SGD",
+        "value": 0.25,
+        "note": "partial"
+      },
+      {
+        "method": "Per-table DP-SGD",
+        "value": 0.25,
+        "note": "partial"
+      },
+      {
+        "method": "MST",
+        "value": 0.25,
+        "note": "partial"
+      },
+      {
+        "method": "PE Vanilla",
+        "value": 0.25,
+        "note": "partial"
+      },
+      {
+        "method": "PE Conditional",
+        "value": 0.5,
+        "note": "pass"
+      }
+    ]
+  },
+  {
+    "name": "BrowserHist",
+    "codename": "BrowserHist",
+    "type": "Histogram",
+    "desc": "Percentage of systems, instances, and duration by browser.",
+    "scores": [
+      {
+        "method": "Wide DP-SGD",
+        "value": 0.0,
+        "note": "fail"
+      },
+      {
+        "method": "Per-table DP-SGD",
+        "value": 0.333,
+        "note": "partial"
+      },
+      {
+        "method": "MST",
+        "value": 0.667,
+        "note": "pass"
+      },
+      {
+        "method": "PE Vanilla",
+        "value": 0.333,
+        "note": "partial"
+      },
+      {
+        "method": "PE Conditional",
+        "value": 0.0,
+        "note": "fail"
+      }
+    ]
+  },
+  {
+    "name": "RamHist",
+    "codename": "RamHist",
+    "type": "Histogram",
+    "desc": "Average RAM utilization percentage by memory capacity.",
+    "scores": [
+      {
+        "method": "Wide DP-SGD",
+        "value": 0.0,
+        "note": "fail"
+      },
+      {
+        "method": "Per-table DP-SGD",
+        "value": 0.5,
+        "note": "pass"
+      },
+      {
+        "method": "MST",
+        "value": 0.0,
+        "note": "fail"
+      },
+      {
+        "method": "PE Vanilla",
+        "value": 0.5,
+        "note": "pass"
+      },
+      {
+        "method": "PE Conditional",
+        "value": 1.0,
+        "note": "pass"
+      }
+    ]
+  },
+  {
+    "name": "PersonaPivot",
+    "codename": "PersonaPivot",
+    "type": "Pivot",
+    "desc": "Web browsing category duration as weighted percentages, by persona.",
+    "scores": [
+      {
+        "method": "Wide DP-SGD",
+        "value": 0.065,
+        "note": "partial"
+      },
+      {
+        "method": "Per-table DP-SGD",
+        "value": 0.419,
+        "note": "partial"
+      },
+      {
+        "method": "MST",
+        "value": 0.194,
+        "note": "partial"
+      },
+      {
+        "method": "PE Vanilla",
+        "value": 0.032,
+        "note": "partial"
+      },
+      {
+        "method": "PE Conditional",
+        "value": 0.161,
+        "note": "partial"
+      }
+    ]
+  },
+  {
+    "name": "SleepPivot",
+    "codename": "SleepPivot",
+    "type": "Pivot",
+    "desc": "On/off/sleep/MODS time percentages by CPU generation and market codename.",
+    "scores": [
+      {
+        "method": "Wide DP-SGD",
+        "value": 0.0,
+        "note": "fail"
+      },
+      {
+        "method": "Per-table DP-SGD",
+        "value": 0.636,
+        "note": "pass"
+      },
+      {
+        "method": "MST",
+        "value": 0.273,
+        "note": "partial"
+      },
+      {
+        "method": "PE Vanilla",
+        "value": 0.091,
+        "note": "partial"
+      },
+      {
+        "method": "PE Conditional",
+        "value": 0.818,
+        "note": "pass"
+      }
+    ]
+  },
+  {
+    "name": "BrowserRank",
+    "codename": "BrowserRank",
+    "type": "Top-k",
+    "desc": "Most popular browser per country by system count.",
+    "scores": [
+      {
+        "method": "Wide DP-SGD",
+        "value": 1.0,
+        "note": "pass"
+      },
+      {
+        "method": "Per-table DP-SGD",
+        "value": 1.0,
+        "note": "pass"
+      },
+      {
+        "method": "MST",
+        "value": 1.0,
+        "note": "pass"
+      },
+      {
+        "method": "PE Vanilla",
+        "value": 0.0,
+        "note": "fail"
+      },
+      {
+        "method": "PE Conditional",
+        "value": 0.0,
+        "note": "fail"
+      }
+    ]
+  },
+  {
+    "name": "DetectionRank",
+    "codename": "DetectionRank",
+    "type": "Top-k",
+    "desc": "Top 10 applications per app type by total daily detection count.",
+    "scores": [
+      {
+        "method": "Wide DP-SGD",
+        "value": null,
+        "note": "N/A"
+      },
+      {
+        "method": "Per-table DP-SGD",
+        "value": 0.5,
+        "note": "pass"
+      },
+      {
+        "method": "MST",
+        "value": 1.0,
+        "note": "pass"
+      },
+      {
+        "method": "PE Vanilla",
+        "value": null,
+        "note": "N/A"
+      },
+      {
+        "method": "PE Conditional",
+        "value": null,
+        "note": "N/A"
+      }
+    ]
+  },
+  {
+    "name": "FocalRank",
+    "codename": "FocalRank",
+    "type": "Top-k",
+    "desc": "Top 10 applications per app type by average daily focal screen time.",
+    "scores": [
+      {
+        "method": "Wide DP-SGD",
+        "value": null,
+        "note": "N/A"
+      },
+      {
+        "method": "Per-table DP-SGD",
+        "value": 0.0,
+        "note": "fail"
+      },
+      {
+        "method": "MST",
+        "value": 0.0,
+        "note": "fail"
+      },
+      {
+        "method": "PE Vanilla",
+        "value": null,
+        "note": "N/A"
+      },
+      {
+        "method": "PE Conditional",
+        "value": null,
+        "note": "N/A"
+      }
+    ]
+  },
+  {
+    "name": "SystemRank",
+    "codename": "SystemRank",
+    "type": "Top-k",
+    "desc": "Top 10 applications per app type by distinct client count.",
+    "scores": [
+      {
+        "method": "Wide DP-SGD",
+        "value": null,
+        "note": "N/A"
+      },
+      {
+        "method": "Per-table DP-SGD",
+        "value": 0.0,
+        "note": "fail"
+      },
+      {
+        "method": "MST",
+        "value": 1.0,
+        "note": "pass"
+      },
+      {
+        "method": "PE Vanilla",
+        "value": null,
+        "note": "N/A"
+      },
+      {
+        "method": "PE Conditional",
+        "value": null,
+        "note": "N/A"
+      }
+    ]
+  },
+  {
+    "name": "WaitModeRank",
+    "codename": "WaitModeRank",
+    "type": "Top-k",
+    "desc": "Top 10 wait-time applications by wait type (app start vs. in-app) and power state.",
+    "scores": [
+      {
+        "method": "Wide DP-SGD",
+        "value": null,
+        "note": "N/A"
+      },
+      {
+        "method": "Per-table DP-SGD",
+        "value": 0.0,
+        "note": "fail"
+      },
+      {
+        "method": "MST",
+        "value": 0.0,
+        "note": "fail"
+      },
+      {
+        "method": "PE Vanilla",
+        "value": null,
+        "note": "N/A"
+      },
+      {
+        "method": "PE Conditional",
+        "value": null,
+        "note": "N/A"
+      }
+    ]
+  },
+  {
+    "name": "WaitRank",
+    "codename": "WaitRank",
+    "type": "Top-k",
+    "desc": "Top 10 applications by average wait time.",
+    "scores": [
+      {
+        "method": "Wide DP-SGD",
+        "value": null,
+        "note": "N/A"
+      },
+      {
+        "method": "Per-table DP-SGD",
+        "value": 0.0,
+        "note": "fail"
+      },
+      {
+        "method": "MST",
+        "value": 0.0,
+        "note": "fail"
+      },
+      {
+        "method": "PE Vanilla",
+        "value": null,
+        "note": "N/A"
+      },
+      {
+        "method": "PE Conditional",
+        "value": null,
+        "note": "N/A"
+      }
+    ]
+  },
+  {
+    "name": "WaitStateRank",
+    "codename": "WaitStateRank",
+    "type": "Top-k",
+    "desc": "Top 20 wait-time applications with durations pivoted by power state (AC/DC/Unknown).",
+    "scores": [
+      {
+        "method": "Wide DP-SGD",
+        "value": null,
+        "note": "N/A"
+      },
+      {
+        "method": "Per-table DP-SGD",
+        "value": 0.0,
+        "note": "fail"
+      },
+      {
+        "method": "MST",
+        "value": 0.0,
+        "note": "fail"
+      },
+      {
+        "method": "PE Vanilla",
+        "value": null,
+        "note": "N/A"
+      },
+      {
+        "method": "PE Conditional",
+        "value": null,
+        "note": "N/A"
+      }
+    ]
+  }
+]
