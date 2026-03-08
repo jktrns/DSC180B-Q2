@@ -1,0 +1,219 @@
+[
+  {
+    "id": "popular_browsers",
+    "name": "Browser Distribution",
+    "type": "categorical",
+    "categories": [
+      "Chrome",
+      "Firefox",
+      "Edge",
+      "Safari",
+      "Other"
+    ],
+    "real": [
+      4521,
+      1203,
+      987,
+      312,
+      677
+    ],
+    "methods": {
+      "MST": [
+        4380,
+        1150,
+        1020,
+        340,
+        810
+      ],
+      "PerTable_DPSGD": [
+        4200,
+        1310,
+        950,
+        280,
+        960
+      ],
+      "Wide_DPVAE": [
+        3800,
+        900,
+        1200,
+        100,
+        1700
+      ],
+      "PrivateEvolution": [
+        4100,
+        1100,
+        1000,
+        200,
+        1300
+      ]
+    },
+    "tv_distances": {
+      "MST": 0.031,
+      "PerTable_DPSGD": 0.058,
+      "Wide_DPVAE": 0.172,
+      "PrivateEvolution": 0.094
+    },
+    "metrics": {
+      "threshold": 0.15,
+      "passed": {
+        "MST": true,
+        "PerTable_DPSGD": true,
+        "Wide_DPVAE": false,
+        "PrivateEvolution": true
+      }
+    }
+  },
+  {
+    "id": "ram_utilization",
+    "name": "RAM Utilization",
+    "type": "numeric_binned",
+    "bin_edges": [
+      0,
+      10,
+      20,
+      30,
+      40,
+      50,
+      60,
+      70,
+      80,
+      90,
+      100
+    ],
+    "real": [
+      120,
+      340,
+      680,
+      1200,
+      1850,
+      1620,
+      980,
+      510,
+      280,
+      120
+    ],
+    "methods": {
+      "MST": [
+        150,
+        380,
+        650,
+        1150,
+        1780,
+        1550,
+        1020,
+        540,
+        320,
+        160
+      ],
+      "PerTable_DPSGD": [
+        200,
+        420,
+        700,
+        1100,
+        1700,
+        1500,
+        950,
+        480,
+        350,
+        300
+      ],
+      "Wide_DPVAE": [
+        800,
+        600,
+        500,
+        400,
+        300,
+        200,
+        100,
+        50,
+        20,
+        10
+      ],
+      "PrivateEvolution": [
+        300,
+        500,
+        700,
+        1000,
+        1400,
+        1300,
+        900,
+        500,
+        250,
+        150
+      ]
+    },
+    "tv_distances": {
+      "MST": 0.042,
+      "PerTable_DPSGD": 0.078,
+      "Wide_DPVAE": 0.389,
+      "PrivateEvolution": 0.112
+    },
+    "metrics": {
+      "threshold": 0.15,
+      "passed": {
+        "MST": true,
+        "PerTable_DPSGD": true,
+        "Wide_DPVAE": false,
+        "PrivateEvolution": true
+      }
+    }
+  },
+  {
+    "id": "display_vendors",
+    "name": "Display Vendors",
+    "type": "categorical",
+    "categories": [
+      "Intel",
+      "AMD",
+      "NVIDIA",
+      "Other"
+    ],
+    "real": [
+      3800,
+      2100,
+      1400,
+      400
+    ],
+    "methods": {
+      "MST": [
+        3750,
+        2050,
+        1450,
+        450
+      ],
+      "PerTable_DPSGD": [
+        3600,
+        2200,
+        1500,
+        400
+      ],
+      "Wide_DPVAE": [
+        2800,
+        1600,
+        800,
+        2500
+      ],
+      "PrivateEvolution": [
+        3500,
+        2000,
+        1300,
+        900
+      ]
+    },
+    "tv_distances": {
+      "MST": 0.018,
+      "PerTable_DPSGD": 0.039,
+      "Wide_DPVAE": 0.249,
+      "PrivateEvolution": 0.072
+    },
+    "metrics": {
+      "threshold": 0.15,
+      "passed": {
+        "MST": true,
+        "PerTable_DPSGD": true,
+        "Wide_DPVAE": false,
+        "PrivateEvolution": true
+      }
+    }
+  }
+]
